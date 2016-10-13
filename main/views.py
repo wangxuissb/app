@@ -247,7 +247,7 @@ def UpdateUser():
 # *****************************帖子相关*****************************
 # *****************************出   售*****************************
 class Sale(db.Model):
-    # 共计18项
+    # 共计19项
     __tablename__ = 'sale'
     # ID
     SaleId = db.Column(db.Integer, primary_key=True)
@@ -265,6 +265,8 @@ class Sale(db.Model):
     Isbn = db.Column(db.String)
     # 是否出售
     IsSale = db.Column(db.Boolean)
+    # 学校
+    SchoolName = db.Column(db.String)
     # 位置
     Location = db.Column(db.String)
     # 价格
@@ -289,7 +291,7 @@ class Sale(db.Model):
 
 def __int__(self, SaleId, UserId, BookName, Author, Classify, Publish, IsSale, Location
             , NewPrice, OldOrNew, OldPrice, Remark, Tel, Other, CreatedAt, PicList
-            , Isbn, Comment):
+            , Isbn, Comment, SchoolName):
     self.SaleId = SaleId
     self.UserId = UserId
     self.BookName = BookName
@@ -303,6 +305,7 @@ def __int__(self, SaleId, UserId, BookName, Author, Classify, Publish, IsSale, L
     self.OldPrice = OldPrice
     self.Remark = Remark
     self.Tel = Tel
+    self.SchoolName = SchoolName
     self.Other = Other
     self.CreatedAt = CreatedAt
     self.PicList = PicList
@@ -333,6 +336,7 @@ def CreateSale():
     s.CreatedAt = request.json['CreatedAt']
     s.PicList = request.json['PicList']
     s.Isbn = request.json['Isbn']
+    s.SchoolName = request.json['SchoolName']
     s.Comment = ''
     session.add(s)
     session.commit()
@@ -481,7 +485,7 @@ def FindSaleById(id):
                     'IsSale': get.IsSale, 'Location': get.Location, 'NewPrice': get.NewPrice,
                     'OldOrNew': get.OldOrNew, 'OldPrice': get.OldPrice, 'Remark': get.Remark, 'Tel': get.Tel,
                     'Other': get.Other, 'CreatedAt': get.CreatedAt, 'PicList': get.PicList,
-                    'Isbn': get.Isbn, 'Comment': get.Comment})
+                    'Isbn': get.Isbn, 'Comment': get.Comment, 'SchoolName': get.SchoolName})
 
 
 # 更新出售
@@ -502,8 +506,7 @@ def FindSaleBookName():
     bookname = request.json['BookName']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    booklist = Sale.query.filter(Sale.BookName.like("%" + bookname + "%")).order_by(
-        desc(Sale.SaleId)).limit(
+    booklist = Sale.query.filter(Sale.BookName.like("%" + bookname + "%")).limit(
         limit).offset(skip).all()
     if booklist:
         newlist = list()
