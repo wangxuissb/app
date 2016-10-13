@@ -384,8 +384,8 @@ def FindAllSale():
                 asc(Sale.OldOrNew)).limit(limit).offset(skip).all()
     elif type == 21:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
-                desc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId), desc(Sale.OldOrNew)).limit(
+                limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
                 desc(Sale.SaleId)).order_by(
