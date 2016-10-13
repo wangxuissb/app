@@ -4,12 +4,10 @@ from sqlalchemy import create_engine, MetaData, and_, desc, asc
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy
-from .. import db,db_session,session
+from .. import db, db_session, session
 from . import main
 
-
 UserIdNum = [0]
-
 
 
 @main.teardown_request
@@ -499,10 +497,8 @@ def FindSaleBookName():
     skip = request.json['Skip']
     limit = request.json['Limit']
     issale = request.json['IsSale']
-    booklist = Sale.query.filter_by(and_(Sale.BookName.like(bookname), Sale.IsSale.like(issale))).order_by(
+    booklist = Sale.query.filter_by(and_(Sale.BookName.like(bookname), Sale.IsSale == issale)).order_by(
         desc(Sale.SaleId)).limit(
         limit).offset(skip).all()
     for book in booklist:
         return jsonify({'SaleId': book.SaleId})
-
-
