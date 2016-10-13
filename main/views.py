@@ -503,7 +503,7 @@ def FindSaleBookName():
     if booklist:
         newlist = []
         for book in booklist:
-            newlist.append(jsonify({'SaleId': book.SaleId}))
-            return repr(newlist)
+            newlist.append(book.SaleId)
+        return jsonify({'SaleId': newlist})
     else:
         return jsonify({'Message': '无结果'})
