@@ -354,7 +354,7 @@ def FindAllSale():
     issale = request.json['Sale']
     if type == 0:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).limit(limit).offset(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.NewPrice)).limit(limit).offset(
                 skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
@@ -384,7 +384,8 @@ def FindAllSale():
                 asc(Sale.OldOrNew)).limit(limit).offset(skip).all()
     elif type == 21:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId), desc(Sale.OldOrNew)).limit(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
+                and_(Sale.SaleId.desc(), Sale.OldOrNew.desc())).limit(
                 limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
