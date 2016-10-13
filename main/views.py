@@ -499,7 +499,8 @@ def FindSaleBookName():
     skip = request.json['Skip']
     limit = request.json['Limit']
     issale = request.json['IsSale']
-    booklist = Sale.query.filter_by(and_(BookName=bookname, IsSale=issale)).order_by(desc(Sale.SaleId)).limit(
+    booklist = Sale.query.filter_by(and_(Sale.BookName.like(bookname), Sale.IsSale.like(issale))).order_by(
+        desc(Sale.SaleId)).limit(
         limit).offset(skip).all()
     for book in booklist:
         return jsonify({'SaleId': book.SaleId})
