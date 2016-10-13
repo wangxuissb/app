@@ -351,7 +351,7 @@ def FindAllSale():
     skip = request.json['Skip']
     limit = request.json['Limit']
     schoolname = request.json['SchoolName']
-    issale = request.json['IsSale']
+    issale = request.json['Sale']
     if type == 0:
         if schoolname == '':
             booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).limit(limit).offset(
@@ -466,7 +466,7 @@ def FindAllSale():
         newlist = list()
         for book in booklist:
             newlist.append(book.SaleId)
-            return jsonify({'SaleId': newlist})
+        return jsonify({'SaleId': newlist})
     else:
         return jsonify({'Message': '无结果'})
 
@@ -501,8 +501,7 @@ def FindSaleBookName():
     bookname = request.json['BookName']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    issale = request.json['IsSale']
-    booklist = Sale.query.filter(and_(Sale.BookName.like("%" + bookname + "%"), Sale.IsSale.is_(issale))).order_by(
+    booklist = Sale.query.filter(Sale.BookName.like("%" + bookname + "%")).order_by(
         desc(Sale.SaleId)).limit(
         limit).offset(skip).all()
     if booklist:
