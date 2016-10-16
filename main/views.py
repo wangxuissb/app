@@ -534,11 +534,11 @@ class Buy(db.Model):
     # 是否已购
     IsBuy = db.Column(db.Boolean)
     # 价格
-    Price = db.Column(db.Float)
+    Price = db.Column(db.DECIMAL)
     # 备注
     Remark = db.Column(db.String)
     # 发布时间
-    CreatedAt = db.Column(db.Integer)
+    CreatedAt = db.Column(db.BIGINT)
     # 电话号
     Tel = db.Column(db.String)
     # 地址
@@ -630,14 +630,14 @@ class Order(db.Model):
     # 书目ID
     BookId = db.Column(db.INTEGER)
     # 成交价
-    Price = db.Column(db.Float)
+    Price = db.Column(db.DECIMAL)
     # 交易状态
     # 0为未付款 1为已付款 2为已发货 3是已收货 4为取消订单
     State = db.Column(db.INTEGER)
     # 快递单号
     Number = db.Column(db.INTEGER)
     # 创建时间
-    CreatedAt = db.Column(db.INTEGER)
+    CreatedAt = db.Column(db.BIGINT)
     # 收获地址
     Location = db.Column(db.String)
     # 备注
@@ -717,7 +717,7 @@ class Comment(db.Model):
     # 内容
     Content = db.Column(db.String)
     # 创建时间
-    CreatedAt = db.Column(db.INTEGER)
+    CreatedAt = db.Column(db.BIGINT)
 
     def __int__(self, CommentId, Type, UserId, ToId, Content, CreatedAt):
         self.CommentId = CommentId
