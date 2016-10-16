@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, jsonify, request, abort, make_response
-from sqlalchemy import create_engine, MetaData, and_, desc, asc
+from sqlalchemy import create_engine, MetaData, and_, or_, desc, asc
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -358,116 +358,115 @@ def FindAllSale():
     issale = request.json['Sale']
     if type == 0:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(Sale.SaleId.desc(),
-                                                                         Sale.OldOrNew.desc()).limit(limit).offset(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(Sale.SaleId.desc()).limit(limit).offset(
                 skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
                 desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 10:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
-                asc(Sale.NewPrice)).limit(limit).offset(skip).all()
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.NewPrice)).order_by(
+                asc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(asc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                desc(Sale.NewPrice)).order_by(asc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 11:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
-                desc(Sale.NewPrice)).limit(limit).offset(skip).all()
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.NewPrice)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                desc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                desc(Sale.NewPrice)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 20:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
-                asc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.OldOrNew)).order_by(
+                asc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                asc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                desc(Sale.OldOrNew)).order_by(
+                asc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 21:
         if schoolname == '':
             booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                and_(Sale.SaleId.desc(), Sale.OldOrNew.desc())).limit(
+                and_(Sale.OldOrNew.desc(), Sale.SaleId.desc())).limit(
                 limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                desc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                desc(Sale.OldOrNew)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 1020:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                 asc(Sale.NewPrice)).order_by(
-                asc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                asc(Sale.OldOrNew)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                asc(Sale.NewPrice)).order_by(asc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                asc(Sale.NewPrice)).order_by(asc(Sale.OldOrNew)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 1021:
         if schoolname == '':
             booklist = Sale.query.filter(Sale.IsSale == issale).order_by(asc(Sale.NewPrice)).order_by(
-                desc(Sale.SaleId)).order_by(
-                desc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                desc(Sale.OldOrNew)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                asc(Sale.NewPrice)).order_by(desc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                asc(Sale.NewPrice)).order_by(desc(Sale.OldOrNew)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 1120:
         if schoolname == '':
             booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.NewPrice)).order_by(
-                desc(Sale.SaleId)).order_by(
-                asc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                asc(Sale.OldOrNew)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                desc(Sale.NewPrice)).order_by(asc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                desc(Sale.NewPrice)).order_by(asc(Sale.OldOrNew)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 1121:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                 desc(Sale.NewPrice)).order_by(
-                desc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                desc(Sale.OldOrNew)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                desc(Sale.NewPrice)).order_by(desc(Sale.OldOrNew)).limit(limit).offset(skip).all()
+                desc(Sale.NewPrice)).order_by(desc(Sale.OldOrNew)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 2010:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                 asc(Sale.OldOrNew)).order_by(
-                asc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                asc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                asc(Sale.OldOrNew)).order_by(asc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                asc(Sale.OldOrNew)).order_by(asc(Sale.NewPrice)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 2011:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                 asc(Sale.OldOrNew)).order_by(
-                desc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                desc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                asc(Sale.OldOrNew)).order_by(desc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                asc(Sale.OldOrNew)).order_by(desc(Sale.NewPrice)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 2110:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                 desc(Sale.OldOrNew)).order_by(
-                asc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                asc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                desc(Sale.OldOrNew)).order_by(asc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                desc(Sale.OldOrNew)).order_by(asc(Sale.NewPrice)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     elif type == 2111:
         if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.SaleId)).order_by(
+            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                 desc(Sale.OldOrNew)).order_by(
-                desc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                desc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
         else:
             booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).order_by(
-                desc(Sale.OldOrNew)).order_by(desc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                desc(Sale.OldOrNew)).order_by(desc(Sale.NewPrice)).order_by(
+                desc(Sale.SaleId)).limit(limit).offset(skip).all()
     if booklist:
         newlist = list()
         for book in booklist:
@@ -507,7 +506,8 @@ def FindSaleBookName():
     bookname = request.json['BookName']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    booklist = Sale.query.filter(Sale.BookName.like("%" + bookname + "%")).order_by(
+    booklist = Sale.query.filter(or_(Sale.BookName.like("%" + bookname + "%"), Sale.Author.like("%" + bookname + "%"),
+                                     Sale.Publish.like("%" + bookname + "%"))).order_by(
         desc(Sale.SaleId)).limit(
         limit).offset(skip).all()
     if booklist:
@@ -515,5 +515,258 @@ def FindSaleBookName():
         for book in booklist:
             newlist.append(book.SaleId)
         return jsonify({'SaleId': newlist})
+    else:
+        return jsonify({'Message': '无结果'})
+
+
+# *****************************求   购*****************************
+class Buy(db.Model):
+    # 共计11项
+    __tablename__ = 'buy'
+    # ID
+    BuyId = db.Column(db.Integer, primary_key=True)
+    # 用户ID
+    UserId = db.Column(db.Integer)
+    # 书名
+    BookName = db.Column(db.String)
+    # 作者
+    Author = db.Column(db.String)
+    # 是否已购
+    IsBuy = db.Column(db.Boolean)
+    # 价格
+    Price = db.Column(db.Float)
+    # 备注
+    Remark = db.Column(db.String)
+    # 发布时间
+    CreatedAt = db.Column(db.Integer)
+    # 电话号
+    Tel = db.Column(db.String)
+    # 地址
+    Location = db.Column(db.String)
+    # 其他
+    Other = db.Column(db.String)
+
+    def __int__(self, BuyId, UserId, BookName, Author, IsBuy, Price, Remark, CreatedAt, Tel, Other, Location):
+        self.BuyId = BuyId
+        self.UserId = UserId
+        self.BookName = BookName
+        self.Author = Author
+        self.IsBuy = IsBuy
+        self.Price = Price
+        self.Remark = Remark
+        self.CreatedAt = CreatedAt
+        self.Tel = Tel
+        self.Other = Other
+        self.Location = Location
+
+    def __repr__(self):
+        return ''
+
+
+# 新建求购
+@main.route('/api/bookinfo/create/buy', methods=['POST'])
+def CreateBuy():
+    s = Buy(UserId=request.json['UserId'])
+    s.BookName = request.json['BookName']
+    s.Author = request.json['Author']
+    s.Other = request.json['Other']
+    s.IsBuy = request.json['IsBuy']
+    s.CreatedAt = request.json['CreatedAt']
+    s.Price = request.json['Price']
+    s.Tel = request.json['Tel']
+    s.Remark = request.json['Remark']
+    s.Location = request.json['Location']
+    session.add(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功'})
+
+
+# 查询求购
+@main.route('/api/bookinfo/find/buy', methods=['POST'])
+def FindAllBuy():
+    skip = request.json['Skip']
+    limit = request.json['Limit']
+    buylist = Buy.query.limit(limit).offset(skip).all()
+    for buy in buylist:
+        return jsonify({'BuyId': buy.BuyId})
+
+
+# 根据id查询
+@main.route('/api/bookinfo/find/buy/<int:id>', methods=['GET'])
+def FindBuyById(id):
+    get = Buy.query.filter_by(BuyId=id).first()
+    return jsonify({'BuyId': get.BuyId, 'UserId': get.UserId, 'BookName': get.BookName,
+                    'Author': get.Author, 'IsBuy': get.IsBuy, 'Price': get.Price,
+                    'Remark': get.Remark, 'CreatedAt': get.CreatedAt, 'Tel': get.Tel,
+                    'Other': get.Other, 'Location': get.Location})
+
+
+# 更新求购
+# 当前版本只许更改是否已购买
+@main.route('/api/bookinfo/update/buy', methods=['POST'])
+def UpdateBuy():
+    s = Buy(BuyId=request.json['BuyId'])
+    s.IsSale = request.json['IsBuy']
+    session.merge(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功'})
+
+
+# *****************************订单*****************************
+class Order(db.Model):
+    # 共计11项
+    __tablename__ = 'order'
+    # ID
+    OrderId = db.Column(db.Integer, primary_key=True)
+    # 类型（出售成交，求购成交）
+    # 0为出售 1为求购
+    Type = db.Column(db.INTEGER)
+    # 卖方ID
+    FirstId = db.Column(db.INTEGER)
+    # 买方ID
+    SecondId = db.Column(db.INTEGER)
+    # 书目ID
+    BookId = db.Column(db.INTEGER)
+    # 成交价
+    Price = db.Column(db.Float)
+    # 交易状态
+    # 0为未付款 1为已付款 2为已发货 3是已收货 4为取消订单
+    State = db.Column(db.INTEGER)
+    # 快递单号
+    Number = db.Column(db.INTEGER)
+    # 创建时间
+    CreatedAt = db.Column(db.INTEGER)
+    # 收获地址
+    Location = db.Column(db.String)
+    # 备注
+    Remark = db.Column(db.String)
+
+    def __int__(self, OrderId, Type, FirstId, SecondId, BookId, Price, State, Number, CreatedAt, Location, Remark):
+        self.OrderId = OrderId
+        self.Type = Type
+        self.FirstId = FirstId
+        self.SecondId = SecondId
+        self.BookId = BookId
+        self.Price = Price
+        self.State = State
+        self.Number = Number
+        self.CreatedAt = CreatedAt
+        self.Location = Location
+        self.Remark = Remark
+
+    def __repr__(self):
+        return ''
+
+
+# 创建订单
+@main.route('/api/orderinfo/create', methods=['POST'])
+def CreateOrder():
+    s = Order(Type=request.json['Type'])
+    s.FirstId = request.json['FirstId']
+    s.SecondId = request.json['SecondId']
+    s.BookId = request.json['BookId']
+    s.State = 0
+    s.CreatedAt = request.json['CreatedAt']
+    s.Price = request.json['Price']
+    s.Remark = request.json['Remark']
+    s.Number = request.json['Number']
+    s.Location = request.json['Location']
+    session.add(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功'})
+
+
+# 根据id查询
+@main.route('/api/orderinfo/find/<int:id>', methods=['GET'])
+def FindOrderById(id):
+    get = Order.query.filter_by(OrderId=id).first()
+    return jsonify({'OrderId': get.OrderId, 'Type': get.Type, 'FirstId': get.FirstId, 'SecondId': get.SecondId,
+                    'BookId': get.BookId,
+                    'Price': get.Price, 'State': get.State, 'Number': get.Number, 'CreatedAt': get.CreatedAt,
+                    'Location': get.Location,
+                    'Remark': get.Remark})
+
+
+# 更新订单
+@main.route('/api/orderinfo/update', methods=['POST'])
+def UpdateOrder():
+    s = Order(OrderId=request.json['OrderId'])
+    s.Price = request.json['Price']
+    s.State = request.json['State']
+    session.merge(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功'})
+
+
+# *****************************留言*****************************
+class Comment(db.Model):
+    __tablename__ = 'comment'
+    # ID
+    CommentId = db.Column(db.Integer, primary_key=True)
+    # 类型
+    # 0是对书留言，1是对人留言
+    Type = db.Column(db.Integer)
+    # 留言者
+    UserId = db.Column(db.Integer)
+    # 被留言id
+    ToId = db.Column(db.Integer)
+    # 内容
+    Content = db.Column(db.String)
+    # 创建时间
+    CreatedAt = db.Column(db.INTEGER)
+
+    def __int__(self, CommentId, Type, UserId, ToId, Content, CreatedAt):
+        self.CommentId = CommentId
+        self.Type = Type
+        self.UserId = UserId
+        self.ToId = ToId
+        self.Content = Content
+        self.CreatedAt = CreatedAt
+
+    def __repr__(self):
+        return ''
+
+
+# 创建留言
+@main.route('/api/commentinfo/create', methods=['POST'])
+def CreateComment():
+    s = Comment(UserId=request.json['UserId'])
+    s.Type = request.json['Type']
+    s.ToId = request.json['ToId']
+    s.Content = request.json['Content']
+    s.CreatedAt = request.json['CreatedAt']
+    session.add(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功'})
+
+
+# 查询留言
+@main.route('/api/commentinfo/find/<int:id>', methods=['POST'])
+def FindCommentById(id):
+    get = Comment.query.filter_by(CommentId=id).first()
+    return jsonify(
+        {'CommentId': get.CommentId, 'Type': get.Type, 'UserId': get.UserId, 'ToId': get.ToId, 'Content': get.Content,
+         'CreatedAt': get.CreatedAt})
+
+
+# 查询留言
+@main.route('/api/commentinfo/find', methods=['POST'])
+def FindComment():
+    type = request.json['Type']
+    id = request.json['ToId']
+    skip = request.json['Skip']
+    limit = request.json['Limit']
+    commentlist = Comment.query.filter_by(and_(Comment.Type == type, Comment.ToId.like(id))).order_by(
+        desc(Sale.SaleId)).limit(limit).offset(skip).all()
+    if commentlist:
+        newlist = list()
+        for comment in commentlist:
+            newlist.append(comment.CommentId)
+        return jsonify({'CommentId': newlist})
     else:
         return jsonify({'Message': '无结果'})
