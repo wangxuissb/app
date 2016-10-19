@@ -137,7 +137,7 @@ class User(db.Model):
 @main.route('/api/userinfo/find/<int:Uid>', methods=['GET'])
 def FindUserById(Uid):
     get = User.query.filter_by(UserId=Uid).first()
-    money = [get.Money]
+    money = str(get.Money)
     return jsonify({'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
                     'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
                     'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
