@@ -137,16 +137,17 @@ class User(db.Model):
 @main.route('/api/userinfo/find/<int:Uid>', methods=['GET'])
 def FindUserById(Uid):
     get = User.query.filter_by(UserId=Uid).first()
-    return {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
-            'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
-            'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
-            'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': get.Money, 'Ex': get.Ex,
-            'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime, 'SaleBooks': get.SaleBooks,
-            'BuyBooks': get.BuyBooks, 'PassWord': get.PassWord,
-            'Shopping': get.Shopping, 'Location': get.Location, 'OrderList': get.OrderList,
-            'StarPeoples': get.StarPeoples, 'StaredPeoples': get.StaredPeoples,
-            'StarBooks': get.StarBooks, 'CreatedAt': get.CreatedAt, 'Comment': get.Comment, 'Type': get.Type,
-            'LastPastTime': get.LastPastTime}
+    money = [get.Money]
+    return jsonify({'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
+                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
+                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money, 'Ex': get.Ex,
+                    'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime, 'SaleBooks': get.SaleBooks,
+                    'BuyBooks': get.BuyBooks, 'PassWord': get.PassWord,
+                    'Shopping': get.Shopping, 'Location': get.Location, 'OrderList': get.OrderList,
+                    'StarPeoples': get.StarPeoples, 'StaredPeoples': get.StaredPeoples,
+                    'StarBooks': get.StarBooks, 'CreatedAt': get.CreatedAt, 'Comment': get.Comment, 'Type': get.Type,
+                    'LastPastTime': get.LastPastTime})
 
 
 # 登陆
