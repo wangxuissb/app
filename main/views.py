@@ -137,16 +137,16 @@ class User(db.Model):
 @main.route('/api/userinfo/find/<int:Uid>', methods=['GET'])
 def FindUserById(Uid):
     get = User.query.filter_by(UserId=Uid).first()
-    return jsonify({'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
-                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
-                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
-                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': get.Money, 'Ex': get.Ex,
-                    'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime, 'SaleBooks': get.SaleBooks,
-                    'BuyBooks': get.BuyBooks, 'PassWord': get.PassWord,
-                    'Shopping': get.Shopping, 'Location': get.Location, 'OrderList': get.OrderList,
-                    'StarPeoples': get.StarPeoples, 'StaredPeoples': get.StaredPeoples,
-                    'StarBooks': get.StarBooks, 'CreatedAt': get.CreatedAt, 'Comment': get.Comment, 'Type': get.Type,
-                    'LastPastTime': get.LastPastTime})
+    return {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
+            'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
+            'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+            'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': get.Money, 'Ex': get.Ex,
+            'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime, 'SaleBooks': get.SaleBooks,
+            'BuyBooks': get.BuyBooks, 'PassWord': get.PassWord,
+            'Shopping': get.Shopping, 'Location': get.Location, 'OrderList': get.OrderList,
+            'StarPeoples': get.StarPeoples, 'StaredPeoples': get.StaredPeoples,
+            'StarBooks': get.StarBooks, 'CreatedAt': get.CreatedAt, 'Comment': get.Comment, 'Type': get.Type,
+            'LastPastTime': get.LastPastTime}
 
 
 # 登陆
@@ -635,7 +635,7 @@ class Order(db.Model):
     # 0为未付款 1为已付款 2为已发货 3是已收货 4为取消订单
     State = db.Column(db.INTEGER)
     # 快递单号
-    Number = db.Column(db.INTEGER)
+    Number = db.Column(db.String)
     # 创建时间
     CreatedAt = db.Column(db.BIGINT)
     # 收获地址
