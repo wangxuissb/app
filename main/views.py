@@ -359,118 +359,105 @@ def FindAllSale():
     skip = request.json['Skip']
     limit = request.json['Limit']
     schoolname = request.json['SchoolName']
+    classify = request.json['Classify']
     issale = request.json['Sale']
-    if type == 0:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(Sale.SaleId.desc()).limit(limit).offset(
-                skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 10:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.NewPrice)).order_by(
-                asc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.NewPrice)).order_by(asc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 11:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.NewPrice)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.NewPrice)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 20:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.OldOrNew)).order_by(
-                asc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.OldOrNew)).order_by(
-                asc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 21:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                and_(Sale.OldOrNew.desc(), Sale.SaleId.desc())).limit(
-                limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.OldOrNew)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 1020:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                asc(Sale.NewPrice)).order_by(
-                asc(Sale.OldOrNew)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                asc(Sale.NewPrice)).order_by(asc(Sale.OldOrNew)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 1021:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(asc(Sale.NewPrice)).order_by(
-                desc(Sale.OldOrNew)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                asc(Sale.NewPrice)).order_by(desc(Sale.OldOrNew)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 1120:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(desc(Sale.NewPrice)).order_by(
-                asc(Sale.OldOrNew)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.NewPrice)).order_by(asc(Sale.OldOrNew)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 1121:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                desc(Sale.NewPrice)).order_by(
-                desc(Sale.OldOrNew)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.NewPrice)).order_by(desc(Sale.OldOrNew)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 2010:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                asc(Sale.OldOrNew)).order_by(
-                asc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                asc(Sale.OldOrNew)).order_by(asc(Sale.NewPrice)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 2011:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                asc(Sale.OldOrNew)).order_by(
-                desc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                asc(Sale.OldOrNew)).order_by(desc(Sale.NewPrice)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 2110:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                desc(Sale.OldOrNew)).order_by(
-                asc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.OldOrNew)).order_by(asc(Sale.NewPrice)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
-    elif type == 2111:
-        if schoolname == '':
-            booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                desc(Sale.OldOrNew)).order_by(
-                desc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
-        else:
-            booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                desc(Sale.OldOrNew)).order_by(desc(Sale.NewPrice)).order_by(
-                desc(Sale.SaleId)).limit(limit).offset(skip).all()
+    if classify == '':
+        if type == 0:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(desc(Sale.SaleId)).limit(
+                    limit).offset(skip).all()
+        elif type == 10:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    desc(Sale.NewPrice)).order_by(
+                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.NewPrice)).order_by(asc(Sale.SaleId)).limit(limit).offset(skip).all()
+        elif type == 11:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    desc(Sale.NewPrice)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.NewPrice)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
+        elif type == 20:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    desc(Sale.OldOrNew)).order_by(
+                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.OldOrNew)).order_by(
+                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+        elif type == 21:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    and_(Sale.OldOrNew.desc(), Sale.SaleId.desc())).limit(
+                    limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.OldOrNew)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
+    else:
+        if type == 0:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    Sale.SaleId.desc()).limit(limit).offset(
+                    skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
+        elif type == 10:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    desc(Sale.NewPrice)).order_by(
+                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.NewPrice)).order_by(asc(Sale.SaleId)).limit(limit).offset(skip).all()
+        elif type == 11:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    desc(Sale.NewPrice)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.NewPrice)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
+        elif type == 20:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    desc(Sale.OldOrNew)).order_by(
+                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.OldOrNew)).order_by(
+                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+        elif type == 21:
+            if schoolname == '':
+                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                    and_(Sale.OldOrNew.desc(), Sale.SaleId.desc())).limit(
+                    limit).offset(skip).all()
+            else:
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
+                                                  Sale.Classify.like(classify))).order_by(
+                    desc(Sale.OldOrNew)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
     if booklist:
         newlist = list()
         for book in booklist:
