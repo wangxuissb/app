@@ -154,15 +154,18 @@ def FindUserById(Uid):
 @main.route('/api/userinfo/login/<Tel>&<Psw>&<Time>', methods=['POST'])
 def Login(Tel, Psw, Time):
     get = User.query.filter_by(TelPhone=Tel).first()
-    id = get.UserId
-    if get.PassWord == Psw:
-        get.LastLoginTime = Time
-        session.merge(get)
-        session.commit()
-        session.close()
-        return jsonify({'Message': '成功', 'UserId': id})
+    if get is null:
+        return jsonify({'Message': '用户不存在', 'UserId': ''})
     else:
-        return jsonify({'Message': '密码错误', 'UserId': ''})
+        id = get.UserId
+        if get.PassWord == Psw:
+            get.LastLoginTime = Time
+            session.merge(get)
+            session.commit()
+            session.close()
+            return jsonify({'Message': '成功', 'UserId': id})
+        else:
+            return jsonify({'Message': '密码错误', 'UserId': ''})
 
 
 # 注册
@@ -472,18 +475,19 @@ def FindAllSale():
         newlist = list()
         for book in booklist:
             newlist.append(book.SaleId)
-        return jsonify({'SaleId': newlist})
+        return jsonify({'Message': '成功', 'SaleId': newlist})
     else:
-        return jsonify({'Message': '无结果'})
+        return jsonify({'Message': '无结果', 'SaleId': ''})
 
 
 # 根据id查询
 @main.route('/api/bookinfo/find/sale/<int:id>', methods=['GET'])
 def FindSaleById(id):
     get = Sale.query.filter_by(SaleId=id).first()
+    NewPrice = str(get.NewPrice)
     return jsonify({'SaleId': get.SaleId, 'UserId': get.UserId, 'BookName': get.BookName,
                     'Author': get.Author, 'Classify': get.Classify, 'Publish': get.Publish,
-                    'IsSale': get.IsSale, 'Location': get.Location, 'NewPrice': get.NewPrice,
+                    'IsSale': get.IsSale, 'Location': get.Location, 'NewPrice': NewPrice,
                     'OldOrNew': get.OldOrNew, 'OldPrice': get.OldPrice, 'Remark': get.Remark, 'Tel': get.Tel,
                     'Other': get.Other, 'CreatedAt': get.CreatedAt, 'PicList': get.PicList,
                     'Isbn': get.Isbn, 'Comment': get.Comment, 'SchoolName': get.SchoolName})
@@ -588,7 +592,8 @@ def CreateBuy():
 def FindAllBuy():
     skip = request.json['Skip']
     limit = request.json['Limit']
-    buylist = Buy.query.limit(limit).offset(skip).all()
+    buylist = Buy.query.limit(limit).order_by(
+        desc(Sale.SaleId)).offset(skip).all()
     for buy in buylist:
         return jsonify({'BuyId': buy.BuyId})
 
@@ -597,8 +602,9 @@ def FindAllBuy():
 @main.route('/api/bookinfo/find/buy/<int:id>', methods=['GET'])
 def FindBuyById(id):
     get = Buy.query.filter_by(BuyId=id).first()
+    Price = str(get.Price)
     return jsonify({'BuyId': get.BuyId, 'UserId': get.UserId, 'BookName': get.BookName,
-                    'Author': get.Author, 'IsBuy': get.IsBuy, 'Price': get.Price,
+                    'Author': get.Author, 'IsBuy': get.IsBuy, 'Price': Price,
                     'Remark': get.Remark, 'CreatedAt': get.CreatedAt, 'Tel': get.Tel,
                     'Other': get.Other, 'Location': get.Location})
 
@@ -684,9 +690,10 @@ def CreateOrder():
 @main.route('/api/orderinfo/find/<int:id>', methods=['GET'])
 def FindOrderById(id):
     get = Order.query.filter_by(OrderId=id).first()
+    Price = str(get.Price)
     return jsonify({'OrderId': get.OrderId, 'Type': get.Type, 'FirstId': get.FirstId, 'SecondId': get.SecondId,
                     'BookId': get.BookId,
-                    'Price': get.Price, 'State': get.State, 'Number': get.Number, 'CreatedAt': get.CreatedAt,
+                    'Price': Price, 'State': get.State, 'Number': get.Number, 'CreatedAt': get.CreatedAt,
                     'Location': get.Location,
                     'Remark': get.Remark})
 
