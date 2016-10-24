@@ -581,8 +581,13 @@ def FindAllBuy():
     limit = request.json['Limit']
     buylist = Buy.query.limit(limit).order_by(
         desc(Sale.SaleId)).offset(skip).all()
-    for buy in buylist:
-        return jsonify({'BuyId': buy.BuyId})
+    if buylist:
+        newlist = list()
+        for buy in buylist:
+            newlist.append(buy.BuyId)
+        return jsonify({'Message': '成功', 'BuyId': newlist})
+    else:
+        return jsonify({'Message': '无结果', 'BuyId': ''})
 
 
 # 根据id查询
