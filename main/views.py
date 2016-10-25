@@ -154,7 +154,7 @@ def FindUserById(Uid):
 @main.route('/api/userinfo/login/<Tel>&<Psw>&<Time>', methods=['POST'])
 def Login(Tel, Psw, Time):
     get = User.query.filter_by(TelPhone=Tel).first()
-    if get is null:
+    if get is None:
         return jsonify({'Message': '用户不存在', 'UserId': ''})
     else:
         id = get.UserId
@@ -389,8 +389,8 @@ def FindAllSale():
         elif type == 20:
             if schoolname == '':
                 booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                    desc(Sale.OldOrNew)).order_by(
-                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+                    asc(Sale.OldOrNew)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
             else:
                 booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
                     asc(Sale.OldOrNew)).order_by(
