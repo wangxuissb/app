@@ -373,10 +373,10 @@ def FindAllSale():
         elif type == 10:
             if schoolname == '':
                 booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                    desc(Sale.NewPrice)).limit(limit).offset(skip).all()
+                    asc(Sale.NewPrice)).limit(limit).offset(skip).all()
             else:
                 booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                    desc(Sale.NewPrice)).order_by(asc(Sale.SaleId)).limit(limit).offset(skip).all()
+                    asc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
         elif type == 11:
             if schoolname == '':
                 booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
@@ -417,12 +417,12 @@ def FindAllSale():
         elif type == 10:
             if schoolname == '':
                 booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
-                    desc(Sale.NewPrice)).order_by(
-                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+                    asc(Sale.NewPrice)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
             else:
                 booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
                                                   Sale.Classify.like(classify))).order_by(
-                    desc(Sale.NewPrice)).order_by(asc(Sale.SaleId)).limit(limit).offset(skip).all()
+                    asc(Sale.NewPrice)).order_by(desc(Sale.SaleId)).limit(limit).offset(skip).all()
         elif type == 11:
             if schoolname == '':
                 booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
