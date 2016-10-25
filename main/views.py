@@ -364,49 +364,44 @@ def FindAllSale():
     if classify == '':
         if type == 0:
             if schoolname == '':
-                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                     desc(Sale.SaleId)).limit(limit).offset(skip).all()
             else:
-                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
-                                                  Sale.Classify.like(classify))).order_by(desc(Sale.SaleId)).limit(
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
+                    desc(Sale.SaleId)).limit(
                     limit).offset(skip).all()
         elif type == 10:
             if schoolname == '':
-                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
-                    desc(Sale.NewPrice)).order_by(
-                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+                booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
+                    desc(Sale.NewPrice)).limit(limit).offset(skip).all()
             else:
-                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
-                                                  Sale.Classify.like(classify))).order_by(
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
                     desc(Sale.NewPrice)).order_by(asc(Sale.SaleId)).limit(limit).offset(skip).all()
         elif type == 11:
             if schoolname == '':
-                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                     desc(Sale.NewPrice)).order_by(
                     desc(Sale.SaleId)).limit(limit).offset(skip).all()
             else:
-                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
-                                                  Sale.Classify.like(classify))).order_by(
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
                     desc(Sale.NewPrice)).order_by(
                     desc(Sale.SaleId)).limit(limit).offset(skip).all()
         elif type == 20:
             if schoolname == '':
-                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                     desc(Sale.OldOrNew)).order_by(
                     asc(Sale.SaleId)).limit(limit).offset(skip).all()
             else:
-                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
-                                                  Sale.Classify.like(classify))).order_by(
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
                     desc(Sale.OldOrNew)).order_by(
                     asc(Sale.SaleId)).limit(limit).offset(skip).all()
         elif type == 21:
             if schoolname == '':
-                booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
+                booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
                     and_(Sale.OldOrNew.desc(), Sale.SaleId.desc())).limit(
                     limit).offset(skip).all()
             else:
-                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
-                                                  Sale.Classify.like(classify))).order_by(
+                booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
                     desc(Sale.OldOrNew)).order_by(
                     desc(Sale.SaleId)).limit(limit).offset(skip).all()
     else:
