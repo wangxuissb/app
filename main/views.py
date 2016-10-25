@@ -393,12 +393,13 @@ def FindAllSale():
                     asc(Sale.SaleId)).limit(limit).offset(skip).all()
             else:
                 booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-                    desc(Sale.OldOrNew)).order_by(
-                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+                    asc(Sale.OldOrNew)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
         elif type == 21:
             if schoolname == '':
                 booklist = Sale.query.filter(Sale.IsSale == issale).order_by(
-                    and_(Sale.OldOrNew.desc(), Sale.SaleId.desc())).limit(
+                    desc(Sale.OldOrNew)).order_by(
+                    desc(Sale.SaleId)).limit(
                     limit).offset(skip).all()
             else:
                 booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
@@ -436,17 +437,17 @@ def FindAllSale():
         elif type == 20:
             if schoolname == '':
                 booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
-                    desc(Sale.OldOrNew)).order_by(
-                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+                    asc(Sale.OldOrNew)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
             else:
                 booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
                                                   Sale.Classify.like(classify))).order_by(
-                    desc(Sale.OldOrNew)).order_by(
-                    asc(Sale.SaleId)).limit(limit).offset(skip).all()
+                    asc(Sale.OldOrNew)).order_by(
+                    desc(Sale.SaleId)).limit(limit).offset(skip).all()
         elif type == 21:
             if schoolname == '':
                 booklist = Sale.query.filter(and_(Sale.IsSale == issale, Sale.Classify.like(classify))).order_by(
-                    and_(Sale.OldOrNew.desc(), Sale.SaleId.desc())).limit(
+                    desc(Sale.OldOrNew)).order_by(desc(Sale.SaleId)).limit(
                     limit).offset(skip).all()
             else:
                 booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale,
