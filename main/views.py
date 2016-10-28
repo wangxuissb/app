@@ -457,7 +457,14 @@ def FindAllSale():
     if booklist:
         newlist = list()
         for book in booklist:
-            newlist.append(book.SaleId)
+            NewPrice = str(book.NewPrice)
+            newlist.append(jsonify({'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
+                                    'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
+                                    'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
+                                    'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
+                                    'Tel': book.Tel,
+                                    'Other': book.Other, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
+                                    'Isbn': book.Isbn, 'Comment': book.Comment, 'SchoolName': book.SchoolName}))
         return jsonify({'Message': '成功', 'SaleId': newlist})
     else:
         return jsonify({'Message': '无结果', 'SaleId': ''})
