@@ -204,6 +204,20 @@ def UpdateUser():
     return jsonify({'Message': '更新成功', 'Data': data})
 
 
+# 查找单个用户
+@main.route('/api/userinfo/find/<int:Uid>', methods=['GET'])
+def FindUserById(Uid):
+    get = User.query.filter_by(UserId=Uid).first()
+    return jsonify({'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
+                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
+                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money,
+                    'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
+                    'PassWord': get.PassWord, 'Location': get.Location,
+                    'CreatedAt': get.CreatedAt, 'Type': get.Type,
+                    'LastPastTime': get.LastPastTime})
+
+
 # *****************************帖子相关*****************************
 # *****************************出   售*****************************
 class Sale(db.Model):
