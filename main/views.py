@@ -27,7 +27,7 @@ def index():
 
 # *****************************用户相关*****************************
 class User(db.Model):
-    # 共计28项
+    # 共计20项
     __tablename__ = 'user'
     # -----------------------------必要信息-------------------------
     # ID
@@ -58,25 +58,6 @@ class User(db.Model):
     IsPublish = db.Column(db.Boolean)
     # 是否有开发权限
     IsDevelop = db.Column(db.Boolean)
-
-    # -----------------------------关联信息-------------------------
-    # 出售的帖子
-    SaleBooks = db.Column(db.String)
-    # 求购的帖子
-    BuyBooks = db.Column(db.String)
-    # 关注的人
-    StarPeoples = db.Column(db.String)
-    # 关注我的人
-    StaredPeoples = db.Column(db.String)
-    # 收藏的帖子
-    StarBooks = db.Column(db.String)
-    # 购物车
-    Shopping = db.Column(db.String)
-    # 我的订单
-    OrderList = db.Column(db.String)
-    # 此人的评论
-    Comment = db.Column(db.String)
-
     # -----------------------------其他信息-------------------------
     # 用户类型（个人，书店）
     # 0是个人用户 1是书店用户
@@ -97,8 +78,7 @@ class User(db.Model):
     LastPastTime = db.Column(db.BIGINT)
 
     def __int__(self, UserId, TelPhone, PassWord, NickName, SchoolName, Major, Education,
-                Sign, Avatar, IsBan, IsPublish, IsDevelop, SaleBooks, BuyBooks, StarBooks, StaredPeoples,
-                StarPeoples, Shopping, OrderList, Location, Ex, Gold, CreatedAt, LastLoginTime, Comment, Type,
+                Sign, Avatar, IsBan, IsPublish, IsDevelop, Location, Ex, Gold, CreatedAt, LastLoginTime, Type,
                 LastPastTime, Money):
         self.UserId = UserId
         self.TelPhone = TelPhone
@@ -112,20 +92,12 @@ class User(db.Model):
         self.IsBan = IsBan
         self.IsPublish = IsPublish
         self.IsDevelop = IsDevelop
-        self.SaleBooks = SaleBooks
-        self.BuyBooks = BuyBooks
-        self.StarBooks = StarBooks
-        self.StaredPeoples = StaredPeoples
-        self.StarPeoples = StarPeoples
         self.Money = Money
         self.Ex = Ex
         self.Gold = Gold
-        self.Shopping = Shopping
         self.Location = Location
-        self.OrderList = OrderList
         self.CreatedAt = CreatedAt
         self.LastLoginTime = LastLoginTime
-        self.Comment = Comment
         self.Type = Type
         self.LastPastTime = LastPastTime
 
@@ -133,50 +105,39 @@ class User(db.Model):
         return ''
 
 
-# 查找单个用户
-@main.route('/api/userinfo/find/<int:Uid>', methods=['GET'])
-def FindUserById(Uid):
-    get = User.query.filter_by(UserId=Uid).first()
-    money = str(get.Money)
-    return jsonify({'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
-                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
-                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
-                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money, 'Ex': get.Ex,
-                    'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime, 'SaleBooks': get.SaleBooks,
-                    'BuyBooks': get.BuyBooks, 'PassWord': get.PassWord,
-                    'Shopping': get.Shopping, 'Location': get.Location, 'OrderList': get.OrderList,
-                    'StarPeoples': get.StarPeoples, 'StaredPeoples': get.StaredPeoples,
-                    'StarBooks': get.StarBooks, 'CreatedAt': get.CreatedAt, 'Comment': get.Comment, 'Type': get.Type,
-                    'LastPastTime': get.LastPastTime})
-
-
 # 登陆
 @main.route('/api/userinfo/login/<Tel>&<Psw>&<Time>', methods=['POST'])
 def Login(Tel, Psw, Time):
     get = User.query.filter_by(TelPhone=Tel).first()
     if get is None:
-        return jsonify({'Message': '用户不存在', 'UserId': ''})
+        return jsonify({'Message': '用户不存在', 'Data': ''})
     else:
-        id = get.UserId
         if get.PassWord == Psw:
             get.LastLoginTime = Time
             session.merge(get)
             session.commit()
             session.close()
-            return jsonify({'Message': '成功', 'UserId': id})
+            money = str(get.Money)
+            data = {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
+                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
+                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money,
+                    'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
+                    'PassWord': get.PassWord, 'Location': get.Location,
+                    'CreatedAt': get.CreatedAt, 'Type': get.Type,
+                    'LastPastTime': get.LastPastTime}
+            return jsonify(
+                {'Message': '成功', 'Data': data})
         else:
-            return jsonify({'Message': '密码错误', 'UserId': ''})
+            return jsonify({'Message': '密码错误', 'Data': ''})
 
 
 # 注册
 @main.route('/api/userinfo/signup', methods=['POST'])
 def SignUp():
     teluser = User.query.filter_by(TelPhone=request.json['TelPhone']).first()
-    nameuser = User.query.filter_by(TelPhone=request.json['NickName']).first()
     if teluser:
         return jsonify({'Message': '手机号码存在'})
-    elif nameuser:
-        return jsonify({'Message': '昵称存在'})
     else:
         u = User(TelPhone=request.json['TelPhone'])
         u.NickName = request.json['NickName']
@@ -194,15 +155,8 @@ def SignUp():
         u.Money = 0
         u.CreatedAt = request.json['CreatedAt']
         u.LastLoginTime = request.json['LastLoginTime']
-        u.SaleBooks = ''
-        u.BuyBooks = ''
-        u.StaredPeoples = ''
-        u.StarPeoples = ''
-        u.StarBooks = ''
         u.Location = ''
         u.Shopping = ''
-        u.OrderList = ''
-        u.Comment = ''
         u.Type = request.json['Type']
         u.LastPastTime = 0
         session.add(u)
@@ -231,27 +185,29 @@ def UpdateUser():
     u.Gold = request.json['Gold']
     u.CreatedAt = request.json['CreatedAt']
     u.LastLoginTime = request.json['LastLoginTime']
-    u.SaleBooks = request.json['SaleBooks']
-    u.BuyBooks = request.json['BuyBooks']
-    u.StarBooks = request.json['StarBooks']
-    u.StarPeoples = request.json['StarPeoples']
-    u.StaredPeoples = request.json['StaredPeoples']
-    u.Shopping = request.json['Shopping']
-    u.OrderList = request.json['OrderList']
     u.Location = request.json['Location']
-    u.Comment = request.json['Comment']
     u.Type = request.json['Type']
     u.LastPastTime = request.json['LastPastTime']
     session.merge(u)
     session.commit()
     session.close()
-    return jsonify({'Message': '更新成功'})
+    money = str(get.Money)
+    get = User.query.filter_by(UserId=request.json['UserId']).first()
+    data = {'UserId': u.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
+            'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
+            'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+            'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money,
+            'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
+            'PassWord': get.PassWord, 'Shopping': get.Shopping, 'Location': get.Location,
+            'CreatedAt': get.CreatedAt, 'Type': get.Type,
+            'LastPastTime': get.LastPastTime}
+    return jsonify({'Message': '更新成功', 'Data': data})
 
 
 # *****************************帖子相关*****************************
 # *****************************出   售*****************************
 class Sale(db.Model):
-    # 共计19项
+    # 共计18项
     __tablename__ = 'sale'
     # ID
     SaleId = db.Column(db.Integer, primary_key=True)
@@ -263,6 +219,8 @@ class Sale(db.Model):
     Author = db.Column(db.String)
     # 分类
     Classify = db.Column(db.String)
+    # 标签
+    Label = db.Column(db.String)
     # 出版社
     Publish = db.Column(db.String)
     # Isbn号
@@ -283,19 +241,15 @@ class Sale(db.Model):
     Remark = db.Column(db.String)
     # 联系电话
     Tel = db.Column(db.String)
-    # 其他
-    Other = db.Column(db.String)
     # 发布时间
     CreatedAt = db.Column(db.BIGINT)
     # 图片url
     PicList = db.Column(db.String)
-    # 评论
-    Comment = db.Column(db.String)
 
 
 def __int__(self, SaleId, UserId, BookName, Author, Classify, Publish, IsSale, Location
-            , NewPrice, OldOrNew, OldPrice, Remark, Tel, Other, CreatedAt, PicList
-            , Isbn, Comment, SchoolName):
+            , NewPrice, OldOrNew, OldPrice, Remark, Tel, CreatedAt, PicList
+            , Isbn, SchoolName, Label):
     self.SaleId = SaleId
     self.UserId = UserId
     self.BookName = BookName
@@ -310,11 +264,10 @@ def __int__(self, SaleId, UserId, BookName, Author, Classify, Publish, IsSale, L
     self.Remark = Remark
     self.Tel = Tel
     self.SchoolName = SchoolName
-    self.Other = Other
     self.CreatedAt = CreatedAt
     self.PicList = PicList
     self.Isbn = Isbn
-    self.Comment = Comment
+    self.Label = Label
 
 
 def __repr__(self):
@@ -335,13 +288,13 @@ def CreateSale():
     s.OldOrNew = request.json['OldOrNew']
     s.OldPrice = request.json['OldPrice']
     s.Remark = request.json['Remark']
+    s.Label = request.json['Label']
     s.Tel = request.json['Tel']
-    s.Other = request.json['Other']
     s.CreatedAt = request.json['CreatedAt']
     s.PicList = request.json['PicList']
     s.Isbn = request.json['Isbn']
     s.SchoolName = request.json['SchoolName']
-    s.Comment = ''
+    s.Label = request.json['Label']
     session.add(s)
     session.commit()
     session.close()
@@ -458,29 +411,17 @@ def FindAllSale():
         newlist = list()
         for book in booklist:
             NewPrice = str(book.NewPrice)
-            newlist.append({'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
-                            'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
-                            'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
-                            'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
-                            'Tel': book.Tel,
-                            'Other': book.Other, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
-                            'Isbn': book.Isbn, 'Comment': book.Comment, 'SchoolName': book.SchoolName})
-        return jsonify({'Message': '成功', 'SaleId': newlist})
+            data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
+                    'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
+                    'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
+                    'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
+                    'Tel': book.Tel,
+                    'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName}
+            newlist.append(data)
+        return jsonify({'Message': '成功', 'Data': newlist})
     else:
-        return jsonify({'Message': '无结果', 'SaleId': ''})
-
-
-# 根据id查询
-@main.route('/api/bookinfo/find/sale/<int:id>', methods=['GET'])
-def FindSaleById(id):
-    get = Sale.query.filter_by(SaleId=id).first()
-    NewPrice = str(get.NewPrice)
-    return jsonify({'SaleId': get.SaleId, 'UserId': get.UserId, 'BookName': get.BookName,
-                    'Author': get.Author, 'Classify': get.Classify, 'Publish': get.Publish,
-                    'IsSale': get.IsSale, 'Location': get.Location, 'NewPrice': NewPrice,
-                    'OldOrNew': get.OldOrNew, 'OldPrice': get.OldPrice, 'Remark': get.Remark, 'Tel': get.Tel,
-                    'Other': get.Other, 'CreatedAt': get.CreatedAt, 'PicList': get.PicList,
-                    'Isbn': get.Isbn, 'Comment': get.Comment, 'SchoolName': get.SchoolName})
+        return jsonify({'Message': '无结果', 'Data': ''})
 
 
 # 更新出售
@@ -508,10 +449,18 @@ def FindSaleBookName():
     if booklist:
         newlist = list()
         for book in booklist:
-            newlist.append(book.SaleId)
-        return jsonify({'Message': '成功', 'SaleId': newlist})
+            NewPrice = str(book.NewPrice)
+            data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
+                    'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
+                    'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
+                    'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
+                    'Tel': book.Tel,
+                    'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName}
+            newlist.append(data)
+        return jsonify({'Message': '成功', 'Data': newlist})
     else:
-        return jsonify({'Message': '无结果', 'SaleId': ''})
+        return jsonify({'Message': '无结果', 'Data': ''})
 
 
 # *****************************求   购*****************************
@@ -538,10 +487,8 @@ class Buy(db.Model):
     Tel = db.Column(db.String)
     # 地址
     Location = db.Column(db.String)
-    # 其他
-    Other = db.Column(db.String)
 
-    def __int__(self, BuyId, UserId, BookName, Author, IsBuy, Price, Remark, CreatedAt, Tel, Other, Location):
+    def __int__(self, BuyId, UserId, BookName, Author, IsBuy, Price, Remark, CreatedAt, Tel, Location):
         self.BuyId = BuyId
         self.UserId = UserId
         self.BookName = BookName
@@ -551,7 +498,6 @@ class Buy(db.Model):
         self.Remark = Remark
         self.CreatedAt = CreatedAt
         self.Tel = Tel
-        self.Other = Other
         self.Location = Location
 
     def __repr__(self):
@@ -564,7 +510,6 @@ def CreateBuy():
     s = Buy(UserId=request.json['UserId'])
     s.BookName = request.json['BookName']
     s.Author = request.json['Author']
-    s.Other = request.json['Other']
     s.IsBuy = request.json['IsBuy']
     s.CreatedAt = request.json['CreatedAt']
     s.Price = request.json['Price']
@@ -587,21 +532,15 @@ def FindAllBuy():
     if buylist:
         newlist = list()
         for buy in buylist:
-            newlist.append(buy.BuyId)
-        return jsonify({'Message': '成功', 'BuyId': newlist})
-    else:
-        return jsonify({'Message': '无结果', 'BuyId': ''})
-
-
-# 根据id查询
-@main.route('/api/bookinfo/find/buy/<int:id>', methods=['GET'])
-def FindBuyById(id):
-    get = Buy.query.filter_by(BuyId=id).first()
-    Price = str(get.Price)
-    return jsonify({'BuyId': get.BuyId, 'UserId': get.UserId, 'BookName': get.BookName,
+            Price = str(buy.Price)
+            data = {'BuyId': get.BuyId, 'UserId': get.UserId, 'BookName': get.BookName,
                     'Author': get.Author, 'IsBuy': get.IsBuy, 'Price': Price,
                     'Remark': get.Remark, 'CreatedAt': get.CreatedAt, 'Tel': get.Tel,
-                    'Other': get.Other, 'Location': get.Location})
+                    'Location': get.Location}
+            newlist.append(data)
+        return jsonify({'Message': '成功', 'Data': newlist})
+    else:
+        return jsonify({'Message': '无结果', 'Data': ''})
 
 
 # 更新求购
@@ -681,18 +620,6 @@ def CreateOrder():
     return jsonify({'Message': '成功'})
 
 
-# 根据id查询
-@main.route('/api/orderinfo/find/<int:id>', methods=['GET'])
-def FindOrderById(id):
-    get = Order.query.filter_by(OrderId=id).first()
-    Price = str(get.Price)
-    return jsonify({'OrderId': get.OrderId, 'Type': get.Type, 'FirstId': get.FirstId, 'SecondId': get.SecondId,
-                    'BookId': get.BookId,
-                    'Price': Price, 'State': get.State, 'Number': get.Number, 'CreatedAt': get.CreatedAt,
-                    'Location': get.Location,
-                    'Remark': get.Remark})
-
-
 # 更新订单
 @main.route('/api/orderinfo/update', methods=['POST'])
 def UpdateOrder():
@@ -710,21 +637,20 @@ class Comment(db.Model):
     __tablename__ = 'comment'
     # ID
     CommentId = db.Column(db.Integer, primary_key=True)
-    # 类型
-    # 0是对书留言，1是对人留言
-    Type = db.Column(db.Integer)
     # 留言者
     UserId = db.Column(db.Integer)
-    # 被留言id
+    # 被留言id（书的id）
     ToId = db.Column(db.Integer)
+    # 回复id,无回复为0
+    BackId = db.Column(db.Integer)
     # 内容
     Content = db.Column(db.String)
     # 创建时间
     CreatedAt = db.Column(db.BIGINT)
 
-    def __int__(self, CommentId, Type, UserId, ToId, Content, CreatedAt):
+    def __int__(self, CommentId, BackId, UserId, ToId, Content, CreatedAt):
         self.CommentId = CommentId
-        self.Type = Type
+        self.BackId = BackId
         self.UserId = UserId
         self.ToId = ToId
         self.Content = Content
@@ -738,10 +664,10 @@ class Comment(db.Model):
 @main.route('/api/commentinfo/create', methods=['POST'])
 def CreateComment():
     s = Comment(UserId=request.json['UserId'])
-    s.Type = request.json['Type']
     s.ToId = request.json['ToId']
     s.Content = request.json['Content']
     s.CreatedAt = request.json['CreatedAt']
+    s.BackId = request.json['BackId']
     session.add(s)
     session.commit()
     session.close()
@@ -749,27 +675,311 @@ def CreateComment():
 
 
 # 查询留言
-@main.route('/api/commentinfo/find/<int:id>', methods=['POST'])
-def FindCommentById(id):
-    get = Comment.query.filter_by(CommentId=id).first()
-    return jsonify(
-        {'CommentId': get.CommentId, 'Type': get.Type, 'UserId': get.UserId, 'ToId': get.ToId, 'Content': get.Content,
-         'CreatedAt': get.CreatedAt})
-
-
-# 查询留言
 @main.route('/api/commentinfo/find', methods=['POST'])
 def FindComment():
-    type = request.json['Type']
     id = request.json['ToId']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    commentlist = Comment.query.filter_by(and_(Comment.Type == type, Comment.ToId.like(id))).order_by(
+    commentlist = Comment.query.filter_by(Comment.ToId.like(id)).order_by(
         desc(Sale.SaleId)).limit(limit).offset(skip).all()
     if commentlist:
         newlist = list()
         for comment in commentlist:
-            newlist.append(comment.CommentId)
-        return jsonify({'CommentId': newlist})
+            data = {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
+                    'ToId': comment.ToId,
+                    'Content': comment.Content,
+                    'CreatedAt': comment.CreatedAt}
+            newlist.append(data)
+        return jsonify({'Message': '无结果', 'Data': newlist})
     else:
-        return jsonify({'Message': '无结果'})
+        return jsonify({'Message': '无结果', 'Data': ''})
+
+
+# *****************************关注和被关注*****************************
+class StarPeople(db.Model):
+    __tablename__ = 'starpeople'
+    # ID
+    StarPeopleId = db.Column(db.Integer, primary_key=True)
+    FirstId = db.Column(db.Integer)
+    ToId = db.Column(db.Integer)
+
+    def __int__(self, StarPeopleId, FirstId, ToId):
+        self.StarPeopleId = StarPeopleId
+        self.FirstId = FirstId
+        self.ToId = ToId
+
+    def __repr__(self):
+        return ''
+
+
+# *****************************收藏帖子*****************************
+class StarBook(db.Model):
+    __tablename__ = 'starbook'
+    # ID
+    StarBookId = db.Column(db.Integer, primary_key=True)
+    FirstId = db.Column(db.Integer)
+    ToId = db.Column(db.Integer)
+
+    def __int__(self, StarBookId, FirstId, ToId):
+        self.StarBookId = StarBookId
+        self.FirstId = FirstId
+        self.ToId = ToId
+
+    def __repr__(self):
+        return ''
+
+
+# *****************************购物车*****************************
+class Shopping(db.Model):
+    __tablename__ = 'shopping'
+    # ID
+    ShoppingId = db.Column(db.Integer, primary_key=True)
+    FirstId = db.Column(db.Integer)
+    ToId = db.Column(db.Integer)
+
+    def __int__(self, ShoppingId, FirstId, ToId):
+        self.ShoppingId = ShoppingId
+        self.FirstId = FirstId
+        self.ToId = ToId
+
+    def __repr__(self):
+        return ''
+
+
+# *****************************用户操作*****************************
+# 关注
+@main.route('/api/starinfo/starpeople/create', methods=['POST'])
+def addStarPeople():
+    firstId = request.json['FirstId']
+    toId = request.json['ToId']
+    s = StarPeople(StarPeople.FirstId == firstId)
+    s.ToId = toId
+    session.add(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功'})
+
+
+# 收藏
+@main.route('/api/starinfo/starbook/create', methods=['POST'])
+def addStarBook():
+    firstId = request.json['FirstId']
+    toId = request.json['ToId']
+    s = StarBook(StarPeople.FirstId == firstId)
+    s.ToId = toId
+    session.add(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功'})
+
+
+# 取消关注
+@main.route('/api/starinfo/starpeople/delete', methods=['POST'])
+def deleteStarPeople():
+    firstId = request.json['FirstId']
+    toId = request.json['ToId']
+    StarPeople.query.filter_by(and_(StarPeople.FirstId.like(firstId), StarPeople.ToId.like(toId))).delete()
+    return jsonify({'Message': '成功'})
+
+
+# 取消收藏
+@main.route('/api/starinfo/starbook/delete', methods=['POST'])
+def deleteStarBook():
+    firstId = request.json['FirstId']
+    toId = request.json['ToId']
+    StarBook.query.filter_by(and_(StarBook.FirstId.like(firstId), StarBook.ToId.like(toId))).delete()
+    return jsonify({'Message': '成功'})
+
+
+# *****************************用户查寻相关*****************************
+# 根据用户id查询出售
+@main.route('/api/bookinfo/find/sale/userid', methods=['POST'])
+def FindSaleById():
+    userid = request.json['UserId']
+    skip = request.json['Skip']
+    limit = request.json['Limit']
+    booklist = Sale.query.filter(Sale.UserId == userid).order_by(
+        desc(Sale.SaleId)).limit(limit).offset(skip).all()
+    if booklist:
+        newlist = list()
+        for book in booklist:
+            NewPrice = str(book.NewPrice)
+            data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
+                    'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
+                    'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
+                    'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
+                    'Tel': book.Tel,
+                    'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName}
+            newlist.append(data)
+        return jsonify({'Message': '成功', 'Data': newlist})
+    else:
+        return jsonify({'Message': '无结果', 'Data': ''})
+
+
+# 根据用户id查询求购
+@main.route('/api/bookinfo/find/buy/userid', methods=['POST'])
+def FindBuyById():
+    userid = request.json['UserId']
+    skip = request.json['Skip']
+    limit = request.json['Limit']
+    buylist = Buy.query.filter(Buy.UserId == userid).order_by(
+        desc(Buy.BuyId)).limit(limit).offset(skip).all()
+    if buylist:
+        newlist = list()
+        for buy in buylist:
+            Price = str(buy.Price)
+            data = {'BuyId': get.BuyId, 'UserId': get.UserId, 'BookName': get.BookName,
+                    'Author': get.Author, 'IsBuy': get.IsBuy, 'Price': Price,
+                    'Remark': get.Remark, 'CreatedAt': get.CreatedAt, 'Tel': get.Tel,
+                    'Location': get.Location}
+            newlist.append(data)
+        return jsonify({'Message': '成功', 'Data': newlist})
+
+    else:
+        return jsonify({'Message': '无结果', 'Data': ''})
+
+
+# 根据id查询用户订单
+@main.route('/api/orderinfo/find/userid', methods=['POST'])
+def FindOrderById():
+    userid = request.json['UserId']
+    skip = request.json['Skip']
+    limit = request.json['Limit']
+    type = request.json['Type']
+    # 0是我的出售订单，1是我的求购订单
+    if type == 0:
+        orderList = Order.query.filter(Order.FirstId.like(userid)).order_by(
+            desc(Order.OrderId)).limit(limit).offset(skip).all()
+    else:
+        orderList = Order.query.filter(Order.SecondId.like(userid)).order_by(
+            desc(Order.OrderId)).limit(limit).offset(skip).all()
+    if orderList:
+        newlist = list()
+        for order in orderList:
+            Price = str(order.Price)
+            data = {'OrderId': order.OrderId, 'Type': order.Type, 'FirstId': order.FirstId,
+                    'SecondId': order.SecondId,
+                    'BookId': order.BookId,
+                    'Price': Price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
+                    'Location': order.Location,
+                    'Remark': order.Remark}
+            newlist.append(data)
+        return jsonify({'Message': '成功', 'Data': newlist})
+    else:
+        return jsonify({'Message': '无结果', 'Data': ''})
+
+
+# 关注的人
+@main.route('/api/starinfo/starpeople/find/userid', methods=['POST'])
+def FindStarPeople():
+    userid = request.json['UserId']
+    skip = request.json['Skip']
+    limit = request.json['Limit']
+    userIdList = StarPeople.query.filter(StarPeople.FirstId == userid).limit(limit).offset(skip).all()
+    if userIdList:
+        newlist = list()
+        for userId in userIdList:
+            get = User.query.filter(User.UserId == userId.ToId).first()
+            money = str(get.Money)
+            data = {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
+                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
+                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money,
+                    'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
+                    'PassWord': get.PassWord, 'Location': get.Location,
+                    'CreatedAt': get.CreatedAt, 'Type': get.Type,
+                    'LastPastTime': get.LastPastTime}
+            newlist.append(data)
+        return jsonify(
+            {'Message': '成功', 'Data': newlist})
+    else:
+        return jsonify({'Message': '无结果', 'Data': ''})
+
+
+# 关注我的人
+@main.route('/api/starinfo/staredpeople/find/userid', methods=['POST'])
+def FindStaredPeople():
+    userid = request.json['UserId']
+    skip = request.json['Skip']
+    limit = request.json['Limit']
+    userIdList = StarPeople.query.filter(StarPeople.ToId == userid).limit(limit).offset(skip).all()
+    if userIdList:
+        newlist = list()
+        for userId in userIdList:
+            get = User.query.filter(User.UserId == userId.FirstId).first()
+            money = str(get.Money)
+            data = {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
+                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
+                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money,
+                    'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
+                    'PassWord': get.PassWord, 'Location': get.Location,
+                    'CreatedAt': get.CreatedAt, 'Type': get.Type,
+                    'LastPastTime': get.LastPastTime}
+            newlist.append(data)
+        return jsonify(
+            {'Message': '成功', 'Data': newlist})
+    else:
+        return jsonify({'Message': '无结果', 'Data': ''})
+
+
+# 收藏的帖子
+@main.route('/api/starinfo/starbiik/find/userid', methods=['POST'])
+def FindStarBook():
+    userid = request.json['UserId']
+    skip = request.json['Skip']
+    limit = request.json['Limit']
+    bookIdList = StarBook.query.filter(StarBook.FirstId == userid).limit(limit).offset(skip).all()
+    if bookIdList:
+        newlist = list()
+        for bookId in bookIdList:
+            book = Sale.query.filter(Sale.SaleId == bookId.ToId).first()
+            NewPrice = str(book.NewPrice)
+            data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
+                    'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
+                    'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
+                    'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
+                    'Tel': book.Tel,
+                    'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName}
+            newlist.append(data)
+        return jsonify(
+            {'Message': '成功', 'Data': newlist})
+    else:
+        return jsonify({'Message': '无结果', 'Data': ''})
+
+
+# 查询求购数目
+@main.route('/api/bookinfo/find/buy/<id>', methods=['GET'])
+def FindBuyCount(id):
+    count = Buy.query.filter(Buy.UserId == id).count()
+    return jsonify({'Message': '无结果', 'Data': count})
+
+
+# 查询发布数目
+@main.route('/api/bookinfo/find/sale/<id>', methods=['GET'])
+def FindSaleCount(id):
+    count = Sale.query.filter(Sale.UserId == id).count()
+    return jsonify({'Message': '无结果', 'Data': count})
+
+
+# 查询订单数目
+@main.route('/api/orderinfo/find/<id>', methods=['GET'])
+def FindOrderCount(id):
+    count = Order.query.filter(or_(Order.FirstId == id, Order.SecondId == id)).count()
+    return jsonify({'Message': '无结果', 'Data': count})
+
+
+# 查询关注数目
+@main.route('/api/starinfo/starpeople/find/<id>', methods=['GET'])
+def FindStarPeopleCount(id):
+    count = StarPeople.query.filter(StarPeople.FirstId == id).count()
+    return jsonify({'Message': '无结果', 'Data': count})
+
+
+# 查询被关注数目
+@main.route('/api/starinfo/staredpeople/find/<id>', methods=['GET'])
+def FindStaredPeopleCount(id):
+    count = StarPeople.query.filter(StarPeople.ToId == id).count()
+    return jsonify({'Message': '无结果', 'Data': count})
