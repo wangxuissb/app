@@ -5,7 +5,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy
 
-databaseurl = 'mysql://wangxu:wangxu@localhost:3306/eshutao'
+databaseurl = 'mysql://root:406726@localhost:3306/eshutao'
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=databaseurl))
