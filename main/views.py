@@ -118,7 +118,8 @@ def Login(Tel, Psw, Time):
         return jsonify({'Message': '失败', 'Data': '用户不存在'})
     else:
         if get.PassWord == Psw:
-            get.LastLoginTime = Time
+            u = User(UserId=get.UserId)
+            u.LastLoginTime = Time
             session.merge(get)
             session.commit()
             session.close()
