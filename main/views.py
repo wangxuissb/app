@@ -120,9 +120,6 @@ def Login(Tel, Psw, Time):
         if get.PassWord == Psw:
             u = User(UserId=get.UserId)
             u.LastLoginTime = Time
-            session.merge(get)
-            session.commit()
-            session.close()
             money = str(get.Money)
             data = {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
                     'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
@@ -132,6 +129,9 @@ def Login(Tel, Psw, Time):
                     'PassWord': get.PassWord, 'Location': get.Location,
                     'CreatedAt': get.CreatedAt, 'Type': get.Type,
                     'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat}
+            session.merge(get)
+            session.commit()
+            session.close()
             return jsonify(
                 {'Message': '成功', 'Data': data})
         else:
