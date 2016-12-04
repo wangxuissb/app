@@ -272,7 +272,7 @@ class Sale(db.Model):
     Count = db.Column(db.INTEGER)
     # 书可以面交
     isOffLine = db.Column(db.Boolean)
-    # 来源(个人0或书商1)
+    # 来源
     Belong = db.Column(db.String)
     # 用户ID
     UserId = db.Column(db.Integer)
@@ -1118,3 +1118,14 @@ def FindStaredPeopleCount(id):
 def FindStarBookCount(id):
     count = StarBook.query.filter(StarBook.FirstId == id).count()
     return jsonify({'Message': '成功', 'Data': count})
+
+
+# 查询三种数目
+@main.route('/api/allcount/<id>', methods=['GET'])
+def GetAllCount(id):
+    buyCount = Buy.query.filter(Buy.UserId == id).count()
+    saleCount = Sale.query.filter(Sale.UserId == id).count()
+    starPeopleCount = StarPeople.query.filter(StarPeople.FirstId == id).count()
+    starBookCount = StarBook.query.filter(StarBook.FirstId == id).count()
+    data = {'BuyAndSaleCount': buyCount + saleCount, 'StarPeopleCount': starPeopleCount, 'StarBookCount': starBookCount}
+    return jsonify({'Message': '成功', 'Data': data})
