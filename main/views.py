@@ -723,7 +723,7 @@ def FindComment():
     id = request.json['ToId']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    commentlist = Comment.query.filter_by(Comment.ToId.like(id)).order_by(
+    commentlist = Comment.query.filter_by(Comment.ToId == id).order_by(
         desc(Sale.SaleId)).limit(limit).offset(skip).all()
     if commentlist:
         newlist = list()
