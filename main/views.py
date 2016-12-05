@@ -571,7 +571,7 @@ def FindAllBuy():
     skip = request.json['Skip']
     limit = request.json['Limit']
     buylist = Buy.query.limit(limit).order_by(
-        desc(Sale.SaleId)).offset(skip).all()
+        desc(Buy.BuyId)).offset(skip).all()
     if buylist:
         newlist = list()
         for buy in buylist:
@@ -723,8 +723,8 @@ def FindComment():
     id = request.json['ToId']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    commentlist = Comment.query.filter_by(Comment.ToId == id).order_by(
-        desc(Sale.SaleId)).limit(limit).offset(skip).all()
+    commentlist = Comment.query.filter_by(ToId=id).order_by(
+        desc(Comment.CommentId)).limit(limit).offset(skip).all()
     if commentlist:
         newlist = list()
         for comment in commentlist:
