@@ -1005,9 +1005,10 @@ def FindSaleById():
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
                     'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
-                    'Tel': book.Tel,
+                    'Tel': book.Tel, 'Count': book.Count, 'isOffLine': book.isOffLine,
                     'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
-                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'User': userdata}
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'ShopId': book.ShopId,
+                    'Belong': book.Belong, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
@@ -1269,9 +1270,10 @@ def FindStarBook():
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
                     'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
-                    'Tel': book.Tel,
+                    'Tel': book.Tel, 'Count': book.Count, 'isOffLine': book.isOffLine,
                     'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
-                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'User': userdata}
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'ShopId': book.ShopId,
+                    'Belong': book.Belong, 'User': userdata}
             newlist.append(data)
         return jsonify(
             {'Message': '成功', 'Data': newlist})
