@@ -1039,7 +1039,7 @@ def FindBuyById():
             Price = str(buy.Price)
             data = {'BuyId': buy.BuyId, 'UserId': buy.UserId, 'BookName': buy.BookName,
                     'Author': buy.Author, 'IsBuy': buy.IsBuy, 'Price': Price,
-                    'Remark': buy.Remark, 'CreatedAt': buy.CreatedAt, 'Tel': buy.Tel,
+                    'Remark': buy.Remark, 'CreatedAt': buy.CreatedAt, 'Tel': buy.Tel, 'isOffLine': buy.isOffLine,
                     'Location': buy.Location, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
