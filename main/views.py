@@ -941,7 +941,7 @@ def addStarBook():
 def deleteStarPeople():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    StarPeople.query.filter_by(and_(StarPeople.FirstId == firstId, StarPeople.ToId == toId)).delete()
+    StarPeople.query.filter(and_(StarPeople.FirstId == firstId, StarPeople.ToId == toId)).delete()
     return jsonify({'Message': '成功', 'Data': '取消成功'})
 
 
@@ -950,7 +950,7 @@ def deleteStarPeople():
 def deleteStarBook():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    StarBook.query.filter_by(and_(StarBook.FirstId == firstId, StarBook.ToId == toId)).delete()
+    StarBook.query.filter(and_(StarBook.FirstId == firstId, StarBook.ToId == toId)).delete()
     return jsonify({'Message': '成功', 'Data': '取消成功'})
 
 
