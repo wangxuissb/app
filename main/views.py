@@ -864,7 +864,7 @@ def addShopping():
 def deleteShopping():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    Shopping.query.filter_by(and_(Shopping.FirstId.like(firstId), Shopping.ToId.like(toId))).delete()
+    Shopping.query.filter_by(and_(Shopping.FirstId == firstId, Shopping.ToId == toId)).delete()
     return jsonify({'Message': '成功', 'Data': '删除成功'})
 
 
@@ -874,13 +874,23 @@ def findShopping():
     firstId = request.json['FirstId']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    list = Shopping.query.filter_by(Shopping.FirstId.like(firstId)).limit(limit).offset(skip).all()
+    list = Shopping.query.filter_by(Shopping.FirstId == firstId).limit(limit).offset(skip).all()
     if list:
         newlist = list()
         for shop in list:
             book = Sale.query.filter(Sale.SaleId == shop.ToId).order_by(
                 desc(Sale.SaleId)).first()
             NewPrice = str(book.NewPrice)
+            getuser = User.query.filter_by(UserId=book.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId,
                     'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify,
@@ -892,7 +902,7 @@ def findShopping():
                     'Tel': book.Tel,
                     'Label': book.Label, 'CreatedAt': book.CreatedAt,
                     'PicList': book.PicList,
-                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName}
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
@@ -918,7 +928,7 @@ def addStarPeople():
 def addStarBook():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    s = StarBook(StarPeople.FirstId == firstId)
+    s = StarBook(StarBook.FirstId == firstId)
     s.ToId = toId
     session.add(s)
     session.commit()
@@ -980,6 +990,16 @@ def FindSaleById():
     if booklist:
         newlist = list()
         for book in booklist:
+            getuser = User.query.filter_by(UserId=book.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
             NewPrice = str(book.NewPrice)
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
@@ -987,7 +1007,7 @@ def FindSaleById():
                     'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
                     'Tel': book.Tel,
                     'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
-                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName}
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
@@ -1005,11 +1025,21 @@ def FindBuyById():
     if buylist:
         newlist = list()
         for buy in buylist:
+            getuser = User.query.filter_by(UserId=buy.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
             Price = str(buy.Price)
             data = {'BuyId': buy.BuyId, 'UserId': buy.UserId, 'BookName': buy.BookName,
                     'Author': buy.Author, 'IsBuy': buy.IsBuy, 'Price': Price,
                     'Remark': buy.Remark, 'CreatedAt': buy.CreatedAt, 'Tel': buy.Tel,
-                    'Location': buy.Location}
+                    'Location': buy.Location, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
 
@@ -1039,39 +1069,119 @@ def FindOrderById():
                 book = Sale.query.filter(Sale.SaleId == order.BookId).order_by(
                     desc(Sale.SaleId)).first()
                 NewPrice = str(book.NewPrice)
+                bookuser = User.query.filter_by(UserId=book.UserId).first()
+                bookusermoney = str(getuser.Money)
+                userdata = {'UserId': bookuser.UserId, 'TelPhone': bookuser.TelPhone, 'NickName': bookuser.NickName,
+                            'SchoolName': bookuser.SchoolName, 'Major': bookuser.Major, 'Education': bookuser.Education,
+                            'Sign': bookuser.Sign, 'Avatar': bookuser.Avatar, 'IsBan': bookuser.IsBan,
+                            'IsPublish': bookuser.IsPublish, 'IsDevelop': bookuser.IsDevelop, 'Money': bookusermoney,
+                            'Ex': bookuser.Ex, 'Gold': bookuser.Gold, 'LastLoginTime': bookuser.LastLoginTime,
+                            'PassWord': bookuser.PassWord, 'Location': bookuser.Location,
+                            'CreatedAt': bookuser.CreatedAt, 'Type': bookuser.Type,
+                            'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                bookdata = {'SaleId': book.SaleId, 'UserId': book.UserId,
+                            'BookName': book.BookName,
+                            'Author': book.Author, 'Classify': book.Classify,
+                            'Publish': book.Publish,
+                            'IsSale': book.IsSale, 'Location': book.Location,
+                            'NewPrice': NewPrice,
+                            'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice,
+                            'Remark': book.Remark,
+                            'Tel': book.Tel,
+                            'Label': book.Label, 'CreatedAt': book.CreatedAt,
+                            'PicList': book.PicList,
+                            'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'User': userdata}
+                firstuser = User.query.filter_by(UserId=order.FirstId).first()
+                firstusermoney = str(getuser.Money)
+                firstuserdata = {'UserId': firstuser.UserId, 'TelPhone': firstuser.TelPhone,
+                                 'NickName': firstuser.NickName,
+                                 'SchoolName': firstuser.SchoolName, 'Major': firstuser.Major,
+                                 'Education': firstuser.Education,
+                                 'Sign': firstuser.Sign, 'Avatar': firstuser.Avatar, 'IsBan': firstuser.IsBan,
+                                 'IsPublish': firstuser.IsPublish, 'IsDevelop': firstuser.IsDevelop,
+                                 'Money': firstusermoney,
+                                 'Ex': firstuser.Ex, 'Gold': firstuser.Gold, 'LastLoginTime': firstuser.LastLoginTime,
+                                 'PassWord': firstuser.PassWord, 'Location': firstuser.Location,
+                                 'CreatedAt': firstuser.CreatedAt, 'Type': firstuser.Type,
+                                 'LastPastTime': firstuser.LastPastTime, 'QQ': firstuser.QQ, 'WeChat': firstuser.WeChat}
+                seconduser = User.query.filter_by(UserId=order.SecondId).first()
+                secondusermoney = str(getuser.Money)
+                seconduserdata = {'UserId': seconduser.UserId, 'TelPhone': seconduser.TelPhone,
+                                  'NickName': seconduser.NickName,
+                                  'SchoolName': seconduser.SchoolName, 'Major': seconduser.Major,
+                                  'Education': seconduser.Education,
+                                  'Sign': seconduser.Sign, 'Avatar': seconduser.Avatar, 'IsBan': seconduser.IsBan,
+                                  'IsPublish': seconduser.IsPublish, 'IsDevelop': seconduser.IsDevelop,
+                                  'Money': secondusermoney,
+                                  'Ex': seconduser.Ex, 'Gold': seconduser.Gold,
+                                  'LastLoginTime': seconduser.LastLoginTime,
+                                  'PassWord': seconduser.PassWord, 'Location': seconduser.Location,
+                                  'CreatedAt': seconduser.CreatedAt, 'Type': seconduser.Type,
+                                  'LastPastTime': seconduser.LastPastTime, 'QQ': seconduser.QQ,
+                                  'WeChat': seconduser.WeChat}
                 data = {'OrderId': order.OrderId, 'Type': order.Type, 'FirstId': order.FirstId,
                         'SecondId': order.SecondId,
                         'BookId': order.BookId,
                         'Price': Price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
                         'Location': order.Location,
-                        'Remark': order.Remark, 'Book': {'SaleId': book.SaleId, 'UserId': book.UserId,
-                                                         'BookName': book.BookName,
-                                                         'Author': book.Author, 'Classify': book.Classify,
-                                                         'Publish': book.Publish,
-                                                         'IsSale': book.IsSale, 'Location': book.Location,
-                                                         'NewPrice': NewPrice,
-                                                         'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice,
-                                                         'Remark': book.Remark,
-                                                         'Tel': book.Tel,
-                                                         'Label': book.Label, 'CreatedAt': book.CreatedAt,
-                                                         'PicList': book.PicList,
-                                                         'Isbn': book.Isbn, 'SchoolName': book.SchoolName}
+                        'Remark': order.Remark, 'Book': bookdata, 'FirstUser': firstuserdata,
+                        'SecondUser': seconduserdata
                         }
             else:
                 book = Buy.query.filter(Buy.BuyId == order.BookId).order_by(
                     desc(Buy.BuyId)).first()
                 NewPrice = str(book.Price)
+                bookuser = User.query.filter_by(UserId=book.UserId).first()
+                bookusermoney = str(getuser.Money)
+                userdata = {'UserId': bookuser.UserId, 'TelPhone': bookuser.TelPhone, 'NickName': bookuser.NickName,
+                            'SchoolName': bookuser.SchoolName, 'Major': bookuser.Major, 'Education': bookuser.Education,
+                            'Sign': bookuser.Sign, 'Avatar': bookuser.Avatar, 'IsBan': bookuser.IsBan,
+                            'IsPublish': bookuser.IsPublish, 'IsDevelop': bookuser.IsDevelop, 'Money': bookusermoney,
+                            'Ex': bookuser.Ex, 'Gold': bookuser.Gold, 'LastLoginTime': bookuser.LastLoginTime,
+                            'PassWord': bookuser.PassWord, 'Location': bookuser.Location,
+                            'CreatedAt': bookuser.CreatedAt, 'Type': bookuser.Type,
+                            'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                bookdata = {'BuyId': book.BuyId, 'UserId': book.UserId,
+                            'BookName': book.BookName,
+                            'Author': book.Author, 'IsBuy': book.IsBuy, 'Price': NewPrice,
+                            'Remark': book.Remark, 'CreatedAt': book.CreatedAt,
+                            'Tel': book.Tel,
+                            'Location': book.Location, 'User': userdata}
+                firstuser = User.query.filter_by(UserId=order.FirstId).first()
+                firstusermoney = str(getuser.Money)
+                firstuserdata = {'UserId': firstuser.UserId, 'TelPhone': firstuser.TelPhone,
+                                 'NickName': firstuser.NickName,
+                                 'SchoolName': firstuser.SchoolName, 'Major': firstuser.Major,
+                                 'Education': firstuser.Education,
+                                 'Sign': firstuser.Sign, 'Avatar': firstuser.Avatar, 'IsBan': firstuser.IsBan,
+                                 'IsPublish': firstuser.IsPublish, 'IsDevelop': firstuser.IsDevelop,
+                                 'Money': firstusermoney,
+                                 'Ex': firstuser.Ex, 'Gold': firstuser.Gold, 'LastLoginTime': firstuser.LastLoginTime,
+                                 'PassWord': firstuser.PassWord, 'Location': firstuser.Location,
+                                 'CreatedAt': firstuser.CreatedAt, 'Type': firstuser.Type,
+                                 'LastPastTime': firstuser.LastPastTime, 'QQ': firstuser.QQ, 'WeChat': firstuser.WeChat}
+                seconduser = User.query.filter_by(UserId=order.SecondId).first()
+                secondusermoney = str(getuser.Money)
+                seconduserdata = {'UserId': seconduser.UserId, 'TelPhone': seconduser.TelPhone,
+                                  'NickName': seconduser.NickName,
+                                  'SchoolName': seconduser.SchoolName, 'Major': seconduser.Major,
+                                  'Education': seconduser.Education,
+                                  'Sign': seconduser.Sign, 'Avatar': seconduser.Avatar, 'IsBan': seconduser.IsBan,
+                                  'IsPublish': seconduser.IsPublish, 'IsDevelop': seconduser.IsDevelop,
+                                  'Money': secondusermoney,
+                                  'Ex': seconduser.Ex, 'Gold': seconduser.Gold,
+                                  'LastLoginTime': seconduser.LastLoginTime,
+                                  'PassWord': seconduser.PassWord, 'Location': seconduser.Location,
+                                  'CreatedAt': seconduser.CreatedAt, 'Type': seconduser.Type,
+                                  'LastPastTime': seconduser.LastPastTime, 'QQ': seconduser.QQ,
+                                  'WeChat': seconduser.WeChat}
                 data = {'OrderId': order.OrderId, 'Type': order.Type, 'FirstId': order.FirstId,
                         'SecondId': order.SecondId,
                         'BookId': order.BookId,
                         'Price': Price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
                         'Location': order.Location,
-                        'Remark': order.Remark, 'Book': {'BuyId': book.BuyId, 'UserId': book.UserId,
-                                                         'BookName': book.BookName,
-                                                         'Author': book.Author, 'IsBuy': book.IsBuy, 'Price': NewPrice,
-                                                         'Remark': book.Remark, 'CreatedAt': book.CreatedAt,
-                                                         'Tel': book.Tel,
-                                                         'Location': book.Location}
+                        'Remark': order.Remark, 'Book': bookdata, 'FirstUser': firstuserdata,
+                        'SecondUser': seconduserdata
                         }
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
@@ -1145,13 +1255,23 @@ def FindStarBook():
         for bookId in bookIdList:
             book = Sale.query.filter(Sale.SaleId == bookId.ToId).first()
             NewPrice = str(book.NewPrice)
+            getuser = User.query.filter_by(UserId=book.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
                     'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
                     'Tel': book.Tel,
                     'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
-                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName}
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'User': userdata}
             newlist.append(data)
         return jsonify(
             {'Message': '成功', 'Data': newlist})
