@@ -851,7 +851,7 @@ class Shopping(db.Model):
 def addShopping():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    s = Shopping(Shopping.FirstId == firstId)
+    s = Shopping(FirstId=firstId)
     s.ToId = toId
     session.add(s)
     session.commit()
@@ -915,7 +915,7 @@ def findShopping():
 def addStarPeople():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    s = StarPeople(StarPeople.FirstId == firstId)
+    s = StarPeople(FirstId=firstId)
     s.ToId = toId
     session.add(s)
     session.commit()
@@ -928,7 +928,7 @@ def addStarPeople():
 def addStarBook():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    s = StarBook(StarBook.FirstId == firstId)
+    s = StarBook(FirstId=firstId)
     s.ToId = toId
     session.add(s)
     session.commit()
