@@ -768,10 +768,27 @@ def FindComment():
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
                         'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
-            data = {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
-                    'ToId': comment.ToId,
-                    'Content': comment.Content,
-                    'CreatedAt': comment.CreatedAt, 'User': userdata}
+            if comment.BackId == 0:
+                data = {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
+                        'ToId': comment.ToId,
+                        'Content': comment.Content,
+                        'CreatedAt': comment.CreatedAt, 'User': userdata, 'BackUser': ''}
+            else:
+                backuser = User.query.filter_by(UserId=comment.BackId).first()
+                backmoney = str(backuser.Money)
+                backuserdata = {'UserId': backuser.UserId, 'TelPhone': backuser.TelPhone, 'NickName': backuser.NickName,
+                                'SchoolName': backuser.SchoolName, 'Major': backuser.Major,
+                                'Education': backuser.Education,
+                                'Sign': backuser.Sign, 'Avatar': backuser.Avatar, 'IsBan': backuser.IsBan,
+                                'IsPublish': backuser.IsPublish, 'IsDevelop': backuser.IsDevelop, 'Money': backmoney,
+                                'Ex': backuser.Ex, 'Gold': backuser.Gold, 'LastLoginTime': backuser.LastLoginTime,
+                                'PassWord': backuser.PassWord, 'Location': backuser.Location,
+                                'CreatedAt': backuser.CreatedAt, 'Type': backuser.Type,
+                                'LastPastTime': backuser.LastPastTime, 'QQ': backuser.QQ, 'WeChat': backuser.WeChat}
+                data = {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
+                        'ToId': comment.ToId,
+                        'Content': comment.Content,
+                        'CreatedAt': comment.CreatedAt, 'User': userdata, 'BackUser': backuserdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
