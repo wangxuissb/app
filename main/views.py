@@ -958,7 +958,7 @@ def isStarBook():
 
 # 查询是否关注
 @main.route('/api/starinfo/starpeople/isstar', methods=['POST'])
-def isStarBook():
+def isStarPeople():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
     peopleList = StarPeople.query.filter(and_(StarPeople.FirstId == firstId, StarPeople.ToId == toId)).all()
