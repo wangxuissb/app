@@ -590,8 +590,8 @@ def CreateBuy():
 def FindAllBuy():
     skip = request.json['Skip']
     limit = request.json['Limit']
-    buylist = Buy.query.limit(limit).order_by(
-        desc(Buy.BuyId)).offset(skip).all()
+    buylist = Buy.query.order_by(
+        desc(Buy.BuyId)).limit(limit).offset(skip).all()
     if buylist:
         newlist = list()
         for buy in buylist:
