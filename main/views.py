@@ -449,6 +449,16 @@ def FindAllSale():
         newlist = list()
         for book in booklist:
             NewPrice = str(book.NewPrice)
+            getuser = User.query.filter_by(UserId=book.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
@@ -456,7 +466,7 @@ def FindAllSale():
                     'Tel': book.Tel, 'Count': book.Count, 'isOffLine': book.isOffLine,
                     'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
                     'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'ShopId': book.ShopId,
-                    'Belong': book.Belong}
+                    'Belong': book.Belong, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
@@ -488,6 +498,16 @@ def FindSaleBookName():
         newlist = list()
         for book in booklist:
             NewPrice = str(book.NewPrice)
+            getuser = User.query.filter_by(UserId=book.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
@@ -495,7 +515,7 @@ def FindSaleBookName():
                     'Tel': book.Tel, 'Count': book.Count, 'isOffLine': book.isOffLine,
                     'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
                     'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'ShopId': book.ShopId,
-                    'Belong': book.Belong}
+                    'Belong': book.Belong, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
@@ -576,10 +596,20 @@ def FindAllBuy():
         newlist = list()
         for buy in buylist:
             Price = str(buy.Price)
+            getuser = User.query.filter_by(UserId=buy.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
             data = {'BuyId': buy.BuyId, 'UserId': buy.UserId, 'BookName': buy.BookName,
                     'Author': buy.Author, 'IsBuy': buy.IsBuy, 'Price': Price,
                     'Remark': buy.Remark, 'CreatedAt': buy.CreatedAt, 'Tel': buy.Tel,
-                    'Location': buy.Location, 'isOffLine': buy.isOffLine}
+                    'Location': buy.Location, 'isOffLine': buy.isOffLine, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
@@ -728,10 +758,20 @@ def FindComment():
     if commentlist:
         newlist = list()
         for comment in commentlist:
+            getuser = User.query.filter_by(UserId=comment.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
             data = {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
                     'ToId': comment.ToId,
                     'Content': comment.Content,
-                    'CreatedAt': comment.CreatedAt}
+                    'CreatedAt': comment.CreatedAt, 'User': userdata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
