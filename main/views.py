@@ -944,6 +944,30 @@ def deleteStarBook():
     return jsonify({'Message': '成功', 'Data': '取消成功'})
 
 
+# 查询是否收藏
+@main.route('/api/starinfo/starbook/isstar', methods=['POST'])
+def isStarBook():
+    firstId = request.json['FirstId']
+    toId = request.json['ToId']
+    bookList = StarBook.query.filter(and_(StarBook.FirstId == firstId, StarBook.ToId == toId)).all()
+    if bookList:
+        return jsonify({'Message': '成功', 'Data': '已收藏'})
+    else:
+        return jsonify({'Message': '成功', 'Data': '未收藏'})
+
+
+# 查询是否关注
+@main.route('/api/starinfo/starpeople/isstar', methods=['POST'])
+def isStarBook():
+    firstId = request.json['FirstId']
+    toId = request.json['ToId']
+    peopleList = StarPeople.query.filter(and_(StarPeople.FirstId == firstId, StarPeople.ToId == toId)).all()
+    if peopleList:
+        return jsonify({'Message': '成功', 'Data': '已关注'})
+    else:
+        return jsonify({'Message': '成功', 'Data': '未关注'})
+
+
 # *****************************用户查寻相关*****************************
 # 根据用户id查询出售
 @main.route('/api/bookinfo/find/sale/userid', methods=['POST'])
