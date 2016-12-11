@@ -548,8 +548,10 @@ class Buy(db.Model):
     isOffLine = db.Column(db.Boolean)
     # 地址
     Location = db.Column(db.String)
+    # 图片
+    Pic = db.Column(db.String)
 
-    def __int__(self, BuyId, UserId, BookName, Author, IsBuy, Price, Remark, CreatedAt, Tel, Location, isOffLine):
+    def __int__(self, BuyId, UserId, BookName, Author, IsBuy, Price, Remark, CreatedAt, Tel, Location, isOffLine, Pic):
         self.BuyId = BuyId
         self.UserId = UserId
         self.BookName = BookName
@@ -561,6 +563,7 @@ class Buy(db.Model):
         self.Tel = Tel
         self.Location = Location
         self.isOffLine = isOffLine
+        self.Pic = Pic
 
     def __repr__(self):
         return ''
@@ -579,6 +582,7 @@ def CreateBuy():
     s.Remark = request.json['Remark']
     s.Location = request.json['Location']
     s.isOffLine = request.json['isOffLine']
+    s.Pic = request.json['Pic']
     session.add(s)
     session.commit()
     session.close()
@@ -609,7 +613,7 @@ def FindAllBuy():
             data = {'BuyId': buy.BuyId, 'UserId': buy.UserId, 'BookName': buy.BookName,
                     'Author': buy.Author, 'IsBuy': buy.IsBuy, 'Price': Price,
                     'Remark': buy.Remark, 'CreatedAt': buy.CreatedAt, 'Tel': buy.Tel,
-                    'Location': buy.Location, 'isOffLine': buy.isOffLine, 'User': userdata}
+                    'Location': buy.Location, 'isOffLine': buy.isOffLine, 'User': userdata, 'Pic': buy.Pic}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
@@ -1040,7 +1044,7 @@ def FindBuyById():
             data = {'BuyId': buy.BuyId, 'UserId': buy.UserId, 'BookName': buy.BookName,
                     'Author': buy.Author, 'IsBuy': buy.IsBuy, 'Price': Price,
                     'Remark': buy.Remark, 'CreatedAt': buy.CreatedAt, 'Tel': buy.Tel, 'isOffLine': buy.isOffLine,
-                    'Location': buy.Location, 'User': userdata}
+                    'Location': buy.Location, 'User': userdata, 'Pic': buy.Pic}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
 
@@ -1147,7 +1151,7 @@ def FindOrderById():
                             'Author': book.Author, 'IsBuy': book.IsBuy, 'Price': NewPrice,
                             'Remark': book.Remark, 'CreatedAt': book.CreatedAt,
                             'Tel': book.Tel,
-                            'Location': book.Location, 'User': userdata}
+                            'Location': book.Location, 'User': userdata, 'Pic': book.Pic}
                 firstuser = User.query.filter_by(UserId=order.FirstId).first()
                 firstusermoney = str(getuser.Money)
                 firstuserdata = {'UserId': firstuser.UserId, 'TelPhone': firstuser.TelPhone,
