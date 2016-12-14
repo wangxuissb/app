@@ -229,6 +229,21 @@ def FindUserById(Uid):
                     'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat})
 
 
+# 手机号查找单个用户
+@main.route('/api/userinfo/findbytel/<int:Tel>', methods=['GET'])
+def FindUserByTel(Tel):
+    get = User.query.filter_by(TelPhone=Tel).first()
+    money = str(get.Money)
+    return jsonify({'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
+                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
+                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money,
+                    'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
+                    'PassWord': get.PassWord, 'Location': get.Location,
+                    'CreatedAt': get.CreatedAt, 'Type': get.Type,
+                    'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat})
+
+
 # *****************************帖子相关*****************************
 # *****************************出   售*****************************
 class Sale(db.Model):
