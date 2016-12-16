@@ -513,7 +513,8 @@ def FindSaleBookName():
     skip = request.json['Skip']
     limit = request.json['Limit']
     booklist = Sale.query.filter(or_(Sale.BookName.like("%" + bookname + "%"), Sale.Author.like("%" + bookname + "%"),
-                                     Sale.Publish.like("%" + bookname + "%"))).order_by(
+                                     Sale.Publish.like("%" + bookname + "%"),
+                                     Sale.Classify.like("%" + bookname + "%"))).order_by(
         desc(Sale.SaleId)).limit(
         limit).offset(skip).all()
     if booklist:
