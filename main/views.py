@@ -251,6 +251,28 @@ def FindUserByTel(Tel):
         return jsonify({'Message': '成功', 'Data': '该用户不存在'})
 
 
+# QQ登陆
+@main.route('/api/userinfo/loginbyqq/<string:QQ>', methods=['GET'])
+def LoginByQQ(QQ):
+    get = User.query.filter_by(QQ=QQ).first()
+    if get:
+        money = str(get.Money)
+        return jsonify({'Message': '成功', 'Data': {'UserId': get.UserId, 'TelPhone': get.TelPhone,
+                                                  'NickName': get.NickName,
+                                                  'SchoolName': get.SchoolName, 'Major': get.Major,
+                                                  'Education': get.Education,
+                                                  'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
+                                                  'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop,
+                                                  'Money': money,
+                                                  'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
+                                                  'PassWord': get.PassWord, 'Location': get.Location,
+                                                  'CreatedAt': get.CreatedAt, 'Type': get.Type,
+                                                  'LastPastTime': get.LastPastTime, 'QQ': get.QQ,
+                                                  'WeChat': get.WeChat}})
+    else:
+        return jsonify({'Message': '失败', 'Data': '该用户不存在'})
+
+
 # *****************************帖子相关*****************************
 # *****************************出   售*****************************
 class Sale(db.Model):
@@ -1098,7 +1120,7 @@ def FindOrderById():
                     desc(Sale.SaleId)).first()
                 NewPrice = str(book.NewPrice)
                 bookuser = User.query.filter_by(UserId=book.UserId).first()
-                bookusermoney = str(getuser.Money)
+                bookusermoney = str(bookuser.Money)
                 userdata = {'UserId': bookuser.UserId, 'TelPhone': bookuser.TelPhone, 'NickName': bookuser.NickName,
                             'SchoolName': bookuser.SchoolName, 'Major': bookuser.Major, 'Education': bookuser.Education,
                             'Sign': bookuser.Sign, 'Avatar': bookuser.Avatar, 'IsBan': bookuser.IsBan,
@@ -1106,7 +1128,7 @@ def FindOrderById():
                             'Ex': bookuser.Ex, 'Gold': bookuser.Gold, 'LastLoginTime': bookuser.LastLoginTime,
                             'PassWord': bookuser.PassWord, 'Location': bookuser.Location,
                             'CreatedAt': bookuser.CreatedAt, 'Type': bookuser.Type,
-                            'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                            'LastPastTime': bookuser.LastPastTime, 'QQ': bookuser.QQ, 'WeChat': bookuser.WeChat}
                 bookdata = {'SaleId': book.SaleId, 'UserId': book.UserId,
                             'BookName': book.BookName,
                             'Author': book.Author, 'Classify': book.Classify,
@@ -1120,7 +1142,7 @@ def FindOrderById():
                             'PicList': book.PicList,
                             'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'User': userdata}
                 firstuser = User.query.filter_by(UserId=order.FirstId).first()
-                firstusermoney = str(getuser.Money)
+                firstusermoney = str(firstuser.Money)
                 firstuserdata = {'UserId': firstuser.UserId, 'TelPhone': firstuser.TelPhone,
                                  'NickName': firstuser.NickName,
                                  'SchoolName': firstuser.SchoolName, 'Major': firstuser.Major,
@@ -1133,7 +1155,7 @@ def FindOrderById():
                                  'CreatedAt': firstuser.CreatedAt, 'Type': firstuser.Type,
                                  'LastPastTime': firstuser.LastPastTime, 'QQ': firstuser.QQ, 'WeChat': firstuser.WeChat}
                 seconduser = User.query.filter_by(UserId=order.SecondId).first()
-                secondusermoney = str(getuser.Money)
+                secondusermoney = str(seconduser.Money)
                 seconduserdata = {'UserId': seconduser.UserId, 'TelPhone': seconduser.TelPhone,
                                   'NickName': seconduser.NickName,
                                   'SchoolName': seconduser.SchoolName, 'Major': seconduser.Major,
@@ -1160,7 +1182,7 @@ def FindOrderById():
                     desc(Buy.BuyId)).first()
                 NewPrice = str(book.Price)
                 bookuser = User.query.filter_by(UserId=book.UserId).first()
-                bookusermoney = str(getuser.Money)
+                bookusermoney = str(bookuser.Money)
                 userdata = {'UserId': bookuser.UserId, 'TelPhone': bookuser.TelPhone, 'NickName': bookuser.NickName,
                             'SchoolName': bookuser.SchoolName, 'Major': bookuser.Major, 'Education': bookuser.Education,
                             'Sign': bookuser.Sign, 'Avatar': bookuser.Avatar, 'IsBan': bookuser.IsBan,
@@ -1168,7 +1190,7 @@ def FindOrderById():
                             'Ex': bookuser.Ex, 'Gold': bookuser.Gold, 'LastLoginTime': bookuser.LastLoginTime,
                             'PassWord': bookuser.PassWord, 'Location': bookuser.Location,
                             'CreatedAt': bookuser.CreatedAt, 'Type': bookuser.Type,
-                            'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                            'LastPastTime': bookuser.LastPastTime, 'QQ': bookuser.QQ, 'WeChat': bookuser.WeChat}
                 bookdata = {'BuyId': book.BuyId, 'UserId': book.UserId,
                             'BookName': book.BookName,
                             'Author': book.Author, 'IsBuy': book.IsBuy, 'Price': NewPrice,
@@ -1176,7 +1198,7 @@ def FindOrderById():
                             'Tel': book.Tel,
                             'Location': book.Location, 'User': userdata, 'Pic': book.Pic}
                 firstuser = User.query.filter_by(UserId=order.FirstId).first()
-                firstusermoney = str(getuser.Money)
+                firstusermoney = str(firstuser.Money)
                 firstuserdata = {'UserId': firstuser.UserId, 'TelPhone': firstuser.TelPhone,
                                  'NickName': firstuser.NickName,
                                  'SchoolName': firstuser.SchoolName, 'Major': firstuser.Major,
@@ -1189,7 +1211,7 @@ def FindOrderById():
                                  'CreatedAt': firstuser.CreatedAt, 'Type': firstuser.Type,
                                  'LastPastTime': firstuser.LastPastTime, 'QQ': firstuser.QQ, 'WeChat': firstuser.WeChat}
                 seconduser = User.query.filter_by(UserId=order.SecondId).first()
-                secondusermoney = str(getuser.Money)
+                secondusermoney = str(seconduser.Money)
                 seconduserdata = {'UserId': seconduser.UserId, 'TelPhone': seconduser.TelPhone,
                                   'NickName': seconduser.NickName,
                                   'SchoolName': seconduser.SchoolName, 'Major': seconduser.Major,
