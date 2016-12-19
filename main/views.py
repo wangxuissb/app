@@ -25,6 +25,137 @@ def index():
     return '欢迎来到e书淘'
 
 
+# *****************************主页相关内容*****************************
+class App(db.Model):
+    __tablename__ = 'app'
+    AppId = db.Column(db.Integer, primary_key=True)
+    Type = db.Column(db.String)
+    State = db.Column(db.INTEGER)
+    Content = db.Column(db.String)
+
+    def __int__(self, AppId, State, Content, Type):
+        self.AppId = AppId
+        self.State = State
+        self.Content = Content
+        self.Type = Type
+
+    def __repr__(self):
+        return ''
+
+
+# app状态
+@main.route('/api/appinfo/state', methods=['GET'])
+def getAppState():
+    app = App.query.filter(App.Type.like('状态')).all()
+    return jsonify({'Message': '成功', 'Data': app.State})
+
+
+# 获取主页推荐
+@main.route('/api/appinfo/foryou', methods=['POST'])
+def getForYou():
+    schoolname = request.json['School']
+    major = request.json['Major']
+    issale = False
+    foryoulist = list()
+    booklist2 = App.query.filter(App.Type.like('推荐')).all()
+    if booklist2:
+        for app in booklist2:
+            book2 = Sale.query.filter_by(SaleId=app.Content).first()
+            NewPrice2 = str(book2.NewPrice)
+            getuser2 = User.query.filter_by(UserId=book2.UserId).first()
+            money2 = str(getuser2.Money)
+            userdata2 = {'UserId': getuser2.UserId, 'TelPhone': getuser2.TelPhone, 'NickName': getuser2.NickName,
+                         'SchoolName': getuser2.SchoolName, 'Major': getuser2.Major, 'Education': getuser2.Education,
+                         'Sign': getuser2.Sign, 'Avatar': getuser2.Avatar, 'IsBan': getuser2.IsBan,
+                         'IsPublish': getuser2.IsPublish, 'IsDevelop': getuser2.IsDevelop, 'Money': money2,
+                         'Ex': getuser2.Ex, 'Gold': getuser2.Gold, 'LastLoginTime': getuser2.LastLoginTime,
+                         'PassWord': getuser2.PassWord, 'Location': getuser2.Location,
+                         'CreatedAt': getuser2.CreatedAt, 'Type': getuser2.Type,
+                         'LastPastTime': getuser2.LastPastTime, 'QQ': getuser2.QQ, 'WeChat': getuser2.WeChat}
+            data2 = {'SaleId': book2.SaleId, 'UserId': book2.UserId, 'BookName': book2.BookName,
+                     'Author': book2.Author, 'Classify': book2.Classify, 'Publish': book2.Publish,
+                     'IsSale': book2.IsSale, 'Location': book2.Location, 'NewPrice': NewPrice2,
+                     'OldOrNew': book2.OldOrNew, 'OldPrice': book2.OldPrice, 'Remark': book2.Remark,
+                     'Tel': book2.Tel, 'Count': book2.Count, 'isOffLine': book2.isOffLine,
+                     'Label': book2.Label, 'CreatedAt': book2.CreatedAt, 'PicList': book2.PicList,
+                     'Isbn': book2.Isbn, 'SchoolName': book2.SchoolName, 'ShopId': book2.ShopId,
+                     'Belong': book2.Belong, 'User': userdata2}
+            foryoulist.append(data2)
+    booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
+        desc(Sale.SaleId)).limit(10).all()
+    if booklist:
+        for book in booklist:
+            NewPrice = str(book.NewPrice)
+            getuser = User.query.filter_by(UserId=book.UserId).first()
+            money = str(getuser.Money)
+            userdata = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                        'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                        'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                        'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                        'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                        'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                        'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+            data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
+                    'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
+                    'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
+                    'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
+                    'Tel': book.Tel, 'Count': book.Count, 'isOffLine': book.isOffLine,
+                    'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
+                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'ShopId': book.ShopId,
+                    'Belong': book.Belong, 'User': userdata}
+            foryoulist.append(data)
+    booklist1 = Sale.query.filter(and_(Sale.BookName.like("%" + major + "%"), Sale.IsSale == issale)).order_by(
+        desc(Sale.SaleId)).limit(10).all()
+    if booklist1:
+        for book1 in booklist1:
+            NewPrice1 = str(book1.NewPrice)
+            getuser1 = User.query.filter_by(UserId=book1.UserId).first()
+            money1 = str(getuser1.Money)
+            userdata1 = {'UserId': getuser1.UserId, 'TelPhone': getuser1.TelPhone, 'NickName': getuser1.NickName,
+                         'SchoolName': getuser1.SchoolName, 'Major': getuser1.Major, 'Education': getuser1.Education,
+                         'Sign': getuser1.Sign, 'Avatar': getuser1.Avatar, 'IsBan': getuser1.IsBan,
+                         'IsPublish': getuser1.IsPublish, 'IsDevelop': getuser1.IsDevelop, 'Money': money1,
+                         'Ex': getuser1.Ex, 'Gold': getuser1.Gold, 'LastLoginTime': getuser1.LastLoginTime,
+                         'PassWord': getuser1.PassWord, 'Location': getuser1.Location,
+                         'CreatedAt': getuser1.CreatedAt, 'Type': getuser1.Type,
+                         'LastPastTime': getuser1.LastPastTime, 'QQ': getuser1.QQ, 'WeChat': getuser1.WeChat}
+            data1 = {'SaleId': book1.SaleId, 'UserId': book1.UserId, 'BookName': book1.BookName,
+                     'Author': book1.Author, 'Classify': book1.Classify, 'Publish': book1.Publish,
+                     'IsSale': book1.IsSale, 'Location': book1.Location, 'NewPrice': NewPrice1,
+                     'OldOrNew': book1.OldOrNew, 'OldPrice': book1.OldPrice, 'Remark': book1.Remark,
+                     'Tel': book1.Tel, 'Count': book1.Count, 'isOffLine': book1.isOffLine,
+                     'Label': book1.Label, 'CreatedAt': book1.CreatedAt, 'PicList': book1.PicList,
+                     'Isbn': book1.Isbn, 'SchoolName': book1.SchoolName, 'ShopId': book1.ShopId,
+                     'Belong': book1.Belong, 'User': userdata1}
+            foryoulist.append(data1)
+    booklist0 = Sale.query.filter(Sale.IsSale == issale).order_by(
+        desc(Sale.SaleId)).limit(5).all()
+    if booklist0:
+        for book0 in booklist0:
+            NewPrice0 = str(book0.NewPrice)
+            getuser0 = User.query.filter_by(UserId=book0.UserId).first()
+            money0 = str(getuser0.Money)
+            userdata0 = {'UserId': getuser0.UserId, 'TelPhone': getuser0.TelPhone, 'NickName': getuser0.NickName,
+                         'SchoolName': getuser0.SchoolName, 'Major': getuser0.Major, 'Education': getuser0.Education,
+                         'Sign': getuser0.Sign, 'Avatar': getuser0.Avatar, 'IsBan': getuser0.IsBan,
+                         'IsPublish': getuser0.IsPublish, 'IsDevelop': getuser0.IsDevelop, 'Money': money0,
+                         'Ex': getuser0.Ex, 'Gold': getuser0.Gold, 'LastLoginTime': getuser0.LastLoginTime,
+                         'PassWord': getuser0.PassWord, 'Location': getuser0.Location,
+                         'CreatedAt': getuser0.CreatedAt, 'Type': getuser0.Type,
+                         'LastPastTime': getuser0.LastPastTime, 'QQ': getuser0.QQ, 'WeChat': getuser0.WeChat}
+            data0 = {'SaleId': book0.SaleId, 'UserId': book0.UserId, 'BookName': book0.BookName,
+                     'Author': book0.Author, 'Classify': book0.Classify, 'Publish': book0.Publish,
+                     'IsSale': book0.IsSale, 'Location': book0.Location, 'NewPrice': NewPrice0,
+                     'OldOrNew': book0.OldOrNew, 'OldPrice': book0.OldPrice, 'Remark': book0.Remark,
+                     'Tel': book0.Tel, 'Count': book0.Count, 'isOffLine': book0.isOffLine,
+                     'Label': book0.Label, 'CreatedAt': book0.CreatedAt, 'PicList': book0.PicList,
+                     'Isbn': book0.Isbn, 'SchoolName': book0.SchoolName, 'ShopId': book0.ShopId,
+                     'Belong': book0.Belong, 'User': userdata0}
+            foryoulist.append(data0)
+    return jsonify({'Message': '成功', 'Data': foryoulist})
+
+
 # *****************************用户相关*****************************
 class User(db.Model):
     # 共计22项
