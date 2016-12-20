@@ -295,12 +295,12 @@ def get_signature():
     timestamp = str(int(time.time()) * 1000)
     signature = hashlib.sha1(('ik1qhw09ikf3p' + nonce + timestamp).encode(
         'utf-8')).hexdigest()
-    return {
+    return jsonify({
         "App-Key": 'ik1qhw09ikf3p',
         "Nonce": nonce,
         "Timestamp": timestamp,
         "Signature": signature
-    }
+    })
 
 
 # 注册
