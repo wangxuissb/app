@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import hashlib
+import random
+
 from flask import Flask, jsonify, request, abort, make_response
 from sqlalchemy import create_engine, MetaData, and_, or_, desc, asc
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
@@ -6,6 +9,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy
 from .. import db, db_session, session
 from . import main
+import json, time, urllib2
 
 UserIdNum = [0]
 
@@ -71,7 +75,8 @@ def getForYou():
                          'Ex': getuser2.Ex, 'Gold': getuser2.Gold, 'LastLoginTime': getuser2.LastLoginTime,
                          'PassWord': getuser2.PassWord, 'Location': getuser2.Location,
                          'CreatedAt': getuser2.CreatedAt, 'Type': getuser2.Type,
-                         'LastPastTime': getuser2.LastPastTime, 'QQ': getuser2.QQ, 'WeChat': getuser2.WeChat}
+                         'LastPastTime': getuser2.LastPastTime, 'QQ': getuser2.QQ, 'WeChat': getuser2.WeChat,
+                         'IMToken': getuser2.IMToken}
             data2 = {'SaleId': book2.SaleId, 'UserId': book2.UserId, 'BookName': book2.BookName,
                      'Author': book2.Author, 'Classify': book2.Classify, 'Publish': book2.Publish,
                      'IsSale': book2.IsSale, 'Location': book2.Location, 'NewPrice': NewPrice2,
@@ -95,7 +100,8 @@ def getForYou():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
@@ -119,7 +125,8 @@ def getForYou():
                          'Ex': getuser1.Ex, 'Gold': getuser1.Gold, 'LastLoginTime': getuser1.LastLoginTime,
                          'PassWord': getuser1.PassWord, 'Location': getuser1.Location,
                          'CreatedAt': getuser1.CreatedAt, 'Type': getuser1.Type,
-                         'LastPastTime': getuser1.LastPastTime, 'QQ': getuser1.QQ, 'WeChat': getuser1.WeChat}
+                         'LastPastTime': getuser1.LastPastTime, 'QQ': getuser1.QQ, 'WeChat': getuser1.WeChat,
+                         'IMToken': getuser1.IMToken}
             data1 = {'SaleId': book1.SaleId, 'UserId': book1.UserId, 'BookName': book1.BookName,
                      'Author': book1.Author, 'Classify': book1.Classify, 'Publish': book1.Publish,
                      'IsSale': book1.IsSale, 'Location': book1.Location, 'NewPrice': NewPrice1,
@@ -143,7 +150,8 @@ def getForYou():
                          'Ex': getuser0.Ex, 'Gold': getuser0.Gold, 'LastLoginTime': getuser0.LastLoginTime,
                          'PassWord': getuser0.PassWord, 'Location': getuser0.Location,
                          'CreatedAt': getuser0.CreatedAt, 'Type': getuser0.Type,
-                         'LastPastTime': getuser0.LastPastTime, 'QQ': getuser0.QQ, 'WeChat': getuser0.WeChat}
+                         'LastPastTime': getuser0.LastPastTime, 'QQ': getuser0.QQ, 'WeChat': getuser0.WeChat,
+                         'IMToken': getuser0.IMToken}
             data0 = {'SaleId': book0.SaleId, 'UserId': book0.UserId, 'BookName': book0.BookName,
                      'Author': book0.Author, 'Classify': book0.Classify, 'Publish': book0.Publish,
                      'IsSale': book0.IsSale, 'Location': book0.Location, 'NewPrice': NewPrice0,
@@ -211,9 +219,12 @@ class User(db.Model):
     # 上次签到时间
     LastPastTime = db.Column(db.BIGINT)
 
+    # IM token
+    IMToken = db.Column(db.String)
+
     def __int__(self, UserId, TelPhone, PassWord, NickName, SchoolName, Major, Education,
                 Sign, Avatar, IsBan, IsPublish, IsDevelop, Location, Ex, Gold, CreatedAt, LastLoginTime, Type,
-                LastPastTime, Money, QQ, WeChat):
+                LastPastTime, Money, QQ, WeChat, IMToken):
         self.UserId = UserId
         self.TelPhone = TelPhone
         self.PassWord = PassWord
@@ -236,6 +247,7 @@ class User(db.Model):
         self.LastPastTime = LastPastTime
         self.WeChat = WeChat
         self.QQ = QQ
+        self.IMToken = IMToken
 
     def __repr__(self):
         return ''
@@ -251,6 +263,15 @@ def Login(Tel, Psw, Time):
         if get.PassWord == Psw:
             u = User(UserId=get.UserId)
             u.LastLoginTime = Time
+            mjson = json.load(get_signature())
+            headers = {'App-Key': mjson['App-Key'], 'Nonce': mjson['Nonce'], 'Timestamp': mjson['Timestamp'],
+                       'Signature': mjson['Signature'], 'Content-Type': 'application/x-www-form-urlencoded'}
+            data = {'userId': get.UserId, 'name': get.NickName, 'portraitUri': get.Avatar}
+            req = urllib2.Request('http://api.cn.ronghub.com/user/getToken.[json]', data, headers)
+            response = urllib2.urlopen(req)
+            hjson = json.loads(response.read())
+            if hjson['code'] == 200:
+                u.IMToken = hjson['token']
             money = str(get.Money)
             data = {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
                     'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
@@ -259,7 +280,7 @@ def Login(Tel, Psw, Time):
                     'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
                     'PassWord': get.PassWord, 'Location': get.Location,
                     'CreatedAt': get.CreatedAt, 'Type': get.Type,
-                    'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat}
+                    'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat, 'IMToken': get.IMToken}
             session.merge(get)
             session.commit()
             session.close()
@@ -267,6 +288,19 @@ def Login(Tel, Psw, Time):
                 {'Message': '成功', 'Data': data})
         else:
             return jsonify({'Message': '失败', 'Data': '密码错误'})
+
+
+def get_signature():
+    nonce = str(random.random())
+    timestamp = str(int(time.time()) * 1000)
+    signature = hashlib.sha1(('ik1qhw09ikf3p' + nonce + timestamp).encode(
+        'utf-8')).hexdigest()
+    return {
+        "App-Key": 'ik1qhw09ikf3p',
+        "Nonce": nonce,
+        "Timestamp": timestamp,
+        "Signature": signature
+    }
 
 
 # 注册
@@ -298,6 +332,7 @@ def SignUp():
         u.QQ = ''
         u.WeChat = ''
         u.LastPastTime = 0
+        u.IMToken = ''
         session.add(u)
         session.commit()
         session.close()
@@ -329,6 +364,7 @@ def UpdateUser():
     u.LastPastTime = request.json['LastPastTime']
     u.QQ = request.json['QQ']
     u.WeChat = request.json['WeChat']
+    u.IMToken = request.json['IMToken']
     session.merge(u)
     session.commit()
     session.close()
@@ -341,7 +377,7 @@ def UpdateUser():
             'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
             'PassWord': get.PassWord, 'Location': get.Location,
             'CreatedAt': get.CreatedAt, 'Type': get.Type,
-            'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat}
+            'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat, 'IMToken': get.IMToken}
     return jsonify({'Message': '成功', 'Data': data})
 
 
@@ -357,7 +393,7 @@ def FindUserById(Uid):
                     'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
                     'PassWord': get.PassWord, 'Location': get.Location,
                     'CreatedAt': get.CreatedAt, 'Type': get.Type,
-                    'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat})
+                    'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat, 'IMToken': get.IMToken})
 
 
 # 手机号查找单个用户
@@ -377,7 +413,7 @@ def FindUserByTel(Tel):
                                                   'PassWord': get.PassWord, 'Location': get.Location,
                                                   'CreatedAt': get.CreatedAt, 'Type': get.Type,
                                                   'LastPastTime': get.LastPastTime, 'QQ': get.QQ,
-                                                  'WeChat': get.WeChat}})
+                                                  'WeChat': get.WeChat, 'IMToken': get.IMToken}})
     else:
         return jsonify({'Message': '成功', 'Data': '该用户不存在'})
 
@@ -399,7 +435,7 @@ def LoginByQQ(QQ):
                                                   'PassWord': get.PassWord, 'Location': get.Location,
                                                   'CreatedAt': get.CreatedAt, 'Type': get.Type,
                                                   'LastPastTime': get.LastPastTime, 'QQ': get.QQ,
-                                                  'WeChat': get.WeChat}})
+                                                  'WeChat': get.WeChat, 'IMToken': get.IMToken}})
     else:
         return jsonify({'Message': '失败', 'Data': '该用户不存在'})
 
@@ -633,7 +669,8 @@ def FindAllSale():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
@@ -683,7 +720,8 @@ def FindSaleBookName():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
@@ -785,7 +823,8 @@ def FindAllBuy():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             data = {'BuyId': buy.BuyId, 'UserId': buy.UserId, 'BookName': buy.BookName,
                     'Author': buy.Author, 'IsBuy': buy.IsBuy, 'Price': Price,
                     'Remark': buy.Remark, 'CreatedAt': buy.CreatedAt, 'Tel': buy.Tel,
@@ -947,7 +986,8 @@ def FindComment():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             if comment.BackId == 0:
                 data = {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
                         'ToId': comment.ToId,
@@ -964,7 +1004,8 @@ def FindComment():
                                 'Ex': backuser.Ex, 'Gold': backuser.Gold, 'LastLoginTime': backuser.LastLoginTime,
                                 'PassWord': backuser.PassWord, 'Location': backuser.Location,
                                 'CreatedAt': backuser.CreatedAt, 'Type': backuser.Type,
-                                'LastPastTime': backuser.LastPastTime, 'QQ': backuser.QQ, 'WeChat': backuser.WeChat}
+                                'LastPastTime': backuser.LastPastTime, 'QQ': backuser.QQ, 'WeChat': backuser.WeChat,
+                                'IMToken': getuser.IMToken}
                 data = {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
                         'ToId': comment.ToId,
                         'Content': comment.Content,
@@ -1070,7 +1111,8 @@ def findShopping():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId,
                     'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify,
@@ -1179,7 +1221,8 @@ def FindSaleById():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             NewPrice = str(book.NewPrice)
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
@@ -1215,7 +1258,8 @@ def FindBuyById():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             Price = str(buy.Price)
             data = {'BuyId': buy.BuyId, 'UserId': buy.UserId, 'BookName': buy.BookName,
                     'Author': buy.Author, 'IsBuy': buy.IsBuy, 'Price': Price,
@@ -1259,7 +1303,8 @@ def FindOrderById():
                             'Ex': bookuser.Ex, 'Gold': bookuser.Gold, 'LastLoginTime': bookuser.LastLoginTime,
                             'PassWord': bookuser.PassWord, 'Location': bookuser.Location,
                             'CreatedAt': bookuser.CreatedAt, 'Type': bookuser.Type,
-                            'LastPastTime': bookuser.LastPastTime, 'QQ': bookuser.QQ, 'WeChat': bookuser.WeChat}
+                            'LastPastTime': bookuser.LastPastTime, 'QQ': bookuser.QQ, 'WeChat': bookuser.WeChat,
+                            'IMToken': bookuser.IMToken}
                 bookdata = {'SaleId': book.SaleId, 'UserId': book.UserId,
                             'BookName': book.BookName,
                             'Author': book.Author, 'Classify': book.Classify,
@@ -1284,7 +1329,8 @@ def FindOrderById():
                                  'Ex': firstuser.Ex, 'Gold': firstuser.Gold, 'LastLoginTime': firstuser.LastLoginTime,
                                  'PassWord': firstuser.PassWord, 'Location': firstuser.Location,
                                  'CreatedAt': firstuser.CreatedAt, 'Type': firstuser.Type,
-                                 'LastPastTime': firstuser.LastPastTime, 'QQ': firstuser.QQ, 'WeChat': firstuser.WeChat}
+                                 'LastPastTime': firstuser.LastPastTime, 'QQ': firstuser.QQ, 'WeChat': firstuser.WeChat,
+                                 'IMToken': firstuser.IMToken}
                 seconduser = User.query.filter_by(UserId=order.SecondId).first()
                 secondusermoney = str(seconduser.Money)
                 seconduserdata = {'UserId': seconduser.UserId, 'TelPhone': seconduser.TelPhone,
@@ -1299,7 +1345,7 @@ def FindOrderById():
                                   'PassWord': seconduser.PassWord, 'Location': seconduser.Location,
                                   'CreatedAt': seconduser.CreatedAt, 'Type': seconduser.Type,
                                   'LastPastTime': seconduser.LastPastTime, 'QQ': seconduser.QQ,
-                                  'WeChat': seconduser.WeChat}
+                                  'WeChat': seconduser.WeChat, 'IMToken': seconduser.IMToken}
                 data = {'OrderId': order.OrderId, 'Type': order.Type, 'FirstId': order.FirstId,
                         'SecondId': order.SecondId,
                         'BookId': order.BookId,
@@ -1321,7 +1367,8 @@ def FindOrderById():
                             'Ex': bookuser.Ex, 'Gold': bookuser.Gold, 'LastLoginTime': bookuser.LastLoginTime,
                             'PassWord': bookuser.PassWord, 'Location': bookuser.Location,
                             'CreatedAt': bookuser.CreatedAt, 'Type': bookuser.Type,
-                            'LastPastTime': bookuser.LastPastTime, 'QQ': bookuser.QQ, 'WeChat': bookuser.WeChat}
+                            'LastPastTime': bookuser.LastPastTime, 'QQ': bookuser.QQ, 'WeChat': bookuser.WeChat,
+                            'IMToken': bookuser.IMToken}
                 bookdata = {'BuyId': book.BuyId, 'UserId': book.UserId,
                             'BookName': book.BookName,
                             'Author': book.Author, 'IsBuy': book.IsBuy, 'Price': NewPrice,
@@ -1340,7 +1387,8 @@ def FindOrderById():
                                  'Ex': firstuser.Ex, 'Gold': firstuser.Gold, 'LastLoginTime': firstuser.LastLoginTime,
                                  'PassWord': firstuser.PassWord, 'Location': firstuser.Location,
                                  'CreatedAt': firstuser.CreatedAt, 'Type': firstuser.Type,
-                                 'LastPastTime': firstuser.LastPastTime, 'QQ': firstuser.QQ, 'WeChat': firstuser.WeChat}
+                                 'LastPastTime': firstuser.LastPastTime, 'QQ': firstuser.QQ, 'WeChat': firstuser.WeChat,
+                                 'IMToken': firstuser.IMToken}
                 seconduser = User.query.filter_by(UserId=order.SecondId).first()
                 secondusermoney = str(seconduser.Money)
                 seconduserdata = {'UserId': seconduser.UserId, 'TelPhone': seconduser.TelPhone,
@@ -1355,7 +1403,7 @@ def FindOrderById():
                                   'PassWord': seconduser.PassWord, 'Location': seconduser.Location,
                                   'CreatedAt': seconduser.CreatedAt, 'Type': seconduser.Type,
                                   'LastPastTime': seconduser.LastPastTime, 'QQ': seconduser.QQ,
-                                  'WeChat': seconduser.WeChat}
+                                  'WeChat': seconduser.WeChat, 'IMToken': seconduser.IMToken}
                 data = {'OrderId': order.OrderId, 'Type': order.Type, 'FirstId': order.FirstId,
                         'SecondId': order.SecondId,
                         'BookId': order.BookId,
@@ -1380,16 +1428,17 @@ def FindStarPeople():
     if userIdList:
         newlist = list()
         for userId in userIdList:
-            get = User.query.filter(User.UserId == userId.ToId).first()
-            money = str(get.Money)
-            data = {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
-                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
-                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
-                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money,
-                    'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
-                    'PassWord': get.PassWord, 'Location': get.Location,
-                    'CreatedAt': get.CreatedAt, 'Type': get.Type,
-                    'LastPastTime': get.LastPastTime}
+            getuser = User.query.filter(User.UserId == userId.ToId).first()
+            money = str(getuser.Money)
+            data = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                    'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                    'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                    'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                    'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                    'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                    'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                    'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                    'IMToken': getuser.IMToken}
             newlist.append(data)
         return jsonify(
             {'Message': '成功', 'Data': newlist})
@@ -1407,16 +1456,17 @@ def FindStaredPeople():
     if userIdList:
         newlist = list()
         for userId in userIdList:
-            get = User.query.filter(User.UserId == userId.FirstId).first()
-            money = str(get.Money)
-            data = {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
-                    'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
-                    'Sign': get.Sign, 'Avatar': get.Avatar, 'IsBan': get.IsBan,
-                    'IsPublish': get.IsPublish, 'IsDevelop': get.IsDevelop, 'Money': money,
-                    'Ex': get.Ex, 'Gold': get.Gold, 'LastLoginTime': get.LastLoginTime,
-                    'PassWord': get.PassWord, 'Location': get.Location,
-                    'CreatedAt': get.CreatedAt, 'Type': get.Type,
-                    'LastPastTime': get.LastPastTime}
+            getuser = User.query.filter(User.UserId == userId.FirstId).first()
+            money = str(getuser.Money)
+            data = {'UserId': getuser.UserId, 'TelPhone': getuser.TelPhone, 'NickName': getuser.NickName,
+                    'SchoolName': getuser.SchoolName, 'Major': getuser.Major, 'Education': getuser.Education,
+                    'Sign': getuser.Sign, 'Avatar': getuser.Avatar, 'IsBan': getuser.IsBan,
+                    'IsPublish': getuser.IsPublish, 'IsDevelop': getuser.IsDevelop, 'Money': money,
+                    'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
+                    'PassWord': getuser.PassWord, 'Location': getuser.Location,
+                    'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
+                    'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                    'IMToken': getuser.IMToken}
             newlist.append(data)
         return jsonify(
             {'Message': '成功', 'Data': newlist})
@@ -1445,7 +1495,8 @@ def FindStarBook():
                         'Ex': getuser.Ex, 'Gold': getuser.Gold, 'LastLoginTime': getuser.LastLoginTime,
                         'PassWord': getuser.PassWord, 'Location': getuser.Location,
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
-                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat}
+                        'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
+                        'IMToken': getuser.IMToken}
             data = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
                     'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
                     'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
