@@ -263,7 +263,7 @@ def Login(Tel, Psw, Time):
         if get.PassWord == Psw:
             u = User(UserId=get.UserId)
             u.LastLoginTime = Time
-            a = json.dump(get_signature())
+            a = json.dumps(get_signature())
             mjson = json.load(a)
             headers = {'App-Key': mjson['App-Key'], 'Nonce': mjson['Nonce'], 'Timestamp': mjson['Timestamp'],
                        'Signature': mjson['Signature'], 'Content-Type': 'application/x-www-form-urlencoded'}
