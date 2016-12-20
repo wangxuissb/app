@@ -2,6 +2,7 @@
 import hashlib
 import random
 
+import requests
 from flask import Flask, jsonify, request, abort, make_response
 from sqlalchemy import create_engine, MetaData, and_, or_, desc, asc
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
@@ -265,17 +266,16 @@ def Login(Tel, Psw, Time):
             u.LastLoginTime = Time
             nonce = str(random.random())
             timestamp = str(int(time.time()) * 1000)
-            signature = hashlib.sha1(('ik1qhw09ikf3p' + nonce + timestamp).encode(
-                'utf-8')).hexdigest()
-            headers = {'App-Key': 'ik1qhw09ikf3p', 'Nonce': nonce, 'Timestamp': timestamp,
-                       'Signature': signature, 'Content-Type': 'application/x-www-form-urlencoded'}
-            data = {'userId': get.UserId, 'name': get.NickName, 'portraitUri': get.Avatar}
-            req = urllib2.Request('http://api.cn.ronghub.com/user/getToken.[json]', data, headers)
-            response = urllib2.urlopen(req)
-            print response.read()
-            # hjson = json.loads(b)
-            # if hjson['code'] == 200:
-            #     u.IMToken = hjson['token']
+            signature = hashlib.sha1(('hWepl3U2IAw' + nonce + timestamp).encode('utf-8')).hexdigest()
+            print nonce
+            print signature
+            print timestamp
+            datainfo = {'userId': 123, 'name': 234, 'portraitUri': '1'}
+            headers = {'RC-App-Key': 'ik1qhw09ikf3p', 'RC-Nonce': nonce, 'RC-Timestamp': timestamp,
+                       'RC-Signature': signature,
+                       'Content-Type': 'application/x-www-form-urlencoded'}
+            r = requests.post("http://api.cn.ronghub.com/user/getToken.json", data=datainfo, headers=headers)
+            u.IMToken = r.json().get('token')
             money = str(get.Money)
             data = {'UserId': get.UserId, 'TelPhone': get.TelPhone, 'NickName': get.NickName,
                     'SchoolName': get.SchoolName, 'Major': get.Major, 'Education': get.Education,
