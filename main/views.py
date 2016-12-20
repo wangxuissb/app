@@ -267,9 +267,6 @@ def Login(Tel, Psw, Time):
             nonce = str(random.random())
             timestamp = str(int(time.time()) * 1000)
             signature = hashlib.sha1(('hWepl3U2IAw' + nonce + timestamp).encode('utf-8')).hexdigest()
-            print nonce
-            print signature
-            print timestamp
             datainfo = {'userId': 123, 'name': 234, 'portraitUri': '1'}
             headers = {'RC-App-Key': 'ik1qhw09ikf3p', 'RC-Nonce': nonce, 'RC-Timestamp': timestamp,
                        'RC-Signature': signature,
@@ -285,7 +282,7 @@ def Login(Tel, Psw, Time):
                     'PassWord': get.PassWord, 'Location': get.Location,
                     'CreatedAt': get.CreatedAt, 'Type': get.Type,
                     'LastPastTime': get.LastPastTime, 'QQ': get.QQ, 'WeChat': get.WeChat, 'IMToken': get.IMToken}
-            session.merge(get)
+            session.merge(u)
             session.commit()
             session.close()
             return jsonify(
