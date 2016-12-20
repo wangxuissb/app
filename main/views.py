@@ -263,7 +263,8 @@ def Login(Tel, Psw, Time):
         if get.PassWord == Psw:
             u = User(UserId=get.UserId)
             u.LastLoginTime = Time
-            mjson = json.load(get_signature())
+            a = json.dump(get_signature())
+            mjson = json.load(a)
             headers = {'App-Key': mjson['App-Key'], 'Nonce': mjson['Nonce'], 'Timestamp': mjson['Timestamp'],
                        'Signature': mjson['Signature'], 'Content-Type': 'application/x-www-form-urlencoded'}
             data = {'userId': get.UserId, 'name': get.NickName, 'portraitUri': get.Avatar}
@@ -295,12 +296,12 @@ def get_signature():
     timestamp = str(int(time.time()) * 1000)
     signature = hashlib.sha1(('ik1qhw09ikf3p' + nonce + timestamp).encode(
         'utf-8')).hexdigest()
-    return jsonify({
+    return {
         "App-Key": 'ik1qhw09ikf3p',
         "Nonce": nonce,
         "Timestamp": timestamp,
         "Signature": signature
-    })
+    }
 
 
 # 注册
