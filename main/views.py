@@ -263,10 +263,12 @@ def Login(Tel, Psw, Time):
         if get.PassWord == Psw:
             u = User(UserId=get.UserId)
             u.LastLoginTime = Time
-            a = json.dumps(get_signature())
-            mjson = json.load(a)
-            headers = {'App-Key': mjson['App-Key'], 'Nonce': mjson['Nonce'], 'Timestamp': mjson['Timestamp'],
-                       'Signature': mjson['Signature'], 'Content-Type': 'application/x-www-form-urlencoded'}
+            nonce = str(random.random())
+            timestamp = str(int(time.time()) * 1000)
+            signature = hashlib.sha1(('ik1qhw09ikf3p' + nonce + timestamp).encode(
+                'utf-8')).hexdigest()
+            headers = {'App-Key': 'ik1qhw09ikf3p', 'Nonce': nonce, 'Timestamp': timestamp,
+                       'Signature': signature, 'Content-Type': 'application/x-www-form-urlencoded'}
             data = {'userId': get.UserId, 'name': get.NickName, 'portraitUri': get.Avatar}
             req = urllib2.Request('http://api.cn.ronghub.com/user/getToken.[json]', data, headers)
             response = urllib2.urlopen(req)
@@ -290,19 +292,6 @@ def Login(Tel, Psw, Time):
                 {'Message': '成功', 'Data': data})
         else:
             return jsonify({'Message': '失败', 'Data': '密码错误'})
-
-
-def get_signature():
-    nonce = str(random.random())
-    timestamp = str(int(time.time()) * 1000)
-    signature = hashlib.sha1(('ik1qhw09ikf3p' + nonce + timestamp).encode(
-        'utf-8')).hexdigest()
-    return {
-        "App-Key": 'ik1qhw09ikf3p',
-        "Nonce": nonce,
-        "Timestamp": timestamp,
-        "Signature": signature
-    }
 
 
 # 注册
