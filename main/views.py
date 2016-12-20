@@ -270,7 +270,8 @@ def Login(Tel, Psw, Time):
             data = {'userId': get.UserId, 'name': get.NickName, 'portraitUri': get.Avatar}
             req = urllib2.Request('http://api.cn.ronghub.com/user/getToken.[json]', data, headers)
             response = urllib2.urlopen(req)
-            hjson = json.loads(response.read())
+            b = json.dumps(response.read())
+            hjson = json.loads(b)
             if hjson['code'] == 200:
                 u.IMToken = hjson['token']
             money = str(get.Money)
