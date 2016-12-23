@@ -1065,6 +1065,12 @@ def addShopping():
     mcount = request.json['Count']
     shop = Shopping.query.filter(and_(Shopping.FirstId == firstId, Shopping.ToId == toId)).first()
     if shop:
+        s = Shopping(FirstId=firstId)
+        s.ToId = toId
+        s.Count = mcount
+        session.merge(s)
+        session.commit()
+        session.close()
         return jsonify({'Message': '成功', 'Data': '添加成功'})
     else:
         s = Shopping(FirstId=firstId)
@@ -1079,13 +1085,10 @@ def addShopping():
 # 更新购物车
 @main.route('/api/shoppinginfo/update', methods=['POST'])
 def updateShopping():
-    firstId = request.json['FirstId']
-    toId = request.json['ToId']
-    mcount = request.json['Count']
-    s = Shopping(FirstId=firstId)
-    s.ToId = toId
-    s.Count = mcount
-    session.merge(s)
+    s = Shopping(FirstId=request.json['FirstId'])
+    s.ToId = request.json['ToId']
+    s.Count = request.json['Count']
+    session.update(s)
     session.commit()
     session.close()
     return jsonify({'Message': '成功', 'Data': '更新成功'})
