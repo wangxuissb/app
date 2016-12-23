@@ -1114,11 +1114,11 @@ def findShopping():
     firstId = request.json['FirstId']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    list = Shopping.query.filter_by(FirstId=firstId).order_by(
+    shoppinglist = Shopping.query.filter(Shopping.FirstId == firstId).order_by(
         desc(Shopping.ShoppingId)).limit(limit).offset(skip).all()
-    if list:
+    if shoppinglist:
         newlist = list()
-        for shop in list:
+        for shop in shoppinglist:
             book = Sale.query.filter_by(SaleId=shop.ToId).order_by(
                 desc(Sale.SaleId)).first()
             NewPrice = str(book.NewPrice)
