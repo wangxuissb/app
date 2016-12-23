@@ -1085,10 +1085,9 @@ def addShopping():
 # 更新购物车
 @main.route('/api/shoppinginfo/update', methods=['POST'])
 def updateShopping():
-    s = Shopping(FirstId=request.json['FirstId'])
-    s.ToId = request.json['ToId']
+    s = Shopping(ShoppingId=request.json['ShoppingId'])
     s.Count = request.json['Count']
-    session.update(s)
+    session.merge(s)
     session.commit()
     session.close()
     return jsonify({'Message': '成功', 'Data': '更新成功'})
