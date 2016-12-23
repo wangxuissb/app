@@ -51,7 +51,7 @@ class App(db.Model):
 # app状态
 @main.route('/api/appinfo/state', methods=['GET'])
 def getAppState():
-    app = App.query.filter(App.Type.like('状态')).all()
+    app = App.query.filter(App.Type.like('状态')).first()
     return jsonify({'Message': '成功', 'Data': app.State})
 
 
@@ -1045,11 +1045,13 @@ class Shopping(db.Model):
     ShoppingId = db.Column(db.Integer, primary_key=True)
     FirstId = db.Column(db.Integer)
     ToId = db.Column(db.Integer)
+    Count = db.Column(db.Integer)
 
-    def __int__(self, ShoppingId, FirstId, ToId):
+    def __int__(self, ShoppingId, FirstId, ToId, Count):
         self.ShoppingId = ShoppingId
         self.FirstId = FirstId
         self.ToId = ToId
+        self.Count = Count
 
     def __repr__(self):
         return ''
@@ -1060,12 +1062,18 @@ class Shopping(db.Model):
 def addShopping():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    s = Shopping(FirstId=firstId)
-    s.ToId = toId
-    session.add(s)
-    session.commit()
-    session.close()
-    return jsonify({'Message': '成功', 'Data': '添加成功'})
+    mcount = request.json['Count']
+    shop = Shopping.query.filter(and_(Shopping.FirstId == firstId, Shopping.ToId == toId)).first()
+    if shop:
+        return jsonify({'Message': '成功', 'Data': '添加成功'})
+    else:
+        s = Shopping(FirstId=firstId)
+        s.ToId = toId
+        s.Count = mcount
+        session.add(s)
+        session.commit()
+        session.close()
+        return jsonify({'Message': '成功', 'Data': '添加成功'})
 
 
 # 删除购物车
@@ -1073,8 +1081,16 @@ def addShopping():
 def deleteShopping():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
-    Shopping.query.filter_by(and_(Shopping.FirstId == firstId, Shopping.ToId == toId)).delete()
+    Shopping.query.filter(and_(Shopping.FirstId == firstId, Shopping.ToId == toId)).delete()
     return jsonify({'Message': '成功', 'Data': '删除成功'})
+
+
+# 查询购物车数量（只支持本人查询）
+@main.route('/api/shoppinginfo/count', methods=['POST'])
+def findShoppingCount():
+    firstId = request.json['FirstId']
+    count = Shopping.query.filter(Shopping.FirstId == firstId).count()
+    return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询购物车（只支持本人查询）
@@ -1083,7 +1099,7 @@ def findShopping():
     firstId = request.json['FirstId']
     skip = request.json['Skip']
     limit = request.json['Limit']
-    list = Shopping.query.filter_by(Shopping.FirstId == firstId).limit(limit).offset(skip).all()
+    list = Shopping.query.filter(Shopping.FirstId == firstId).limit(limit).offset(skip).all()
     if list:
         newlist = list()
         for shop in list:
@@ -1101,18 +1117,16 @@ def findShopping():
                         'CreatedAt': getuser.CreatedAt, 'Type': getuser.Type,
                         'LastPastTime': getuser.LastPastTime, 'QQ': getuser.QQ, 'WeChat': getuser.WeChat,
                         'IMToken': getuser.IMToken}
-            data = {'SaleId': book.SaleId, 'UserId': book.UserId,
-                    'BookName': book.BookName,
-                    'Author': book.Author, 'Classify': book.Classify,
-                    'Publish': book.Publish,
-                    'IsSale': book.IsSale, 'Location': book.Location,
-                    'NewPrice': NewPrice,
-                    'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice,
-                    'Remark': book.Remark,
-                    'Tel': book.Tel,
-                    'Label': book.Label, 'CreatedAt': book.CreatedAt,
-                    'PicList': book.PicList,
-                    'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'User': userdata}
+            saledata = {'SaleId': book.SaleId, 'UserId': book.UserId, 'BookName': book.BookName,
+                        'Author': book.Author, 'Classify': book.Classify, 'Publish': book.Publish,
+                        'IsSale': book.IsSale, 'Location': book.Location, 'NewPrice': NewPrice,
+                        'OldOrNew': book.OldOrNew, 'OldPrice': book.OldPrice, 'Remark': book.Remark,
+                        'Tel': book.Tel, 'Count': book.Count, 'isOffLine': book.isOffLine,
+                        'Label': book.Label, 'CreatedAt': book.CreatedAt, 'PicList': book.PicList,
+                        'Isbn': book.Isbn, 'SchoolName': book.SchoolName, 'ShopId': book.ShopId,
+                        'Belong': book.Belong, 'User': userdata}
+            data = {'FirstId': firstId, 'ShoppingId': shop.ShoppingId, 'ToId': book.SaleId, 'Count': shop.Count,
+                    'Sale': saledata}
             newlist.append(data)
         return jsonify({'Message': '成功', 'Data': newlist})
     else:
