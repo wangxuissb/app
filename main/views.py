@@ -1076,6 +1076,21 @@ def addShopping():
         return jsonify({'Message': '成功', 'Data': '添加成功'})
 
 
+# 更新购物车
+@main.route('/api/shoppinginfo/update', methods=['POST'])
+def updateShopping():
+    firstId = request.json['FirstId']
+    toId = request.json['ToId']
+    mcount = request.json['Count']
+    s = Shopping(FirstId=firstId)
+    s.ToId = toId
+    s.Count = mcount
+    session.merge(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '更新成功'})
+
+
 # 删除购物车
 @main.route('/api/shoppinginfo/delete', methods=['POST'])
 def deleteShopping():
