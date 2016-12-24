@@ -1673,7 +1673,7 @@ def GetAllProvince():
 
 # 根据省份获取城市
 @main.route('/api/areainfo/city/belong&<province>', methods=['GET'])
-def GetCity(province):
+def GetCityByProvince(province):
     p = Province.query.filter(Province.province.like(province)).first()
     cityList = City.query.filter(City.father == p.provinceID).all()
     newlist = list()
@@ -1685,7 +1685,7 @@ def GetCity(province):
 
 # 根据城市获取区
 @main.route('/api/areainfo/area/belong&<city>', methods=['GET'])
-def GetArea(city):
+def GetAreaByCity(city):
     city = City.query.filter(City.city == city).first()
     areaList = Area.query.filter(Area.father == city.cityID).all()
     newlist = list()
@@ -1697,9 +1697,9 @@ def GetArea(city):
 
 # 根据省份获取学校
 @main.route('/api/areainfo/school/belong&<province>', methods=['GET'])
-def GetArea(province):
+def GetSchoolByProvince(province):
     p = Province.query.filter(Province.province.like(province)).first()
-    schoolList = School.query.filter(School.area_name == p.province).all()
+    schoolList = School.query.filter(School.area_name.like(p.province)).all()
     newlist = list()
     for school in schoolList:
         newlist.append(school.school_name)
