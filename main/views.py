@@ -1675,7 +1675,7 @@ def GetAllProvince():
 @main.route('/api/areainfo/city/belong&<province>', methods=['GET'])
 def GetCityByProvince(province):
     p = Province.query.filter(Province.province.like(province)).first()
-    cityList = City.query.filter(City.father == p.provinceID).all()
+    cityList = City.query.filter(City.father.like(p.provinceID)).all()
     newlist = list()
     for city in cityList:
         newlist.append(city.city)
@@ -1686,8 +1686,8 @@ def GetCityByProvince(province):
 # 根据城市获取区
 @main.route('/api/areainfo/area/belong&<city>', methods=['GET'])
 def GetAreaByCity(city):
-    city = City.query.filter(City.city == city).first()
-    areaList = Area.query.filter(Area.father == city.cityID).all()
+    city = City.query.filter(City.city.like(city)).first()
+    areaList = Area.query.filter(Area.father.like(city.cityID)).all()
     newlist = list()
     for area in areaList:
         newlist.append(area.area)
