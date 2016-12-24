@@ -1584,3 +1584,125 @@ def GetAllCount(id):
     starBookCount = StarBook.query.filter(StarBook.FirstId == id).count()
     data = {'BuyAndSaleCount': buyCount + saleCount, 'StarPeopleCount': starPeopleCount, 'StarBookCount': starBookCount}
     return jsonify({'Message': '成功', 'Data': data})
+
+
+# ***************************地区/***************************************
+# 省份
+class Province(db.Model):
+    __tablename__ = 'hat_province'
+    id = db.Column(db.Integer, primary_key=True)
+    provinceID = db.Column(db.String)
+    province = db.Column(db.String)
+
+    def __int__(self, id, provinceID, province):
+        self.id = id
+        self.provinceID = provinceID
+        self.province = province
+
+    def __repr__(self):
+        return ''
+
+
+# 城市
+class City(db.Model):
+    __tablename__ = 'hat_city'
+    id = db.Column(db.Integer, primary_key=True)
+    cityID = db.Column(db.Integer)
+    city = db.Column(db.String)
+    father = db.Column(db.String)
+
+    def __int__(self, id, cityID, city, father):
+        self.id = id
+        self.cityID = cityID
+        self.city = city
+        self.father = father
+
+    def __repr__(self):
+        return ''
+
+
+# 区
+class Area(db.Model):
+    __tablename__ = 'hat_area'
+    id = db.Column(db.Integer, primary_key=True)
+    areaID = db.Column(db.String)
+    area = db.Column(db.String)
+    father = db.Column(db.String)
+
+    def __int__(self, id, areaID, area, father):
+        self.id = id
+        self.areaID = areaID
+        self.area = area
+        self.father = father
+
+    def __repr__(self):
+        return ''
+
+
+# 学校
+class School(db.Model):
+    __tablename__ = 'hat_area'
+    school_id = db.Column(db.Integer, primary_key=True)
+    school_name = db.Column(db.String)
+    school_type = db.Column(db.Integer)
+    area_id = db.Column(db.String)
+    area_name = db.Column(db.String)
+    display_order = db.Column(db.Integer)
+
+    def __int__(self, school_id, school_name, school_type, area_id, area_name, display_order):
+        self.school_id = school_id
+        self.school_name = school_name
+        self.school_type = school_type
+        self.area_id = area_id
+        self.area_name = area_name
+        self.display_order = display_order
+
+    def __repr__(self):
+        return ''
+
+
+# 获取省份
+@main.route('/api/areainfo/province', methods=['GET'])
+def GetAllProvince():
+    provinceList = Province.query.all()
+    newlist = list()
+    for province in provinceList:
+        newlist.append(province.province)
+    return jsonify(
+        {'Message': '成功', 'Data': newlist})
+
+
+# 根据省份获取城市
+@main.route('/api/areainfo/city/belong&<province>', methods=['GET'])
+def GetCity(province):
+    p = Province.query.filter(Province.province.like(province)).first()
+    cityList = City.query.filter(City.father == p.provinceID).all()
+    newlist = list()
+    for city in cityList:
+        newlist.append(city.city)
+    return jsonify(
+        {'Message': '成功', 'Data': newlist})
+
+
+# 根据城市获取区
+@main.route('/api/areainfo/area/belong&<city>', methods=['GET'])
+def GetArea(city):
+    city = City.query.filter(City.city == city).first()
+    areaList = Area.query.filter(Area.father == city.cityID).all()
+    newlist = list()
+    for area in areaList:
+        newlist.append(area.area)
+    return jsonify(
+        {'Message': '成功', 'Data': newlist})
+
+
+# 根据省份获取学校
+@main.route('/api/areainfo/school/belong&<province>', methods=['GET'])
+def GetArea(province):
+    p = Province.query.filter(Province.province.like(province)).first()
+    schoolList = School.query.filter(School.area_name == p.province).all()
+    newlist = list()
+    for school in schoolList:
+        newlist.append(school.school_name)
+    return jsonify(
+        {'Message': '成功', 'Data': newlist})
