@@ -678,6 +678,7 @@ def FindAllSale():
 def UpdateSale():
     s = Sale(SaleId=request.json['SaleId'])
     s.IsSale = request.json['IsSale']
+    s.NewPrice = request.json['NewPrice']
     session.merge(s)
     session.commit()
     session.close()
@@ -824,11 +825,11 @@ def FindAllBuy():
 
 
 # 更新求购
-# 当前版本只许更改是否已购买
 @main.route('/api/bookinfo/update/buy', methods=['POST'])
 def UpdateBuy():
     s = Buy(BuyId=request.json['BuyId'])
-    s.IsSale = request.json['IsBuy']
+    s.IsBuy = request.json['IsBuy']
+    s.Price = request.json['Price']
     session.merge(s)
     session.commit()
     session.close()
