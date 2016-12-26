@@ -1782,7 +1782,7 @@ def FindAdress():
                         'Location': a.Location,
                         'Code': a.Code, 'IsDefault': a.IsDefault,
                         'UserId': a.UserId,
-                        'AdressId': a.AdressId, 'Area': get.Area}
+                        'AdressId': a.AdressId, 'Area': a.Area}
             newlist.append(getdata1)
     return jsonify({'Message': '成功', 'Data': newlist})
 
