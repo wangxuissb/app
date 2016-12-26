@@ -1806,12 +1806,12 @@ def UpdateAdress():
 # 删除地址
 @main.route('/api/adressinfo/delete', methods=['POST'])
 def DeleteAdress():
+    Adress.query.filter_by(AdressId=request.json['AdressId']).delete()
     get = Adress.query.filter(
         and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
     if get:
-        Adress.query.filter_by(AdressId=request.json['AdressId']).delete()
+        print ''
     else:
-        Adress.query.filter_by(AdressId=request.json['AdressId']).delete()
         get1 = Adress.query.filter(
             and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).first()
         u = Adress(AdressId=get1.AdressId)
