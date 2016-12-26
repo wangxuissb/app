@@ -1751,7 +1751,7 @@ def CreateAdress():
 @main.route('/api/adressinfo/find', methods=['POST'])
 def FindAdress():
     get = Adress.query.filter(
-        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == request.json['IsDefault'])).first()
+        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == request.json['IsDefault'])).all()
     if get:
         return jsonify({'Message': '成功', 'Data': {'Name': get.Name, 'Tel': get.Tel,
                                                   'Location': get.Location,
@@ -1764,7 +1764,7 @@ def FindAdress():
 
 # 更新地址
 @main.route('/api/adressinfo/update', methods=['POST'])
-def CreateAdress():
+def UpdateAdress():
     u = Adress(AdressId=request.json['AdressId'])
     u.Name = request.json['Name']
     u.Tel = request.json['Tel']
@@ -1780,5 +1780,5 @@ def CreateAdress():
 # 删除地址
 @main.route('/api/adressinfo/delete', methods=['POST'])
 def DeleteAdress():
-    get = Adress.query.filter_by(AdressId=request.json['AdressId']).delete()
+    Adress.query.filter_by(AdressId=request.json['AdressId']).delete()
     return jsonify({'Message': '成功', 'Data': '删除成功'})
