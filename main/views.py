@@ -1750,16 +1750,27 @@ def CreateAdress():
 # 查询地址
 @main.route('/api/adressinfo/find', methods=['POST'])
 def FindAdress():
+    newlist = list()
     get = Adress.query.filter(
-        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == request.json['IsDefault'])).all()
+        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
+    getdata = {'Name': get.Name, 'Tel': get.Tel,
+               'Location': get.Location,
+               'Code': get.Code, 'IsDefault': get.IsDefault,
+               'UserId': get.UserId,
+               'AdressId': get.AdressId}
     if get:
-        return jsonify({'Message': '成功', 'Data': {'Name': get.Name, 'Tel': get.Tel,
-                                                  'Location': get.Location,
-                                                  'Code': get.Code, 'IsDefault': get.IsDefault,
-                                                  'UserId': get.UserId,
-                                                  'AdressId': get.AdressId}})
-    else:
-        return jsonify({'Message': '失败', 'Data': '没有找到'})
+        newlist.append(getdata)
+    get1 = Adress.query.filter(
+        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).all()
+    if get1:
+        for a in get1:
+            getdata1 = {'Name': a.Name, 'Tel': a.Tel,
+                        'Location': a.Location,
+                        'Code': a.Code, 'IsDefault': a.IsDefault,
+                        'UserId': a.UserId,
+                        'AdressId': a.AdressId}
+            newlist.append(getdata1)
+    return jsonify({'Message': '成功', 'Data': newlist})
 
 
 # 更新地址
