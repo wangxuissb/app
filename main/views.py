@@ -1714,15 +1714,17 @@ class Adress(db.Model):
     AdressId = db.Column(db.Integer, primary_key=True)
     Name = db.Column(db.String)
     Tel = db.Column(db.String)
+    Area = db.Column(db.String)
     Location = db.Column(db.String)
     Code = db.Column(db.String)
     IsDefault = db.Column(db.Boolean)
     UserId = db.Column(db.Integer)
 
-    def __int__(self, AdressId, Name, Tel, Location, Code, IsDefault, UserId):
+    def __int__(self, AdressId, Name, Tel, Area, Location, Code, IsDefault, UserId):
         self.AdressId = AdressId
         self.Name = Name
         self.Tel = Tel
+        self.Area = Area
         self.Location = Location
         self.Code = Code
         self.IsDefault = IsDefault
@@ -1740,6 +1742,7 @@ def CreateAdress():
     u.Tel = request.json['Tel']
     u.Location = request.json['Location']
     u.Code = request.json['Code']
+    u.Area = request.json['Area']
     get = Adress.query.filter(
         and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
     if get:
@@ -1769,7 +1772,7 @@ def FindAdress():
                    'Location': get.Location,
                    'Code': get.Code, 'IsDefault': get.IsDefault,
                    'UserId': get.UserId,
-                   'AdressId': get.AdressId}
+                   'AdressId': get.AdressId, 'Area': get.Area}
         newlist.append(getdata)
     get1 = Adress.query.filter(
         and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).all()
@@ -1779,7 +1782,7 @@ def FindAdress():
                         'Location': a.Location,
                         'Code': a.Code, 'IsDefault': a.IsDefault,
                         'UserId': a.UserId,
-                        'AdressId': a.AdressId}
+                        'AdressId': a.AdressId, 'Area': get.Area}
             newlist.append(getdata1)
     return jsonify({'Message': '成功', 'Data': newlist})
 
@@ -1792,6 +1795,7 @@ def UpdateAdress():
     u.Tel = request.json['Tel']
     u.Location = request.json['Location']
     u.Code = request.json['Code']
+    u.Area = request.json['Area']
     u.IsDefault = request.json['IsDefault']
     session.merge(u)
     session.commit()
