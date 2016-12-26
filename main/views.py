@@ -1740,7 +1740,18 @@ def CreateAdress():
     u.Tel = request.json['Tel']
     u.Location = request.json['Location']
     u.Code = request.json['Code']
-    u.IsDefault = request.json['IsDefault']
+    get = Adress.query.filter(
+        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
+    if get:
+        u.IsDefault = request.json['IsDefault']
+        if request.json['IsDefault']:
+            w = Adress(AdressId=get.AdressId)
+            w.IsDefault = False
+            session.merge(w)
+            session.commit()
+            session.close()
+    else:
+        u.IsDefault = True
     session.add(u)
     session.commit()
     session.close()
@@ -1753,12 +1764,12 @@ def FindAdress():
     newlist = list()
     get = Adress.query.filter(
         and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
-    getdata = {'Name': get.Name, 'Tel': get.Tel,
-               'Location': get.Location,
-               'Code': get.Code, 'IsDefault': get.IsDefault,
-               'UserId': get.UserId,
-               'AdressId': get.AdressId}
     if get:
+        getdata = {'Name': get.Name, 'Tel': get.Tel,
+                   'Location': get.Location,
+                   'Code': get.Code, 'IsDefault': get.IsDefault,
+                   'UserId': get.UserId,
+                   'AdressId': get.AdressId}
         newlist.append(getdata)
     get1 = Adress.query.filter(
         and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).all()
@@ -1793,3 +1804,21 @@ def UpdateAdress():
 def DeleteAdress():
     Adress.query.filter_by(AdressId=request.json['AdressId']).delete()
     return jsonify({'Message': '成功', 'Data': '删除成功'})
+
+
+# 修改默认地址
+@main.route('/api/adressinfo/default', methods=['POST'])
+def DefaultAdress():
+    get = Adress.query.filter(
+        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
+    u = Adress(AdressId=get.AdressId)
+    u.IsDefault = False
+    session.merge(u)
+    session.commit()
+    session.close()
+    u = Adress(AdressId=request.json['AdressId'])
+    u.IsDefault = True
+    session.merge(u)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '成功'})
