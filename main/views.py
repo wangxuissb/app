@@ -1588,7 +1588,7 @@ def GetAllCount(id):
 # ***************************地区/***************************************
 # 省份
 class Province(db.Model):
-    __tablename__ = 'hat_province'
+    __tablename__ = 'location_province'
     id = db.Column(db.Integer, primary_key=True)
     provinceID = db.Column(db.String)
     province = db.Column(db.String)
@@ -1604,7 +1604,7 @@ class Province(db.Model):
 
 # 城市
 class City(db.Model):
-    __tablename__ = 'hat_city'
+    __tablename__ = 'location_city'
     id = db.Column(db.Integer, primary_key=True)
     cityID = db.Column(db.Integer)
     city = db.Column(db.String)
@@ -1622,7 +1622,7 @@ class City(db.Model):
 
 # 区
 class Area(db.Model):
-    __tablename__ = 'hat_area'
+    __tablename__ = 'location_area'
     id = db.Column(db.Integer, primary_key=True)
     areaID = db.Column(db.String)
     area = db.Column(db.String)
@@ -1640,7 +1640,7 @@ class Area(db.Model):
 
 # 学校
 class School(db.Model):
-    __tablename__ = 'tb_school'
+    __tablename__ = 'location_school'
     school_id = db.Column(db.Integer, primary_key=True)
     school_name = db.Column(db.String)
     school_type = db.Column(db.Integer)
@@ -1706,3 +1706,79 @@ def GetSchoolByProvince(province):
         newlist.append(school.school_name)
     return jsonify(
         {'Message': '成功', 'Data': newlist})
+
+
+# ***************************地址***************************************
+class Adress(db.Model):
+    __tablename__ = 'adress'
+    AdressId = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String)
+    Tel = db.Column(db.String)
+    Location = db.Column(db.String)
+    Code = db.Column(db.String)
+    IsDefault = db.Column(db.Boolean)
+    UserId = db.Column(db.Integer)
+
+    def __int__(self, AdressId, Name, Tel, Location, Code, IsDefault, UserId):
+        self.AdressId = AdressId
+        self.Name = Name
+        self.Tel = Tel
+        self.Location = Location
+        self.Code = Code
+        self.IsDefault = IsDefault
+        self.UserId = UserId
+
+    def __repr__(self):
+        return ''
+
+
+# 添加地址
+@main.route('/api/adressinfo/create', methods=['POST'])
+def CreateAdress():
+    u = Adress(UserId=request.json['UserId'])
+    u.Name = request.json['Name']
+    u.Tel = request.json['Tel']
+    u.Location = request.json['Location']
+    u.Code = request.json['Code']
+    u.IsDefault = request.json['IsDefault']
+    session.add(u)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '成功'})
+
+
+# 查询地址
+@main.route('/api/adressinfo/find', methods=['POST'])
+def FindAdress():
+    get = Adress.query.filter(
+        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == request.json['IsDefault'])).first()
+    if get:
+        return jsonify({'Message': '成功', 'Data': {'Name': get.Name, 'Tel': get.Tel,
+                                                  'Location': get.Location,
+                                                  'Code': get.Code, 'IsDefault': get.IsDefault,
+                                                  'UserId': get.UserId,
+                                                  'AdressId': get.AdressId}})
+    else:
+        return jsonify({'Message': '失败', 'Data': '没有找到'})
+
+
+# 更新地址
+@main.route('/api/adressinfo/update', methods=['POST'])
+def CreateAdress():
+    u = Adress(AdressId=request.json['AdressId'])
+    u.Name = request.json['Name']
+    u.Tel = request.json['Tel']
+    u.Location = request.json['Location']
+    u.Code = request.json['Code']
+    u.IsDefault = request.json['IsDefault']
+    session.merge(u)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '设置成功'})
+
+
+# 删除地址
+@main.route('/api/adressinfo/delete', methods=['POST'])
+def DeleteAdress():
+    get = Adress.query.filter_by(AdressId=request.json['AdressId']).delete()
+    return jsonify({'Message': '成功', 'Data': '删除成功'})
