@@ -1814,11 +1814,12 @@ def DeleteAdress():
     else:
         get1 = Adress.query.filter(
             and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).first()
-        u = Adress(AdressId=get1.AdressId)
-        u.IsDefault = True
-        session.merge(u)
-        session.commit()
-        session.close()
+        if get1:
+            u = Adress(AdressId=get1.AdressId)
+            u.IsDefault = True
+            session.merge(u)
+            session.commit()
+            session.close()
     return jsonify({'Message': '成功', 'Data': '删除成功'})
 
 
