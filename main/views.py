@@ -684,6 +684,13 @@ def UpdateSale():
     return jsonify({'Message': '成功', 'Data': '设置成功'})
 
 
+# 查询剩余数量
+@main.route('/api/bookinfo/find/count', methods=['POST'])
+def FindSaleBookCount():
+    book = Sale.query.filter(Sale.SaleId == request.json['SaleId']).first()
+    return jsonify({'Message': '成功', 'Data': book.Count})
+
+
 # 按书名搜索
 @main.route('/api/bookinfo/find/sale/bookname', methods=['POST'])
 def FindSaleBookName():
