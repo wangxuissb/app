@@ -768,6 +768,19 @@ def CreateOrder():
     session.add(s)
     session.commit()
     session.close()
+    if request.json['Type'] == 0:
+        Shopping.query.filter(
+            and_(Shopping.FirstId == request.json['FirstId'], Shopping.ToId == request.json['BookId'])).delete()
+        sale = Sale.query.filter(Sale.SaleId == request.json['BookId']).first()
+        newcount = sale.Count - request.json['Count']
+        if newcount <= 0:
+            Sale.query.filter(Sale.SaleId == request.json['BookId']).deltet()
+        else:
+            newsale = Sale(SaleId=sale.SaleId)
+            newsale.Count = newcount
+            session.merge(newsale)
+            session.commit()
+            session.close()
     return jsonify({'Message': '成功', 'Data': '下单成功'})
 
 
@@ -1439,6 +1452,19 @@ def UpdateAdress():
     session.merge(u)
     session.commit()
     session.close()
+    get = Adress.query.filter(
+        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
+    if get:
+        print ''
+    else:
+        get1 = Adress.query.filter(
+            and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).first()
+        if get1:
+            u = Adress(AdressId=get1.AdressId)
+            u.IsDefault = True
+            session.merge(u)
+            session.commit()
+            session.close()
     return jsonify({'Message': '成功', 'Data': '设置成功'})
 
 
