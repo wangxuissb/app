@@ -774,13 +774,20 @@ def CreateOrder():
         sale = Sale.query.filter(Sale.SaleId == request.json['BookId']).first()
         newcount = sale.Count - request.json['Count']
         if newcount <= 0:
-            Sale.query.filter(Sale.SaleId == request.json['BookId']).deltet()
+            newsale = Sale(SaleId=sale.SaleId)
+            newsale.IsSale = True
         else:
             newsale = Sale(SaleId=sale.SaleId)
             newsale.Count = newcount
-            session.merge(newsale)
-            session.commit()
-            session.close()
+        session.merge(newsale)
+        session.commit()
+        session.close()
+    else:
+        newbuy = Buy(BuyId=request.json['BookId'])
+        newbuy.IsBuy = True
+        session.merge(newbuy)
+        session.commit()
+        session.close()
     return jsonify({'Message': '成功', 'Data': '下单成功'})
 
 
