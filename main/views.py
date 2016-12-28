@@ -770,7 +770,7 @@ def CreateOrder():
     session.close()
     if request.json['Type'] == 0:
         Shopping.query.filter(
-            and_(Shopping.FirstId == request.json['FirstId'], Shopping.ToId == request.json['BookId'])).delete()
+            and_(Shopping.FirstId == request.json['SecondId'], Shopping.ToId == request.json['BookId'])).delete()
         sale = Sale.query.filter(Sale.SaleId == request.json['BookId']).first()
         newcount = sale.Count - request.json['Count']
         if newcount <= 0:
