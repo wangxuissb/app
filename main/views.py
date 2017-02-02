@@ -776,6 +776,7 @@ def CreateOrder():
         if newcount <= 0:
             newsale = Sale(SaleId=sale.SaleId)
             newsale.IsSale = True
+            newsale.Count = 0
         else:
             newsale = Sale(SaleId=sale.SaleId)
             newsale.Count = newcount
@@ -816,7 +817,30 @@ def UpdateOrder():
     session.merge(s)
     session.commit()
     session.close()
+    if request.json['State'] == 5:
+        if request.json['Type'] == 0:
+            sale = Sale.query.filter(Sale.SaleId == request.json['BookId']).first()
+            newcount = sale.Count + request.json['Count']
+            newsale = Sale(SaleId=sale.SaleId)
+            newsale.IsSale = False
+            newsale.Count = newcount
+            session.merge(newsale)
+            session.commit()
+            session.close()
+        else:
+            newbuy = Buy(BuyId=request.json['BookId'])
+            newbuy.IsBuy = False
+            session.merge(newbuy)
+            session.commit()
+            session.close()
     return jsonify({'Message': '成功', 'Data': '更新成功'})
+
+
+# 删除订单
+@main.route('/api/orderinfo/delete', methods=['POST'])
+def DeleteOrder():
+    Order.query.filter(Order.OrderId == request.json['OrderId']).delete()
+    return jsonify({'Message': '成功', 'Data': '删除成功'})
 
 
 # *****************************留言*****************************
