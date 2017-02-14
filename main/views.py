@@ -187,15 +187,6 @@ def Login(Tel, Psw, Time):
         if get.PassWord == Psw:
             u = User(UserId=get.UserId)
             u.LastLoginTime = Time
-            nonce = str(random.random())
-            timestamp = str(int(time.time()) * 1000)
-            signature = hashlib.sha1(('hWepl3U2IAw' + nonce + timestamp).encode('utf-8')).hexdigest()
-            datainfo = {'userId': 123, 'name': 234, 'portraitUri': '1'}
-            headers = {'RC-App-Key': 'ik1qhw09ikf3p', 'RC-Nonce': nonce, 'RC-Timestamp': timestamp,
-                       'RC-Signature': signature,
-                       'Content-Type': 'application/x-www-form-urlencoded'}
-            r = requests.post("http://api.cn.ronghub.com/user/getToken.json", data=datainfo, headers=headers)
-            u.IMToken = r.json().get('token')
             session.merge(u)
             session.commit()
             session.close()
@@ -240,6 +231,8 @@ def SignUp():
         session.add(u)
         session.commit()
         session.close()
+        user = User.query.filter_by(TelPhone=request.json['TelPhone']).first()
+        LoginIM(user.UserId, user.PassWord)
         return jsonify({'Message': '成功', 'Data': '注册成功'})
 
 
@@ -1615,3 +1608,27 @@ def GetOrderJson(order):
             'SendCode': order.SendCode,
             'Tel': order.Tel, 'SendAt': order.SendAt
             }
+
+
+def LoginIM(id, psw):
+    datainfo = {
+        "grant_type": "client_credentials",
+        "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
+        "client_secret": "YXA6wrNShdgwMFWDXcGKvl0yY9AFcuY"
+    }
+    headers = {
+        'content-type': 'application/json;charset=UTF-8'
+    }
+    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/token", data=json.dumps(datainfo),
+                      headers=headers)
+    token = r.json().get('access_token')
+    header = {
+        'content-type': 'application/json;charset=UTF-8',
+        'Authorization': 'Bearer ' + token
+    }
+    user = {
+        "username": id,
+        "password": psw
+    }
+    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/users", data=json.dumps(user),
+                      headers=header)
