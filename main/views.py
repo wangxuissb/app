@@ -143,12 +143,9 @@ class User(db.Model):
     # 上次签到时间
     LastPastTime = db.Column(db.BIGINT)
 
-    # IM token
-    IMToken = db.Column(db.String)
-
     def __int__(self, UserId, TelPhone, PassWord, NickName, SchoolName, Major, Education,
                 Sign, Avatar, IsBan, IsPublish, IsDevelop, Location, Ex, Gold, CreatedAt, LastLoginTime, Type,
-                LastPastTime, Money, QQ, WeChat, IMToken):
+                LastPastTime, Money, QQ, WeChat):
         self.UserId = UserId
         self.TelPhone = TelPhone
         self.PassWord = PassWord
@@ -171,7 +168,6 @@ class User(db.Model):
         self.LastPastTime = LastPastTime
         self.WeChat = WeChat
         self.QQ = QQ
-        self.IMToken = IMToken
 
     def __repr__(self):
         return ''
@@ -227,7 +223,6 @@ def SignUp():
         u.QQ = ''
         u.WeChat = ''
         u.LastPastTime = 0
-        u.IMToken = ''
         session.add(u)
         session.commit()
         session.close()
@@ -261,7 +256,6 @@ def UpdateUser():
     u.LastPastTime = request.json['LastPastTime']
     u.QQ = request.json['QQ']
     u.WeChat = request.json['WeChat']
-    u.IMToken = request.json['IMToken']
     session.merge(u)
     session.commit()
     session.close()
@@ -1539,8 +1533,7 @@ def GetUserJson(user):
             'Ex': user.Ex, 'Gold': user.Gold, 'LastLoginTime': user.LastLoginTime,
             'PassWord': user.PassWord, 'Location': user.Location,
             'CreatedAt': user.CreatedAt, 'Type': user.Type,
-            'LastPastTime': user.LastPastTime, 'QQ': user.QQ, 'WeChat': user.WeChat,
-            'IMToken': user.IMToken}
+            'LastPastTime': user.LastPastTime, 'QQ': user.QQ, 'WeChat': user.WeChat}
 
 
 def GetSaleJson(sale):
