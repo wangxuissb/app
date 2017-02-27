@@ -234,6 +234,7 @@ def SignUp():
 # 更新资料
 @main.route('/api/userinfo/update', methods=['POST'])
 def UpdateUser():
+    olduser = User.query.filter_by(UserId=request.json['UserId']).first()
     u = User(UserId=request.json['UserId'])
     u.TelPhone = request.json['TelPhone']
     u.NickName = request.json['NickName']
@@ -261,6 +262,7 @@ def UpdateUser():
     session.close()
     user = User.query.filter_by(UserId=request.json['UserId']).first()
     data = GetUserJson(user)
+    ChangeIM(request.json['UserId'], request.json['PassWord'], olduser.PassWord)
     return jsonify({'Message': '成功', 'Data': data})
 
 
@@ -1531,7 +1533,7 @@ def GetUserJson(user):
             'Sign': user.Sign, 'Avatar': user.Avatar, 'IsBan': user.IsBan,
             'IsPublish': user.IsPublish, 'IsDevelop': user.IsDevelop, 'Money': money,
             'Ex': user.Ex, 'Gold': user.Gold, 'LastLoginTime': user.LastLoginTime,
-            'PassWord': user.PassWord, 'Location': user.Location,
+            'PassWord': '', 'Location': user.Location,
             'CreatedAt': user.CreatedAt, 'Type': user.Type,
             'LastPastTime': user.LastPastTime, 'QQ': user.QQ, 'WeChat': user.WeChat}
 
@@ -1625,3 +1627,26 @@ def LoginIM(id, psw):
     }
     r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/users", data=json.dumps(user),
                       headers=header)
+
+
+def ChangeIM(id, newpsw, oldpsw):
+    datainfo = {
+        "grant_type": "client_credentials",
+        "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
+        "client_secret": "YXA6wrNShdgwMFWDXcGKvl0yY9AFcuY"
+    }
+    headers = {
+        'content-type': 'application/json;charset=UTF-8'
+    }
+    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/token", data=json.dumps(datainfo),
+                      headers=headers)
+    token = r.json().get('access_token')
+    datainfo = {
+        "newpassword": newpsw,
+    }
+    headers = {
+        'Authorization': 'Bearer ' + token
+    }
+    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + id + "/password",
+                      data=json.dumps(datainfo),
+                      headers=headers)
