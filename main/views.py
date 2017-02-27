@@ -1130,12 +1130,12 @@ def FindOrderById():
     skip = request.json['Skip']
     limit = request.json['Limit']
     type = request.json['Type']
-    # 0是我的出售订单，1是我的求购订单
+    # 0是我的出售订单，1是我的购买订单
     if type == 0:
-        orderList = Order.query.filter(Order.FirstId.like(userid)).order_by(
+        orderList = Order.query.filter(Order.FirstId.like(userid), Order.State != -1).order_by(
             desc(Order.OrderId)).limit(limit).offset(skip).all()
     else:
-        orderList = Order.query.filter(Order.SecondId.like(userid)).order_by(
+        orderList = Order.query.filter(Order.SecondId.like(userid), Order.State != -2).order_by(
             desc(Order.OrderId)).limit(limit).offset(skip).all()
     if orderList:
         newlist = list()
