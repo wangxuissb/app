@@ -10,6 +10,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from .. import db, db_session, session
 from . import main
 import json, time, urllib2
+import pingpp
 
 UserIdNum = [0]
 
@@ -27,6 +28,26 @@ def not_found(error):
 @main.route('/', methods=['GET', 'POST'])
 def index():
     return '欢迎来到e书淘'
+
+
+pingpp.api_key = 'sk_test_4avLO4XLG4iDePyXb5bvv188'
+appid = 'app_fjPKqPGCm980qT8G'
+
+
+# *******************************支付**********************************
+@main.route('/api/chargeinfo/getcharge', methods=['GET'])
+def getCharge():
+    ch = pingpp.Charge.create(
+        order_no=request.json['OrderId'],
+        amount=request.json['Price'],
+        app=dict(id=appid),
+        channel=request.json['Channel'],
+        currency='cny',
+        client_ip='127.0.0.1',
+        subject=request.json['Subject'],
+        body=request.json['Body'],
+    )
+    return ch
 
 
 # *****************************主页相关内容*****************************
