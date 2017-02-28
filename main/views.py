@@ -35,7 +35,7 @@ appid = 'app_fjPKqPGCm980qT8G'
 
 
 # *******************************支付**********************************
-@main.route('/api/chargeinfo/getcharge', methods=['GET'])
+@main.route('/api/chargeinfo/getcharge', methods=['POST'])
 def getCharge():
     ch = pingpp.Charge.create(
         order_no=request.json['OrderId'],
