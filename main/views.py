@@ -43,7 +43,7 @@ def getCharge():
         currency='cny',
         client_ip='127.0.0.1',
         subject='Your Subject',
-        body='Your Body',
+        body='Your Body'
     )
     return ch
 
