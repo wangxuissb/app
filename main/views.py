@@ -36,14 +36,14 @@ def getCharge():
     pingpp.api_key = 'sk_test_4avLO4XLG4iDePyXb5bvv188'
     appid = 'app_fjPKqPGCm980qT8G'
     ch = pingpp.Charge.create(
-        order_no=request.json['OrderId'],
-        amount=request.json['Price'],
+        order_no='123456789',
+        amount=1,
         app=dict(id=appid),
-        channel=request.json['Channel'],
+        channel='alipay',
         currency='cny',
         client_ip='127.0.0.1',
-        subject=request.json['Subject'],
-        body='',
+        subject='Your Subject',
+        body='Your Body',
     )
     return ch
 
