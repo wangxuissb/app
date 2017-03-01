@@ -45,7 +45,7 @@ def getCharge():
         currency='cny',
         client_ip='127.0.0.1',
         subject=request.json['Subject'],
-        body=request.json['Body'],
+        body='',
     )
     return ch
 
