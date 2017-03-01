@@ -11,6 +11,7 @@ from .. import db, db_session, session
 from . import main
 import json, time, urllib2
 import pingpp
+from pingpp import Charge
 
 pingpp.api_key = 'sk_test_4avLO4XLG4iDePyXb5bvv188'
 appid = 'app_fjPKqPGCm980qT8G'
@@ -35,7 +36,7 @@ def index():
 # *******************************支付**********************************
 @main.route('/api/chargeinfo/getcharge', methods=['POST'])
 def getCharge():
-    ch = pingpp.Charge.create(
+    ch = Charge.create(
         order_no='123456789',
         amount=1,
         app=dict(id=appid),
