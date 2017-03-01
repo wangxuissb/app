@@ -30,13 +30,11 @@ def index():
     return '欢迎来到e书淘'
 
 
-pingpp.api_key = 'sk_test_4avLO4XLG4iDePyXb5bvv188'
-appid = 'app_fjPKqPGCm980qT8G'
-
-
 # *******************************支付**********************************
 @main.route('/api/chargeinfo/getcharge', methods=['POST'])
 def getCharge():
+    pingpp.api_key = 'sk_test_4avLO4XLG4iDePyXb5bvv188'
+    appid = 'app_fjPKqPGCm980qT8G'
     ch = pingpp.Charge.create(
         order_no=request.json['OrderId'],
         amount=request.json['Price'],
