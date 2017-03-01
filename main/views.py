@@ -36,14 +36,15 @@ def index():
 # *******************************支付**********************************
 @main.route('/api/chargeinfo/getcharge', methods=['POST'])
 def getCharge():
-    ch = Charge.create(
+    ch = pingpp.Charge.create(
         order_no='123456789',
+        amount=1,
         app=dict(id=appid),
         channel='alipay',
         currency='cny',
         client_ip='127.0.0.1',
         subject='Your Subject',
-        body='Your Body'
+        body='Your Body',
     )
     return ch
 
