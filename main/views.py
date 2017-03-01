@@ -38,7 +38,6 @@ def index():
 def getCharge():
     ch = Charge.create(
         order_no='123456789',
-        amount=1,
         app=dict(id=appid),
         channel='alipay',
         currency='cny',
