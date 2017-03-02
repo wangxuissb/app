@@ -14,7 +14,6 @@ import pingpp
 from pingpp import Charge
 
 pingpp.api_key = 'sk_test_4avLO4XLG4iDePyXb5bvv188'
-pingpp.verify_ssl_certs = False
 appid = 'app_fjPKqPGCm980qT8G'
 UserIdNum = [0]
 
@@ -31,17 +30,20 @@ def not_found(error):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    ch = Charge.create(
-        order_no='123456789',
-        amount=1,
-        app=dict(id=appid),
-        channel='alipay',
-        currency='cny',
-        client_ip='127.0.0.1',
-        subject='Your Subject',
-        body='Your Body',
-    )
-    return ch
+    try:
+        ch = Charge.create(
+            order_no='123456789',
+            amount=1,
+            app=dict(id=appid),
+            channel='alipay',
+            currency='cny',
+            client_ip='127.0.0.1',
+            subject='Your Subject',
+            body='Your Body',
+        )
+        return ch
+    except Exception as e:
+        return e.http_body
 
 
 # *******************************支付**********************************
