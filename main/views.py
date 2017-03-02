@@ -14,6 +14,7 @@ import pingpp
 from pingpp import Charge
 
 pingpp.api_key = 'sk_test_4avLO4XLG4iDePyXb5bvv188'
+pingpp.verify_ssl_certs = False
 appid = 'app_fjPKqPGCm980qT8G'
 UserIdNum = [0]
 
