@@ -30,20 +30,7 @@ def not_found(error):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    try:
-        ch = Charge.create(
-            order_no='123456789',
-            amount=1,
-            app=dict(id=appid),
-            channel='alipay',
-            currency='cny',
-            client_ip='127.0.0.1',
-            subject='Your Subject',
-            body='Your Body',
-        )
-        return ch
-    except Exception as e:
-        return e.http_body
+    return '欢迎来到e书淘'
 
 
 # *******************************支付**********************************
@@ -59,7 +46,7 @@ def getCharge():
         subject='Your Subject',
         body='Your Body',
     )
-    return ch
+    return ch.to_str()
 
 
 # *****************************主页相关内容*****************************
