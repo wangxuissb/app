@@ -30,13 +30,23 @@ def not_found(error):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    return '欢迎来到e书淘'
+    ch = Charge.create(
+        order_no='123456789',
+        amount=1,
+        app=dict(id=appid),
+        channel='alipay',
+        currency='cny',
+        client_ip='127.0.0.1',
+        subject='Your Subject',
+        body='Your Body',
+    )
+    return ch
 
 
 # *******************************支付**********************************
 @main.route('/api/chargeinfo/getcharge', methods=['POST'])
 def getCharge():
-    ch = pingpp.Charge.create(
+    ch = Charge.create(
         order_no='123456789',
         amount=1,
         app=dict(id=appid),
