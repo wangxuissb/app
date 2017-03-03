@@ -37,7 +37,7 @@ def index():
 @main.route('/api/chargeinfo/getcharge', methods=['POST'])
 def getCharge():
     ch = Charge.create(
-        order_no=request.json['OrderId'],
+        order_no=request.json['OrderNo'],
         amount=request.json['Price'],
         app=dict(id=appid),
         channel=request.json['Channel'],
@@ -46,7 +46,14 @@ def getCharge():
         subject=request.json['Subject'],
         body=request.json['Body'],
     )
-    return ch.to_str()
+    result = ch.to_str()
+    j = json.loads(result)
+    s = Order(OrderId=request.json['OrderId'])
+    s.ChargeId = j['id']
+    session.merge(s)
+    session.commit()
+    session.close()
+    return result
 
 
 # *****************************主页相关内容*****************************
@@ -724,9 +731,11 @@ class Order(db.Model):
     Location = db.Column(db.String)
     # 备注
     Remark = db.Column(db.String)
+    # ping++支付id
+    ChargeId = db.Column(db.String)
 
     def __int__(self, OrderId, Type, FirstId, SecondId, BookId, Price, State, Number, CreatedAt, Location, Remark,
-                SendType, Count, PayAt, SendAt, GetAt, FinishAt, Peolple, Tel, SendCode):
+                SendType, Count, PayAt, SendAt, GetAt, FinishAt, Peolple, Tel, SendCode, ChargeId):
         self.OrderId = OrderId
         self.Type = Type
         self.FirstId = FirstId
@@ -747,6 +756,7 @@ class Order(db.Model):
         self.SendCode = SendCode
         self.Tel = Tel
         self.SendAt = SendAt
+        self.ChargeId = ChargeId
 
     def __repr__(self):
         return ''
@@ -774,6 +784,7 @@ def CreateOrder():
     s.Location = request.json['Location']
     s.SendType = request.json['SendType']
     s.Count = request.json['Count']
+    s.ChargeId = ''
     session.add(s)
     session.commit()
     session.close()
@@ -823,6 +834,7 @@ def UpdateOrder():
     s.Location = request.json['Location']
     s.SendType = request.json['SendType']
     s.Count = request.json['Count']
+    s.ChargeId = request.json['ChargeId']
     session.merge(s)
     session.commit()
     session.close()
@@ -1621,7 +1633,7 @@ def GetOrderJson(order):
             'SecondUser': GetUserJson(seconduser), 'SendType': order.SendType, 'Count': order.Count,
             'PayAt': order.PayAt, 'GetAt': order.GetAt, 'FinishAt': order.FinishAt, 'Peolple': order.Peolple,
             'SendCode': order.SendCode,
-            'Tel': order.Tel, 'SendAt': order.SendAt
+            'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId
             }
 
 
