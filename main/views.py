@@ -37,14 +37,14 @@ def index():
 @main.route('/api/chargeinfo/getcharge', methods=['POST'])
 def getCharge():
     ch = Charge.create(
-        order_no='123456789',
-        amount=1,
+        order_no=request.json['OrderId'],
+        amount=request.json['Price'],
         app=dict(id=appid),
-        channel='alipay',
+        channel=request.json['Channel'],
         currency='cny',
         client_ip='127.0.0.1',
-        subject='Your Subject',
-        body='Your Body',
+        subject=request.json['Subject'],
+        body=request.json['Body'],
     )
     return ch.to_str()
 
