@@ -43,7 +43,7 @@ def PostFind():
 
 
 @main.route('/posinfo/getkey', methods=['GET'])
-def PostFind():
+def PostKey():
     return jsonify({'Message': '成功', 'Data': {'Time': 'time', 'Context': 'context'}})
 
 
