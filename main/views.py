@@ -33,6 +33,20 @@ def index():
     return '欢迎来到e书淘'
 
 
+# **********************************快递查询***************************
+@main.route('/posinfo/find', methods=['POST'])
+def PostFind():
+    url = 'http://www.kuaidi100.com/query?type=' + request.json['Type'] + '&postid=' + request.json['Id']
+    r = requests.get(url)
+    j = r.json().get('data')
+    return jsonify({'Message': '成功', 'Data': j})
+
+
+@main.route('/posinfo/getkey', methods=['GET'])
+def PostFind():
+    return jsonify({'Message': '成功', 'Data': {'Time': 'time', 'Context': 'context'}})
+
+
 # *******************************支付**********************************
 @main.route('/api/chargeinfo/getcharge', methods=['POST'])
 def getCharge():
