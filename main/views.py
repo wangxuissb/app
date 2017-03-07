@@ -725,6 +725,8 @@ class Order(db.Model):
     SendType = db.Column(db.String)
     # 快递单号
     Number = db.Column(db.String)
+    # 快递公司
+    PosType = db.Column(db.String)
     # 创建时间
     CreatedAt = db.Column(db.BIGINT)
     # 付款时间
@@ -749,7 +751,7 @@ class Order(db.Model):
     ChargeId = db.Column(db.String)
 
     def __int__(self, OrderId, Type, FirstId, SecondId, BookId, Price, State, Number, CreatedAt, Location, Remark,
-                SendType, Count, PayAt, SendAt, GetAt, FinishAt, Peolple, Tel, SendCode, ChargeId):
+                SendType, Count, PayAt, SendAt, GetAt, FinishAt, Peolple, Tel, SendCode, ChargeId, PosType):
         self.OrderId = OrderId
         self.Type = Type
         self.FirstId = FirstId
@@ -771,6 +773,7 @@ class Order(db.Model):
         self.Tel = Tel
         self.SendAt = SendAt
         self.ChargeId = ChargeId
+        self.PosType = PosType
 
     def __repr__(self):
         return ''
@@ -798,6 +801,7 @@ def CreateOrder():
     s.Location = request.json['Location']
     s.SendType = request.json['SendType']
     s.Count = request.json['Count']
+    s.PosType = ''
     s.ChargeId = ''
     session.add(s)
     session.commit()
@@ -849,6 +853,7 @@ def UpdateOrder():
     s.SendType = request.json['SendType']
     s.Count = request.json['Count']
     s.ChargeId = request.json['ChargeId']
+    s.PosType = request.json['PosType']
     session.merge(s)
     session.commit()
     session.close()
@@ -1647,7 +1652,7 @@ def GetOrderJson(order):
             'SecondUser': GetUserJson(seconduser), 'SendType': order.SendType, 'Count': order.Count,
             'PayAt': order.PayAt, 'GetAt': order.GetAt, 'FinishAt': order.FinishAt, 'Peolple': order.Peolple,
             'SendCode': order.SendCode,
-            'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId
+            'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType
             }
 
 
