@@ -1669,7 +1669,7 @@ def GetOrderJson(order):
 
 
 def GetAdressJson(order):
-    get = Adress.query.filter(Adress.AdressId == order.Location).first()
+    get = Adress.query.filter(Adress.AdressId == int(order.Location)).first()
     if get:
         return {'Name': get.Name, 'Tel': get.Tel,
                 'Location': get.Location,
