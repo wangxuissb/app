@@ -276,6 +276,7 @@ def SignUp():
 @main.route('/api/userinfo/update', methods=['POST'])
 def UpdateUser():
     olduser = User.query.filter_by(UserId=request.json['UserId']).first()
+    oldpsw = olduser.PassWord
     u = User(UserId=request.json['UserId'])
     u.TelPhone = request.json['TelPhone']
     u.NickName = request.json['NickName']
@@ -303,7 +304,7 @@ def UpdateUser():
     session.close()
     user = User.query.filter_by(UserId=request.json['UserId']).first()
     data = GetUserJson(user)
-    ChangeIM(request.json['UserId'], request.json['PassWord'], olduser.PassWord)
+    ChangeIM(request.json['UserId'], request.json['PassWord'], oldpsw)
     return jsonify({'Message': '成功', 'Data': data})
 
 
@@ -1658,7 +1659,7 @@ def GetOrderJson(order):
 
 def GetAdressJson(order):
     get = Adress.query.filter(Adress.AdressId == order.Location).first()
-    if adress:
+    if get:
         return {'Name': get.Name, 'Tel': get.Tel,
                 'Location': get.Location,
                 'Code': get.Code, 'IsDefault': get.IsDefault,
