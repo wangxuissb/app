@@ -1645,12 +1645,13 @@ def GetOrderJson(order):
                 'SecondId': order.SecondId,
                 'BookId': order.BookId,
                 'Price': price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
-                'Location': GetAdressJson(order),
+                'Location': order.Location,
                 'Remark': order.Remark, 'Book': GetSaleJson(book), 'FirstUser': GetUserJson(firstuser),
                 'SecondUser': GetUserJson(seconduser), 'SendType': order.SendType, 'Count': order.Count,
                 'PayAt': order.PayAt, 'GetAt': order.GetAt, 'FinishAt': order.FinishAt, 'Peolple': order.Peolple,
                 'SendCode': order.SendCode,
-                'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType
+                'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType,
+                'Adress': GetAdressJson(order)
                 }
     else:
         book = Buy.query.filter(Buy.BuyId == order.BookId).order_by(
@@ -1659,12 +1660,13 @@ def GetOrderJson(order):
                 'SecondId': order.SecondId,
                 'BookId': order.BookId,
                 'Price': price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
-                'Location': GetAdressJson(order),
+                'Location': order.Location,
                 'Remark': order.Remark, 'Book': GetBuyJson(book), 'FirstUser': GetUserJson(firstuser),
                 'SecondUser': GetUserJson(seconduser), 'SendType': order.SendType, 'Count': order.Count,
                 'PayAt': order.PayAt, 'GetAt': order.GetAt, 'FinishAt': order.FinishAt, 'Peolple': order.Peolple,
                 'SendCode': order.SendCode,
-                'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType
+                'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType,
+                'Adress': GetAdressJson(order)
                 }
 
 
