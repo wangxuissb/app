@@ -745,7 +745,7 @@ class Order(db.Model):
     # 邮编
     SendCode = db.Column(db.String)
     # 收获地址
-    Location = db.Column(db.String)
+    Location = db.Column(db.Integer)
     # 备注
     Remark = db.Column(db.String)
     # ping++支付id
@@ -1669,7 +1669,7 @@ def GetOrderJson(order):
 
 
 def GetAdressJson(order):
-    get = Adress.query.filter(Adress.AdressId == int(order.Location)).first()
+    get = Adress.query.filter(Adress.AdressId == order.Location).first()
     if get:
         return {'Name': get.Name, 'Tel': get.Tel,
                 'Location': get.Location,
