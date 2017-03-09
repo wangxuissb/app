@@ -1743,11 +1743,9 @@ def IMLogOut():
                       headers=headers)
     token = r.json().get('access_token')
     headers = {
-        'Content-Type': 'application/json ',
         'Authorization': 'Bearer ' + token
     }
     r = requests.post(
         "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + request.json['id'] + "/disconnect",
-        data=None,
         headers=headers)
     return r.json().get('data')
