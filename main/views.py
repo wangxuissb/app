@@ -1647,13 +1647,25 @@ def GetOrderJson(order):
             'SecondId': order.SecondId,
             'BookId': order.BookId,
             'Price': price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
-            'Location': order.Location,
+            'Location': GetAdressJson(order),
             'Remark': order.Remark, 'Book': GetSaleJson(book), 'FirstUser': GetUserJson(firstuser),
             'SecondUser': GetUserJson(seconduser), 'SendType': order.SendType, 'Count': order.Count,
             'PayAt': order.PayAt, 'GetAt': order.GetAt, 'FinishAt': order.FinishAt, 'Peolple': order.Peolple,
             'SendCode': order.SendCode,
             'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType
             }
+
+
+def GetAdressJson(order):
+    get = Adress.query.filter(Adress.AdressId == order.Location).first()
+    if adress:
+        return {'Name': get.Name, 'Tel': get.Tel,
+                'Location': get.Location,
+                'Code': get.Code, 'IsDefault': get.IsDefault,
+                'UserId': get.UserId,
+                'AdressId': get.AdressId, 'Area': get.Area}
+    else:
+        return {}
 
 
 def LoginIM(id, psw):
