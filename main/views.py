@@ -1641,20 +1641,31 @@ def GetOrderJson(order):
     if order.Type == 0:
         book = Sale.query.filter(Sale.SaleId == order.BookId).order_by(
             desc(Sale.SaleId)).first()
+        return {'OrderId': order.OrderId, 'Type': order.Type, 'FirstId': order.FirstId,
+                'SecondId': order.SecondId,
+                'BookId': order.BookId,
+                'Price': price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
+                'Location': GetAdressJson(order),
+                'Remark': order.Remark, 'Book': GetSaleJson(book), 'FirstUser': GetUserJson(firstuser),
+                'SecondUser': GetUserJson(seconduser), 'SendType': order.SendType, 'Count': order.Count,
+                'PayAt': order.PayAt, 'GetAt': order.GetAt, 'FinishAt': order.FinishAt, 'Peolple': order.Peolple,
+                'SendCode': order.SendCode,
+                'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType
+                }
     else:
         book = Buy.query.filter(Buy.BuyId == order.BookId).order_by(
             desc(Buy.BuyId)).first()
-    return {'OrderId': order.OrderId, 'Type': order.Type, 'FirstId': order.FirstId,
-            'SecondId': order.SecondId,
-            'BookId': order.BookId,
-            'Price': price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
-            'Location': GetAdressJson(order),
-            'Remark': order.Remark, 'Book': GetSaleJson(book), 'FirstUser': GetUserJson(firstuser),
-            'SecondUser': GetUserJson(seconduser), 'SendType': order.SendType, 'Count': order.Count,
-            'PayAt': order.PayAt, 'GetAt': order.GetAt, 'FinishAt': order.FinishAt, 'Peolple': order.Peolple,
-            'SendCode': order.SendCode,
-            'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType
-            }
+        return {'OrderId': order.OrderId, 'Type': order.Type, 'FirstId': order.FirstId,
+                'SecondId': order.SecondId,
+                'BookId': order.BookId,
+                'Price': price, 'State': order.State, 'Number': order.Number, 'CreatedAt': order.CreatedAt,
+                'Location': GetAdressJson(order),
+                'Remark': order.Remark, 'Book': GetBuyJson(book), 'FirstUser': GetUserJson(firstuser),
+                'SecondUser': GetUserJson(seconduser), 'SendType': order.SendType, 'Count': order.Count,
+                'PayAt': order.PayAt, 'GetAt': order.GetAt, 'FinishAt': order.FinishAt, 'Peolple': order.Peolple,
+                'SendCode': order.SendCode,
+                'Tel': order.Tel, 'SendAt': order.SendAt, 'ChargeId': order.ChargeId, 'PosType': order.PosType
+                }
 
 
 def GetAdressJson(order):
