@@ -34,9 +34,9 @@ def index():
 
 
 # **********************************快递查询***************************
-@main.route('/posinfo/find', methods=['POST'])
-def PostFind():
-    url = 'http://www.kuaidi100.com/query?type=' + request.json['Type'] + '&postid=' + request.json['Id']
+@main.route('/posinfo/find/type=<type>&id=<id>', methods=['GET'])
+def PostFind(type, id):
+    url = 'http://www.kuaidi100.com/query?type=' + type + '&postid=' + id
     r = requests.get(url)
     j = r.json().get('data')
     return jsonify({'Message': '成功', 'Data': j})
@@ -131,7 +131,7 @@ def getForYou():
 
 # *****************************用户相关*****************************
 class User(db.Model):
-    # 共计22项
+    # 共计23项
     __tablename__ = 'user'
     # -----------------------------必要信息-------------------------
     # ID
@@ -154,6 +154,8 @@ class User(db.Model):
     Sign = db.Column(db.String)
     # 头像url
     Avatar = db.Column(db.String)
+    # 店铺Id
+    ShopId = db.Column(db.Integer)
 
     # -----------------------------权限信息-------------------------
     # 是否封号
@@ -186,7 +188,7 @@ class User(db.Model):
 
     def __int__(self, UserId, TelPhone, PassWord, NickName, SchoolName, Major, Education,
                 Sign, Avatar, IsBan, IsPublish, IsDevelop, Location, Ex, Gold, CreatedAt, LastLoginTime, Type,
-                LastPastTime, Money, QQ, WeChat):
+                LastPastTime, Money, QQ, WeChat, ShopId):
         self.UserId = UserId
         self.TelPhone = TelPhone
         self.PassWord = PassWord
@@ -209,19 +211,24 @@ class User(db.Model):
         self.LastPastTime = LastPastTime
         self.WeChat = WeChat
         self.QQ = QQ
+        self.ShopId = ShopId
 
     def __repr__(self):
         return ''
 
 
 # 登陆
-@main.route('/api/userinfo/login/<Tel>&<Psw>&<Time>', methods=['POST'])
-def Login(Tel, Psw, Time):
+@main.route('/api/userinfo/login', methods=['POST'])
+def Login():
+    Tel = request.json['Tel']
+    Psw = request.json['Psw']
+    Time = request.json['Time']
     get = User.query.filter_by(TelPhone=Tel).first()
     if get is None:
         return jsonify({'Message': '失败', 'Data': '用户不存在'})
     else:
         if get.PassWord == Psw:
+            IMLogOut(get.UserId)
             u = User(UserId=get.UserId)
             u.LastLoginTime = Time
             session.merge(u)
@@ -259,6 +266,7 @@ def SignUp():
         u.Ex = 0
         u.Gold = 0
         u.Money = 0
+        u.ShopId = 0
         u.Location = ''
         u.Shopping = ''
         u.QQ = ''
@@ -299,6 +307,7 @@ def UpdateUser():
     u.LastPastTime = request.json['LastPastTime']
     u.QQ = request.json['QQ']
     u.WeChat = request.json['WeChat']
+    u.ShopId = request.json['ShopId']
     session.merge(u)
     session.commit()
     session.close()
@@ -313,7 +322,7 @@ def UpdateUser():
 def FindUserById(Uid):
     user = User.query.filter_by(UserId=Uid).first()
     data = GetUserJson(user)
-    return jsonify(data)
+    return jsonify({'Message': '成功', 'Data': data})
 
 
 # 手机号查找单个用户
@@ -336,6 +345,119 @@ def LoginByQQ(QQ):
         return jsonify({'Message': '成功', 'Data': data})
     else:
         return jsonify({'Message': '失败', 'Data': '该用户不存在'})
+
+
+# # *****************************商家相关*****************************
+# class Shop(db.Model):
+#     __tablename__ = 'shop'
+#     # id
+#     ShopId = db.Column(db.Integer, primary_key=True)
+#     # 用户ID
+#     UserId = db.Column(db.Integer)
+#     # 商家头像
+#     Name = db.Column(db.String)
+#     # 商家名称
+#     Avatar = db.Column(db.String)
+#     # 手机号码
+#     Tel = db.Column(db.String)
+#     # 地址
+#     Adress = db.Column(db.String)
+#     # 公司执照
+#     Licence = db.Column(db.String)
+#     # 类型
+#     Type = db.Column(db.Integer)
+#     # 负责人姓名
+#     UserName = db.Column(db.String)
+#     # 负责人身份证号
+#     UserCardNumber = db.Column(db.String)
+#     # 负责人姓名
+#     UserTel = db.Column(db.String)
+#     # 公告
+#     Content = db.Column(db.String)
+#     # 封禁
+#     IsBan = db.Column(db.Boolean)
+#
+#     def __int__(self, ShopId, UserId, Name, Avatar, Tel, Adress, Licence,
+#                 Type, UserName, UserCardNumber, UserTel, Content, IsBan):
+#         self.ShopId = ShopId
+#         self.UserId = UserId
+#         self.Name = Name
+#         self.Avatar = Avatar
+#         self.Tel = Tel
+#         self.Adress = Adress
+#         self.Licence = Licence
+#         self.Type = Type
+#         self.UserName = UserName
+#         self.UserCardNumber = UserCardNumber
+#         self.UserTel = UserTel
+#         self.Content = Content
+#         self.IsBan = IsBan
+#
+#     def __repr__(self):
+#         return ''
+#
+#
+# class ShopComment(db.Model):
+#     __tablename__ = 'shop_comment'
+#     # id
+#     CommentId = db.Column(db.Integer, primary_key=True)
+#     # id
+#     ShopId = db.Column(db.Integer)
+#     # 用户ID
+#     UserId = db.Column(db.Integer)
+#     # 评论
+#     Content = db.Column(db.String)
+#     # 评分
+#     Score = db.Column(db.DECIMAL)
+#     # 时间
+#     CreatedAt = db.Column(db.BIGINT)
+#
+#     def __int__(self, CommentId, ShopId, UserId, Content, Score, CreatedAt):
+#         self.ShopId = ShopId
+#         self.UserId = UserId
+#         self.Content = Content
+#         self.Score = Score
+#         self.CreatedAt = CreatedAt
+#         self.CommentId = CommentId
+#
+#     def __repr__(self):
+#         return ''
+#
+#
+# class ShopClassify(db.Model):
+#     __tablename__ = 'shop_classify'
+#     # id
+#     ClassifyId = db.Column(db.Integer, primary_key=True)
+#     # 用户ID
+#     ShopId = db.Column(db.Integer)
+#     # 分类
+#     Classify = db.Column(db.String)
+#
+#     def __int__(self, ClassifyId, ShopId, Classify):
+#         self.ClassifyId = ClassifyId
+#         self.ShopId = ShopId
+#         self.Classify = Classify
+#
+#     def __repr__(self):
+#         return ''
+#
+#
+# class ShopBook(db.Model):
+#     __tablename__ = 'shop_book'
+#     # id
+#     ShopBookId = db.Column(db.Integer, primary_key=True)
+#     # 用户ID
+#     ShopId = db.Column(db.Integer)
+#     # 分类
+#     BookId = db.Column(db.Integer)
+#
+#     def __int__(self, ShopBookId, ShopId, BookId):
+#         self.ShopBookId = ShopBookId
+#         self.ShopId = ShopId
+#         self.BookId = BookId
+#
+#     def __repr__(self):
+#         return ''
 
 
 # *****************************帖子相关*****************************
@@ -453,13 +575,9 @@ def CreateSale():
 # 价钱从低到高10，从高到底11
 # 新旧从新到旧20，从旧到新21
 # desc降序，asc升序
-@main.route('/api/bookinfo/find/sale', methods=['POST'])
-def FindAllSale():
-    type = request.json['Type']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
-    schoolname = request.json['SchoolName']
-    classify = request.json['Classify']
+@main.route('/api/bookinfo/find/sale/type=<type>&skip=<skip>&limit=<limit>&school=<schoolname>&classify=<classify>',
+            methods=['GET'])
+def FindAllSale(type, skip, limit, schoolname, classify):
     issale = False
     if classify == '':
         if type == 0:
@@ -577,18 +695,15 @@ def UpdateSale():
 
 
 # 查询剩余数量
-@main.route('/api/bookinfo/find/count', methods=['POST'])
-def FindSaleBookCount():
-    book = Sale.query.filter(Sale.SaleId == request.json['SaleId']).first()
+@main.route('/api/bookinfo/find/count/id=<id>', methods=['GET'])
+def FindSaleBookCount(id):
+    book = Sale.query.filter(Sale.SaleId == id).first()
     return jsonify({'Message': '成功', 'Data': book.Count})
 
 
 # 按书名搜索
-@main.route('/api/bookinfo/find/sale/bookname', methods=['POST'])
-def FindSaleBookName():
-    bookname = request.json['BookName']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
+@main.route('/api/bookinfo/find/sale/bookname/bookname=<bookname>&skip=<skip>&limit=<limit>', methods=['GET'])
+def FindSaleBookName(bookname, skip, limit):
     booklist = Sale.query.filter(or_(Sale.BookName.like("%" + bookname + "%"), Sale.Author.like("%" + bookname + "%"),
                                      Sale.Publish.like("%" + bookname + "%"),
                                      Sale.Classify.like("%" + bookname + "%"))).order_by(
@@ -606,7 +721,7 @@ def FindSaleBookName():
 
 # *****************************求   购*****************************
 class Buy(db.Model):
-    # 共计11项
+    # 共计12项
     __tablename__ = 'buy'
     # ID
     BuyId = db.Column(db.Integer, primary_key=True)
@@ -672,10 +787,8 @@ def CreateBuy():
 
 
 # 查询求购
-@main.route('/api/bookinfo/find/buy', methods=['POST'])
-def FindAllBuy():
-    skip = request.json['Skip']
-    limit = request.json['Limit']
+@main.route('/api/bookinfo/find/buy/skip=<skip>&limit=<limit>', methods=['GET'])
+def FindAllBuy(skip, limit):
     buylist = Buy.query.filter(Buy.IsBuy == False).order_by(
         desc(Buy.BuyId)).limit(limit).offset(skip).all()
     if buylist:
@@ -783,49 +896,73 @@ class Order(db.Model):
 # 创建订单
 @main.route('/api/orderinfo/create', methods=['POST'])
 def CreateOrder():
-    s = Order(Type=request.json['Type'])
-    s.PayAt = request.json['PayAt']
-    s.GetAt = request.json['GetAt']
-    s.FinishAt = request.json['FinishAt']
-    s.Peolple = request.json['Peolple']
-    s.SendCode = request.json['SendCode']
-    s.SendAt = request.json['SendAt']
-    s.Tel = request.json['Tel']
-    s.FirstId = request.json['FirstId']
-    s.SecondId = request.json['SecondId']
-    s.BookId = request.json['BookId']
-    s.State = request.json['State']
-    s.CreatedAt = request.json['CreatedAt']
-    s.Price = request.json['Price']
-    s.Remark = request.json['Remark']
-    s.Number = request.json['Number']
-    s.Location = request.json['Location']
-    s.SendType = request.json['SendType']
-    s.Count = request.json['Count']
-    s.PosType = ''
-    s.ChargeId = ''
-    session.add(s)
-    session.commit()
-    session.close()
     if request.json['Type'] == 0:
         Shopping.query.filter(
             and_(Shopping.FirstId == request.json['SecondId'], Shopping.ToId == request.json['BookId'])).delete()
         sale = Sale.query.filter(Sale.SaleId == request.json['BookId']).first()
         newcount = sale.Count - request.json['Count']
-        if newcount <= 0:
-            newsale = Sale(SaleId=sale.SaleId)
-            newsale.IsSale = True
-            newsale.Count = 0
-        else:
+        if newcount >= 0:
             newsale = Sale(SaleId=sale.SaleId)
             newsale.Count = newcount
-        session.merge(newsale)
-        session.commit()
-        session.close()
+            if newcount == 0:
+                newsale.IsSale = True
+            session.merge(newsale)
+            session.commit()
+            session.close()
+            s = Order(Type=request.json['Type'])
+            s.PayAt = request.json['PayAt']
+            s.GetAt = request.json['GetAt']
+            s.FinishAt = request.json['FinishAt']
+            s.Peolple = request.json['Peolple']
+            s.SendCode = request.json['SendCode']
+            s.SendAt = request.json['SendAt']
+            s.Tel = request.json['Tel']
+            s.FirstId = request.json['FirstId']
+            s.SecondId = request.json['SecondId']
+            s.BookId = request.json['BookId']
+            s.State = request.json['State']
+            s.CreatedAt = request.json['CreatedAt']
+            s.Price = request.json['Price']
+            s.Remark = request.json['Remark']
+            s.Number = request.json['Number']
+            s.Location = request.json['Location']
+            s.SendType = request.json['SendType']
+            s.Count = request.json['Count']
+            s.PosType = ''
+            s.ChargeId = ''
+            session.add(s)
+            session.commit()
+            session.close()
+        else:
+            return jsonify({'Message': '失败', 'Data': '数量不足'})
     else:
         newbuy = Buy(BuyId=request.json['BookId'])
         newbuy.IsBuy = True
         session.merge(newbuy)
+        session.commit()
+        session.close()
+        s = Order(Type=request.json['Type'])
+        s.PayAt = request.json['PayAt']
+        s.GetAt = request.json['GetAt']
+        s.FinishAt = request.json['FinishAt']
+        s.Peolple = request.json['Peolple']
+        s.SendCode = request.json['SendCode']
+        s.SendAt = request.json['SendAt']
+        s.Tel = request.json['Tel']
+        s.FirstId = request.json['FirstId']
+        s.SecondId = request.json['SecondId']
+        s.BookId = request.json['BookId']
+        s.State = request.json['State']
+        s.CreatedAt = request.json['CreatedAt']
+        s.Price = request.json['Price']
+        s.Remark = request.json['Remark']
+        s.Number = request.json['Number']
+        s.Location = request.json['Location']
+        s.SendType = request.json['SendType']
+        s.Count = request.json['Count']
+        s.PosType = ''
+        s.ChargeId = ''
+        session.add(s)
         session.commit()
         session.close()
     return jsonify({'Message': '成功', 'Data': '下单成功'})
@@ -927,11 +1064,8 @@ def CreateComment():
 
 
 # 查询留言
-@main.route('/api/commentinfo/find', methods=['POST'])
-def FindComment():
-    id = request.json['ToId']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
+@main.route('/api/commentinfo/find/id=<id>&skip=<skip>&limit=<limit>', methods=['GET'])
+def FindComment(id, skip, limit):
     commentlist = Comment.query.filter_by(ToId=id).order_by(
         desc(Comment.CommentId)).limit(limit).offset(skip).all()
     if commentlist:
@@ -1043,20 +1177,16 @@ def deleteShopping():
 
 
 # 查询购物车数量（只支持本人查询）
-@main.route('/api/shoppinginfo/count', methods=['POST'])
-def findShoppingCount():
-    firstId = request.json['FirstId']
-    count = Shopping.query.filter(Shopping.FirstId == firstId).count()
+@main.route('/api/shoppinginfo/count/id=<id>', methods=['GET'])
+def findShoppingCount(id):
+    count = Shopping.query.filter(Shopping.FirstId == id).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询购物车（只支持本人查询）
-@main.route('/api/shoppinginfo/find', methods=['POST'])
-def findShopping():
-    firstId = request.json['FirstId']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
-    shoppinglist = Shopping.query.filter(Shopping.FirstId == firstId).order_by(
+@main.route('/api/shoppinginfo/find/id=<id>&skip=<skip>&limit=<limit>', methods=['GET'])
+def findShopping(id, skip, limit):
+    shoppinglist = Shopping.query.filter(Shopping.FirstId == id).order_by(
         desc(Shopping.ShoppingId)).limit(limit).offset(skip).all()
     if shoppinglist:
         newlist = list()
@@ -1114,11 +1244,9 @@ def deleteStarBook():
 
 
 # 查询是否收藏
-@main.route('/api/starinfo/starbook/isstar', methods=['POST'])
-def isStarBook():
-    firstId = request.json['FirstId']
-    toId = request.json['ToId']
-    bookList = StarBook.query.filter(and_(StarBook.FirstId == firstId, StarBook.ToId == toId)).all()
+@main.route('/api/starinfo/starbook/isstar/id=<id>&toid=<toid>', methods=['GET'])
+def isStarBook(id, toid):
+    bookList = StarBook.query.filter(and_(StarBook.FirstId == id, StarBook.ToId == toid)).all()
     if bookList:
         return jsonify({'Message': '成功', 'Data': '已收藏'})
     else:
@@ -1126,11 +1254,9 @@ def isStarBook():
 
 
 # 查询是否关注
-@main.route('/api/starinfo/starpeople/isstar', methods=['POST'])
-def isStarPeople():
-    firstId = request.json['FirstId']
-    toId = request.json['ToId']
-    peopleList = StarPeople.query.filter(and_(StarPeople.FirstId == firstId, StarPeople.ToId == toId)).all()
+@main.route('/api/starinfo/starpeople/isstar/id=<id>&toid=<toid>', methods=['GET'])
+def isStarPeople(id, toid):
+    peopleList = StarPeople.query.filter(and_(StarPeople.FirstId == id, StarPeople.ToId == toid)).all()
     if peopleList:
         return jsonify({'Message': '成功', 'Data': '已关注'})
     else:
@@ -1139,12 +1265,9 @@ def isStarPeople():
 
 # *****************************用户查寻相关*****************************
 # 根据用户id查询出售
-@main.route('/api/bookinfo/find/sale/userid', methods=['POST'])
-def FindSaleById():
-    userid = request.json['UserId']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
-    booklist = Sale.query.filter(Sale.UserId == userid).order_by(
+@main.route('/api/bookinfo/find/sale/userid/id=<id>&skip=<skip>&limit=<limit>', methods=['GET'])
+def FindSaleById(id, skip, limit):
+    booklist = Sale.query.filter(Sale.UserId == id).order_by(
         desc(Sale.SaleId)).limit(limit).offset(skip).all()
     if booklist:
         newlist = list()
@@ -1157,12 +1280,9 @@ def FindSaleById():
 
 
 # 根据用户id查询求购
-@main.route('/api/bookinfo/find/buy/userid', methods=['POST'])
-def FindBuyById():
-    userid = request.json['UserId']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
-    buylist = Buy.query.filter(Buy.UserId == userid).order_by(
+@main.route('/api/bookinfo/find/buy/userid/id=<id>&skip=<skip>&limit=<limit>', methods=['GET'])
+def FindBuyById(id, skip, limit):
+    buylist = Buy.query.filter(Buy.UserId == id).order_by(
         desc(Buy.BuyId)).limit(limit).offset(skip).all()
     if buylist:
         newlist = list()
@@ -1176,18 +1296,14 @@ def FindBuyById():
 
 
 # 根据id查询用户订单
-@main.route('/api/orderinfo/find/userid', methods=['POST'])
-def FindOrderById():
-    userid = request.json['UserId']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
-    type = request.json['Type']
+@main.route('/api/orderinfo/find/userid/id=<id>&skip=<skip>&limit=<limit>&type=<type>', methods=['GET'])
+def FindOrderById(id, skip, limit, type):
     # 0是我的出售订单，1是我的购买订单
     if type == 0:
-        orderList = Order.query.filter(Order.FirstId.like(userid), Order.State != -1).order_by(
+        orderList = Order.query.filter(Order.FirstId.like(id), Order.State != -1).order_by(
             desc(Order.OrderId)).limit(limit).offset(skip).all()
     else:
-        orderList = Order.query.filter(Order.SecondId.like(userid), Order.State != -2).order_by(
+        orderList = Order.query.filter(Order.SecondId.like(id), Order.State != -2).order_by(
             desc(Order.OrderId)).limit(limit).offset(skip).all()
     if orderList:
         newlist = list()
@@ -1200,12 +1316,9 @@ def FindOrderById():
 
 
 # 关注的人
-@main.route('/api/starinfo/starpeople/find/userid', methods=['POST'])
-def FindStarPeople():
-    userid = request.json['UserId']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
-    userIdList = StarPeople.query.filter(StarPeople.FirstId == userid).limit(limit).offset(skip).all()
+@main.route('/api/starinfo/starpeople/find/userid/id=<id>&skip=<skip>&limit=<limit>', methods=['GET'])
+def FindStarPeople(id, skip, limit):
+    userIdList = StarPeople.query.filter(StarPeople.FirstId == id).limit(limit).offset(skip).all()
     if userIdList:
         newlist = list()
         for userId in userIdList:
@@ -1219,12 +1332,9 @@ def FindStarPeople():
 
 
 # 关注我的人
-@main.route('/api/starinfo/staredpeople/find/userid', methods=['POST'])
-def FindStaredPeople():
-    userid = request.json['UserId']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
-    userIdList = StarPeople.query.filter(StarPeople.ToId == userid).limit(limit).offset(skip).all()
+@main.route('/api/starinfo/staredpeople/find/userid/id=<id>&skip=<skip>&limit=<limit>', methods=['GET'])
+def FindStaredPeople(id, skip, limit):
+    userIdList = StarPeople.query.filter(StarPeople.ToId == id).limit(limit).offset(skip).all()
     if userIdList:
         newlist = list()
         for userId in userIdList:
@@ -1238,12 +1348,9 @@ def FindStaredPeople():
 
 
 # 收藏的帖子
-@main.route('/api/starinfo/starbook/find/userid', methods=['POST'])
-def FindStarBook():
-    userid = request.json['UserId']
-    skip = request.json['Skip']
-    limit = request.json['Limit']
-    bookIdList = StarBook.query.filter(StarBook.FirstId == userid).limit(limit).offset(skip).all()
+@main.route('/api/starinfo/starbook/find/userid/id=<id>&skip=<skip>&limit=<limit>', methods=['GET'])
+def FindStarBook(id, skip, limit):
+    bookIdList = StarBook.query.filter(StarBook.FirstId == id).limit(limit).offset(skip).all()
     if bookIdList:
         newlist = list()
         for bookId in bookIdList:
@@ -1486,11 +1593,11 @@ def CreateAdress():
 
 
 # 查询地址
-@main.route('/api/adressinfo/find', methods=['POST'])
-def FindAdress():
+@main.route('/api/adressinfo/find/<id>', methods=['GET'])
+def FindAdress(id):
     newlist = list()
     get = Adress.query.filter(
-        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
+        and_(Adress.UserId == id, Adress.IsDefault == True)).first()
     if get:
         getdata = {'Name': get.Name, 'Tel': get.Tel,
                    'Location': get.Location,
@@ -1499,7 +1606,7 @@ def FindAdress():
                    'AdressId': get.AdressId, 'Area': get.Area}
         newlist.append(getdata)
     get1 = Adress.query.filter(
-        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).all()
+        and_(Adress.UserId == id, Adress.IsDefault == False)).all()
     if get1:
         for a in get1:
             getdata1 = {'Name': a.Name, 'Tel': a.Tel,
@@ -1587,7 +1694,7 @@ def GetUserJson(user):
             'Ex': user.Ex, 'Gold': user.Gold, 'LastLoginTime': user.LastLoginTime,
             'PassWord': '', 'Location': user.Location,
             'CreatedAt': user.CreatedAt, 'Type': user.Type,
-            'LastPastTime': user.LastPastTime, 'QQ': user.QQ, 'WeChat': user.WeChat}
+            'LastPastTime': user.LastPastTime, 'QQ': user.QQ, 'WeChat': user.WeChat, 'ShopId': user.ShopId}
 
 
 def GetSaleJson(sale):
@@ -1730,7 +1837,7 @@ def ChangeIM(id, newpsw, oldpsw):
 
 
 @main.route('/api/iminfo/logout', methods=['POST'])
-def IMLogOut():
+def IM_LogOut():
     datainfo = {
         "grant_type": "client_credentials",
         "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
@@ -1745,7 +1852,26 @@ def IMLogOut():
     headers = {
         'Authorization': 'Bearer ' + token
     }
-    r = requests.post(
+    r = requests.get(
         "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + request.json['id'] + "/disconnect",
         headers=headers)
-    return r.json().get('data')
+
+
+def IMLogOut(id):
+    datainfo = {
+        "grant_type": "client_credentials",
+        "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
+        "client_secret": "YXA6wrNShdgwMFWDXcGKvl0yY9AFcuY"
+    }
+    headers = {
+        'content-type': 'application/json;charset=UTF-8'
+    }
+    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/token", data=json.dumps(datainfo),
+                      headers=headers)
+    token = r.json().get('access_token')
+    headers = {
+        'Authorization': 'Bearer ' + token
+    }
+    r = requests.get(
+        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + id + "/disconnect",
+        headers=headers)
