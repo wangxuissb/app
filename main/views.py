@@ -30,7 +30,7 @@ def not_found(error):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    return 'e书淘'
+    return '欢迎来到e书淘'
 
 
 # **********************************快递查询***************************
