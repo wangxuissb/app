@@ -575,9 +575,14 @@ def CreateSale():
 # 价钱从低到高10，从高到底11
 # 新旧从新到旧20，从旧到新21
 # desc降序，asc升序
-@main.route('/api/bookinfo/find/sale/type=<int:type>&skip=<int:skip>&limit=<int:limit>&school=<string:schoolname>&classify=<string:classify>',
+@main.route('/api/bookinfo/find/sale/',
             methods=['GET'])
-def FindAllSale(type, skip, limit, schoolname, classify):
+def FindAllSale():
+    type = request.args.get('type')
+    skip = request.args.get('skip')
+    schoolname = request.args.get('schoolname')
+    classify = request.args.get('classify')
+    limit = request.args.get('limit')
     issale = False
     if classify == '':
         if type == 0:
@@ -702,7 +707,8 @@ def FindSaleBookCount(id):
 
 
 # 按书名搜索
-@main.route('/api/bookinfo/find/sale/bookname/bookname=<string:bookname>&skip=<int:skip>&limit=<int:limit>', methods=['GET'])
+@main.route('/api/bookinfo/find/sale/bookname/bookname=<string:bookname>&skip=<int:skip>&limit=<int:limit>',
+            methods=['GET'])
 def FindSaleBookName(bookname, skip, limit):
     booklist = Sale.query.filter(or_(Sale.BookName.like("%" + bookname + "%"), Sale.Author.like("%" + bookname + "%"),
                                      Sale.Publish.like("%" + bookname + "%"),
