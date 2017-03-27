@@ -578,11 +578,11 @@ def CreateSale():
 @main.route('/api/bookinfo/find/sale/',
             methods=['GET'])
 def FindAllSale():
-    type = request.args.get('type')
-    skip = request.args.get('skip')
-    schoolname = request.args.get('schoolname')
-    classify = request.args.get('classify')
-    limit = request.args.get('limit')
+    type = int(request.args.get('type', 0))
+    skip = int(request.args.get('skip', 0))
+    schoolname = str(request.args.get('schoolname', ''))
+    classify = str(request.args.get('classify', ''))
+    limit = int(request.args.get('limit', 20))
     issale = False
     if classify == '':
         if type == 0:
