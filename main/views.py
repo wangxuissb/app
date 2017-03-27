@@ -1873,5 +1873,5 @@ def IMLogOut(id):
         'Authorization': 'Bearer ' + token
     }
     r = requests.get(
-        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + id + "/disconnect",
+        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(id) + "/disconnect",
         headers=headers)
