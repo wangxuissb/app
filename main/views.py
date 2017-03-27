@@ -318,16 +318,18 @@ def UpdateUser():
 
 
 # 查找单个用户
-@main.route('/api/userinfo/find/<int:Uid>', methods=['GET'])
+@main.route('/api/userinfo/find/', methods=['GET'])
 def FindUserById(Uid):
+    Uid = int(request.args.get('id'))
     user = User.query.filter_by(UserId=Uid).first()
     data = GetUserJson(user)
     return jsonify({'Message': '成功', 'Data': data})
 
 
 # 手机号查找单个用户
-@main.route('/api/userinfo/findbytel/<int:Tel>', methods=['GET'])
-def FindUserByTel(Tel):
+@main.route('/api/userinfo/findbytel/', methods=['GET'])
+def FindUserByTel():
+    Tel = request.args.get('tel')
     user = User.query.filter_by(TelPhone=Tel).first()
     if user:
         data = GetUserJson(user)
@@ -337,8 +339,9 @@ def FindUserByTel(Tel):
 
 
 # QQ登陆
-@main.route('/api/userinfo/loginbyqq/<string:QQ>', methods=['GET'])
+@main.route('/api/userinfo/loginbyqq/', methods=['GET'])
 def LoginByQQ(QQ):
+    QQ = request.args.get('qq')
     user = User.query.filter_by(QQ=QQ).first()
     if user:
         data = GetUserJson(user)
@@ -575,8 +578,7 @@ def CreateSale():
 # 价钱从低到高10，从高到底11
 # 新旧从新到旧20，从旧到新21
 # desc降序，asc升序
-@main.route('/api/bookinfo/find/sale/',
-            methods=['GET'])
+@main.route('/api/bookinfo/find/sale/', methods=['GET'])
 def FindAllSale():
     type = int(request.args.get('type', 0))
     skip = int(request.args.get('skip', 0))
@@ -702,16 +704,19 @@ def UpdateSale():
 
 
 # 查询剩余数量
-@main.route('/api/bookinfo/find/count/id=<int:id>', methods=['GET'])
-def FindSaleBookCount(id):
+@main.route('/api/bookinfo/find/count/', methods=['GET'])
+def FindSaleBookCount():
+    id = int(request.args.get('id'))
     book = Sale.query.filter(Sale.SaleId == id).first()
     return jsonify({'Message': '成功', 'Data': book.Count})
 
 
 # 按书名搜索
-@main.route('/api/bookinfo/find/sale/bookname/bookname=<string:bookname>&skip=<int:skip>&limit=<int:limit>',
-            methods=['GET'])
-def FindSaleBookName(bookname, skip, limit):
+@main.route('/api/bookinfo/find/sale/bookname/', methods=['GET'])
+def FindSaleBookName():
+    bookname = request.args.get('bookname')
+    skip = int(request.args.get('skip'))
+    limit = int(request.args.get('limit'))
     booklist = Sale.query.filter(or_(Sale.BookName.like("%" + bookname + "%"), Sale.Author.like("%" + bookname + "%"),
                                      Sale.Publish.like("%" + bookname + "%"),
                                      Sale.Classify.like("%" + bookname + "%"))).order_by(
@@ -795,8 +800,10 @@ def CreateBuy():
 
 
 # 查询求购
-@main.route('/api/bookinfo/find/buy/skip=<int:skip>&limit=<int:limit>', methods=['GET'])
-def FindAllBuy(skip, limit):
+@main.route('/api/bookinfo/find/buy/', methods=['GET'])
+def FindAllBuy():
+    skip = int(request.args.get('skip'))
+    limit = int(request.args.get('limit'))
     buylist = Buy.query.filter(Buy.IsBuy == False).order_by(
         desc(Buy.BuyId)).limit(limit).offset(skip).all()
     if buylist:
@@ -1072,8 +1079,11 @@ def CreateComment():
 
 
 # 查询留言
-@main.route('/api/commentinfo/find/id=<id>&skip=<int:skip>&limit=<int:limit>', methods=['GET'])
-def FindComment(id, skip, limit):
+@main.route('/api/commentinfo/find/', methods=['GET'])
+def FindComment():
+    skip = int(request.args.get('skip'))
+    id = int(request.args.get('id'))
+    limit = int(request.args.get('limit'))
     commentlist = Comment.query.filter_by(ToId=id).order_by(
         desc(Comment.CommentId)).limit(limit).offset(skip).all()
     if commentlist:
@@ -1185,15 +1195,19 @@ def deleteShopping():
 
 
 # 查询购物车数量（只支持本人查询）
-@main.route('/api/shoppinginfo/count/id=<int:id>', methods=['GET'])
-def findShoppingCount(id):
+@main.route('/api/shoppinginfo/count/', methods=['GET'])
+def findShoppingCount():
+    id = int(request.args.get('id'))
     count = Shopping.query.filter(Shopping.FirstId == id).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询购物车（只支持本人查询）
-@main.route('/api/shoppinginfo/find/id=<int:id>&skip=<int:skip>&limit=<int:limit>', methods=['GET'])
-def findShopping(id, skip, limit):
+@main.route('/api/shoppinginfo/find/', methods=['GET'])
+def findShopping():
+    skip = int(request.args.get('skip'))
+    id = int(request.args.get('id'))
+    limit = int(request.args.get('limit'))
     shoppinglist = Shopping.query.filter(Shopping.FirstId == id).order_by(
         desc(Shopping.ShoppingId)).limit(limit).offset(skip).all()
     if shoppinglist:
@@ -1252,8 +1266,10 @@ def deleteStarBook():
 
 
 # 查询是否收藏
-@main.route('/api/starinfo/starbook/isstar/id=<int:id>&toid=<int:toid>', methods=['GET'])
-def isStarBook(id, toid):
+@main.route('/api/starinfo/starbook/isstar/', methods=['GET'])
+def isStarBook():
+    id = int(request.args.get('id'))
+    toid = int(request.args.get('toid'))
     bookList = StarBook.query.filter(and_(StarBook.FirstId == id, StarBook.ToId == toid)).all()
     if bookList:
         return jsonify({'Message': '成功', 'Data': '已收藏'})
@@ -1262,8 +1278,10 @@ def isStarBook(id, toid):
 
 
 # 查询是否关注
-@main.route('/api/starinfo/starpeople/isstar/id=<id>&toid=<toid>', methods=['GET'])
-def isStarPeople(id, toid):
+@main.route('/api/starinfo/starpeople/isstar/', methods=['GET'])
+def isStarPeople():
+    id = int(request.args.get('id'))
+    toid = int(request.args.get('toid'))
     peopleList = StarPeople.query.filter(and_(StarPeople.FirstId == id, StarPeople.ToId == toid)).all()
     if peopleList:
         return jsonify({'Message': '成功', 'Data': '已关注'})
@@ -1273,8 +1291,11 @@ def isStarPeople(id, toid):
 
 # *****************************用户查寻相关*****************************
 # 根据用户id查询出售
-@main.route('/api/bookinfo/find/sale/userid/id=<int:id>&skip=<int:skip>&limit=<int:limit>', methods=['GET'])
-def FindSaleById(id, skip, limit):
+@main.route('/api/bookinfo/find/sale/userid/', methods=['GET'])
+def FindSaleById():
+    skip = int(request.args.get('skip'))
+    id = int(request.args.get('id'))
+    limit = int(request.args.get('limit'))
     booklist = Sale.query.filter(Sale.UserId == id).order_by(
         desc(Sale.SaleId)).limit(limit).offset(skip).all()
     if booklist:
@@ -1288,8 +1309,11 @@ def FindSaleById(id, skip, limit):
 
 
 # 根据用户id查询求购
-@main.route('/api/bookinfo/find/buy/userid/id=<int:id>&skip=<int:skip>&limit=<int:limit>', methods=['GET'])
-def FindBuyById(id, skip, limit):
+@main.route('/api/bookinfo/find/buy/userid/', methods=['GET'])
+def FindBuyById():
+    skip = int(request.args.get('skip'))
+    id = int(request.args.get('id'))
+    limit = int(request.args.get('limit'))
     buylist = Buy.query.filter(Buy.UserId == id).order_by(
         desc(Buy.BuyId)).limit(limit).offset(skip).all()
     if buylist:
@@ -1304,8 +1328,12 @@ def FindBuyById(id, skip, limit):
 
 
 # 根据id查询用户订单
-@main.route('/api/orderinfo/find/userid/id=<int:id>&skip=<int:skip>&limit=<int:limit>&type=<int:type>', methods=['GET'])
-def FindOrderById(id, skip, limit, type):
+@main.route('/api/orderinfo/find/userid/', methods=['GET'])
+def FindOrderById():
+    type = int(request.args.get('type'))
+    skip = int(request.args.get('skip'))
+    id = int(request.args.get('id'))
+    limit = int(request.args.get('limit'))
     # 0是我的出售订单，1是我的购买订单
     if type == 0:
         orderList = Order.query.filter(Order.FirstId.like(id), Order.State != -1).order_by(
@@ -1324,8 +1352,11 @@ def FindOrderById(id, skip, limit, type):
 
 
 # 关注的人
-@main.route('/api/starinfo/starpeople/find/userid/id=<int:id>&skip=<int:skip>&limit=<int:limit>', methods=['GET'])
-def FindStarPeople(id, skip, limit):
+@main.route('/api/starinfo/starpeople/find/userid/', methods=['GET'])
+def FindStarPeople():
+    skip = int(request.args.get('skip'))
+    id = int(request.args.get('id'))
+    limit = int(request.args.get('limit'))
     userIdList = StarPeople.query.filter(StarPeople.FirstId == id).limit(limit).offset(skip).all()
     if userIdList:
         newlist = list()
@@ -1340,8 +1371,11 @@ def FindStarPeople(id, skip, limit):
 
 
 # 关注我的人
-@main.route('/api/starinfo/staredpeople/find/userid/id=<int:id>&skip=<int:skip>&limit=<int:limit>', methods=['GET'])
-def FindStaredPeople(id, skip, limit):
+@main.route('/api/starinfo/staredpeople/find/userid/', methods=['GET'])
+def FindStaredPeople():
+    skip = int(request.args.get('skip'))
+    id = int(request.args.get('id'))
+    limit = int(request.args.get('limit'))
     userIdList = StarPeople.query.filter(StarPeople.ToId == id).limit(limit).offset(skip).all()
     if userIdList:
         newlist = list()
@@ -1356,8 +1390,11 @@ def FindStaredPeople(id, skip, limit):
 
 
 # 收藏的帖子
-@main.route('/api/starinfo/starbook/find/userid/id=<int:id>&skip=<int:skip>&limit=<int:limit>', methods=['GET'])
-def FindStarBook(id, skip, limit):
+@main.route('/api/starinfo/starbook/find/userid/', methods=['GET'])
+def FindStarBook():
+    skip = int(request.args.get('skip'))
+    id = int(request.args.get('id'))
+    limit = int(request.args.get('limit'))
     bookIdList = StarBook.query.filter(StarBook.FirstId == id).limit(limit).offset(skip).all()
     if bookIdList:
         newlist = list()
@@ -1372,50 +1409,57 @@ def FindStarBook(id, skip, limit):
 
 
 # 查询求购数目
-@main.route('/api/bookinfo/find/buy/<int:id>', methods=['GET'])
-def FindBuyCount(id):
+@main.route('/api/bookinfo/find/buy/', methods=['GET'])
+def FindBuyCount():
+    id = int(request.args.get('id'))
     count = Buy.query.filter(Buy.UserId == id).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询发布数目
-@main.route('/api/bookinfo/find/sale/<int:id>', methods=['GET'])
-def FindSaleCount(id):
+@main.route('/api/bookinfo/find/sale/', methods=['GET'])
+def FindSaleCount():
+    id = int(request.args.get('id'))
     count = Sale.query.filter(Sale.UserId == id).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询订单数目
-@main.route('/api/orderinfo/find/<int:id>', methods=['GET'])
-def FindOrderCount(id):
+@main.route('/api/orderinfo/find/', methods=['GET'])
+def FindOrderCount():
+    id = int(request.args.get('id'))
     count = Order.query.filter(or_(Order.FirstId == id, Order.SecondId == id)).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询关注数目
-@main.route('/api/starinfo/starpeople/find/<int:id>', methods=['GET'])
-def FindStarPeopleCount(id):
+@main.route('/api/starinfo/starpeople/find/', methods=['GET'])
+def FindStarPeopleCount():
+    id = int(request.args.get('id'))
     count = StarPeople.query.filter(StarPeople.FirstId == id).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询被关注数目
-@main.route('/api/starinfo/staredpeople/find/<int:id>', methods=['GET'])
-def FindStaredPeopleCount(id):
+@main.route('/api/starinfo/staredpeople/find/', methods=['GET'])
+def FindStaredPeopleCount():
+    id = int(request.args.get('id'))
     count = StarPeople.query.filter(StarPeople.ToId == id).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询收藏数目
-@main.route('/api/starinfo/starbook/find/<int:id>', methods=['GET'])
-def FindStarBookCount(id):
+@main.route('/api/starinfo/starbook/find/', methods=['GET'])
+def FindStarBookCount():
+    id = int(request.args.get('id'))
     count = StarBook.query.filter(StarBook.FirstId == id).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
 # 查询三种数目
-@main.route('/api/allcount/<int:id>', methods=['GET'])
-def GetAllCount(id):
+@main.route('/api/allcount/', methods=['GET'])
+def GetAllCount():
+    id = int(request.args.get('id'))
     buyCount = Buy.query.filter(Buy.UserId == id).count()
     saleCount = Sale.query.filter(Sale.UserId == id).count()
     starPeopleCount = StarPeople.query.filter(StarPeople.FirstId == id).count()
@@ -1601,8 +1645,9 @@ def CreateAdress():
 
 
 # 查询地址
-@main.route('/api/adressinfo/find/<int:id>', methods=['GET'])
-def FindAdress(id):
+@main.route('/api/adressinfo/find/', methods=['GET'])
+def FindAdress():
+    id = int(request.args.get('id'))
     newlist = list()
     get = Adress.query.filter(
         and_(Adress.UserId == id, Adress.IsDefault == True)).first()
