@@ -228,7 +228,7 @@ def Login():
         return jsonify({'Message': '失败', 'Data': '用户不存在'})
     else:
         if get.PassWord == Psw:
-            IMLogOut(get.UserId)
+            # IMLogOut(get.UserId)
             u = User(UserId=get.UserId)
             u.LastLoginTime = Time
             session.merge(u)
