@@ -96,11 +96,8 @@ def getAppState():
 
 
 # 获取主页推荐
-@main.route('/api/appinfo/foryou', methods=['POST'])
+@main.route('/api/appinfo/foryou', methods=['GET'])
 def getForYou():
-    schoolname = request.json['School']
-    major = request.json['Major']
-    issale = False
     foryoulist = list()
     booklist2 = App.query.filter(App.Type.like('推荐')).all()
     if booklist2:
@@ -108,25 +105,9 @@ def getForYou():
             book2 = Sale.query.filter_by(SaleId=app.Content).first()
             data2 = GetSaleJson(book2)
             foryoulist.append(data2)
-    booklist = Sale.query.filter(and_(Sale.SchoolName.like(schoolname), Sale.IsSale == issale)).order_by(
-        desc(Sale.SaleId)).limit(10).all()
-    if booklist:
-        for book in booklist:
-            data = GetSaleJson(book)
-            foryoulist.append(data)
-    booklist1 = Sale.query.filter(and_(Sale.BookName.like("%" + major + "%"), Sale.IsSale == issale)).order_by(
-        desc(Sale.SaleId)).limit(10).all()
-    if booklist1:
-        for book1 in booklist1:
-            data1 = GetSaleJson(book1)
-            foryoulist.append(data1)
-    booklist0 = Sale.query.filter(Sale.IsSale == issale).order_by(
-        desc(Sale.SaleId)).limit(5).all()
-    if booklist0:
-        for book0 in booklist0:
-            data0 = GetSaleJson(book0)
-            foryoulist.append(data0)
-    return jsonify({'Message': '成功', 'Data': foryoulist})
+        return jsonify({'Message': '成功', 'Data': foryoulist})
+    else:
+        return jsonify({'Message': '失败', 'Data': ''})
 
 
 # *****************************用户相关*****************************
@@ -1906,25 +1887,24 @@ def IM_LogOut():
         'Authorization': 'Bearer ' + token
     }
     r = requests.get(
-        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + request.json['id'] + "/disconnect",
+        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(request.json['id']) + "/disconnect",
         headers=headers)
 
-
-def IMLogOut(id):
-    datainfo = {
-        "grant_type": "client_credentials",
-        "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
-        "client_secret": "YXA6wrNShdgwMFWDXcGKvl0yY9AFcuY"
-    }
-    headers = {
-        'content-type': 'application/json;charset=UTF-8'
-    }
-    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/token", data=json.dumps(datainfo),
-                      headers=headers)
-    token = r.json().get('access_token')
-    headers = {
-        'Authorization': 'Bearer ' + token
-    }
-    r = requests.get(
-        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(id) + "/disconnect",
-        headers=headers)
+    def IMLogOut(id):
+        datainfo = {
+            "grant_type": "client_credentials",
+            "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
+            "client_secret": "YXA6wrNShdgwMFWDXcGKvl0yY9AFcuY"
+        }
+        headers = {
+            'content-type': 'application/json;charset=UTF-8'
+        }
+        r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/token", data=json.dumps(datainfo),
+                          headers=headers)
+        token = r.json().get('access_token')
+        headers = {
+            'Authorization': 'Bearer ' + token
+        }
+        r = requests.get(
+            "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(id) + "/disconnect",
+            headers=headers)
