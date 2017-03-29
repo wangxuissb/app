@@ -1870,8 +1870,8 @@ def ChangeIM(id, newpsw, oldpsw):
                       headers=headers)
 
 
-@main.route('/api/iminfo/logout', methods=['POST'])
-def IM_LogOut():
+@main.route('/api/iminfo/logout/<int:id>', methods=['POST'])
+def IM_LogOut(id):
     datainfo = {
         "grant_type": "client_credentials",
         "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
@@ -1887,24 +1887,25 @@ def IM_LogOut():
         'Authorization': 'Bearer ' + token
     }
     r = requests.get(
-        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(request.json['id']) + "/disconnect",
+        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + id + "/disconnect",
         headers=headers)
 
-    def IMLogOut(id):
-        datainfo = {
-            "grant_type": "client_credentials",
-            "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
-            "client_secret": "YXA6wrNShdgwMFWDXcGKvl0yY9AFcuY"
-        }
-        headers = {
-            'content-type': 'application/json;charset=UTF-8'
-        }
-        r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/token", data=json.dumps(datainfo),
-                          headers=headers)
-        token = r.json().get('access_token')
-        headers = {
-            'Authorization': 'Bearer ' + token
-        }
-        r = requests.get(
-            "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(id) + "/disconnect",
-            headers=headers)
+
+def IMLogOutById(id):
+    datainfo = {
+        "grant_type": "client_credentials",
+        "client_id": "YXA6CGQjYMKIEeaNd20Ttx1Dzg",
+        "client_secret": "YXA6wrNShdgwMFWDXcGKvl0yY9AFcuY"
+    }
+    headers = {
+        'content-type': 'application/json;charset=UTF-8'
+    }
+    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/token", data=json.dumps(datainfo),
+                      headers=headers)
+    token = r.json().get('access_token')
+    headers = {
+        'Authorization': 'Bearer ' + token
+    }
+    r = requests.get(
+        "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(id) + "/disconnect",
+        headers=headers)
