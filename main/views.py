@@ -1409,7 +1409,7 @@ def FindStarBook():
 
 
 # 查询求购数目
-@main.route('/api/bookinfo/find/buy/', methods=['GET'])
+@main.route('/api/bookinfo/find/buy/count/', methods=['GET'])
 def FindBuyCount():
     id = int(request.args.get('id'))
     count = Buy.query.filter(Buy.UserId == id).count()
@@ -1417,7 +1417,7 @@ def FindBuyCount():
 
 
 # 查询发布数目
-@main.route('/api/bookinfo/find/sale/', methods=['GET'])
+@main.route('/api/bookinfo/find/sale/count/', methods=['GET'])
 def FindSaleCount():
     id = int(request.args.get('id'))
     count = Sale.query.filter(Sale.UserId == id).count()
@@ -1425,7 +1425,7 @@ def FindSaleCount():
 
 
 # 查询订单数目
-@main.route('/api/orderinfo/find/', methods=['GET'])
+@main.route('/api/orderinfo/find/count/', methods=['GET'])
 def FindOrderCount():
     id = int(request.args.get('id'))
     count = Order.query.filter(or_(Order.FirstId == id, Order.SecondId == id)).count()
@@ -1433,7 +1433,7 @@ def FindOrderCount():
 
 
 # 查询关注数目
-@main.route('/api/starinfo/starpeople/find/', methods=['GET'])
+@main.route('/api/starinfo/starpeople/find/count/', methods=['GET'])
 def FindStarPeopleCount():
     id = int(request.args.get('id'))
     count = StarPeople.query.filter(StarPeople.FirstId == id).count()
@@ -1441,7 +1441,7 @@ def FindStarPeopleCount():
 
 
 # 查询被关注数目
-@main.route('/api/starinfo/staredpeople/find/', methods=['GET'])
+@main.route('/api/starinfo/staredpeople/find/count/', methods=['GET'])
 def FindStaredPeopleCount():
     id = int(request.args.get('id'))
     count = StarPeople.query.filter(StarPeople.ToId == id).count()
@@ -1449,7 +1449,7 @@ def FindStaredPeopleCount():
 
 
 # 查询收藏数目
-@main.route('/api/starinfo/starbook/find/', methods=['GET'])
+@main.route('/api/starinfo/starbook/find/count/', methods=['GET'])
 def FindStarBookCount():
     id = int(request.args.get('id'))
     count = StarBook.query.filter(StarBook.FirstId == id).count()
