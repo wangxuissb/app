@@ -13,7 +13,7 @@ import json, time, urllib2
 import pingpp
 from pingpp import Charge
 
-pingpp.api_key = 'sk_test_4avLO4XLG4iDePyXb5bvv188'
+pingpp.api_key = 'sk_live_vz5808mDmvfPXfPKGOqPyfPK'
 appid = 'app_fjPKqPGCm980qT8G'
 UserIdNum = [0]
 
