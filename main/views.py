@@ -567,8 +567,6 @@ def FindAllSale():
     classify = request.args.get('classify', '')
     limit = int(request.args.get('limit', 20))
     issale = False
-    print schoolname
-    print classify
     if classify == '':
         if type == 0:
             if schoolname == '':
@@ -1865,7 +1863,7 @@ def ChangeIM(id, newpsw, oldpsw):
     headers = {
         'Authorization': 'Bearer ' + token
     }
-    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + id + "/password",
+    r = requests.post("https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(id) + "/password",
                       data=json.dumps(datainfo),
                       headers=headers)
 
