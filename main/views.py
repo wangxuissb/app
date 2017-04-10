@@ -691,7 +691,7 @@ def FindSaleBookCount():
 
 
 # 按书名搜索
-@main.route('/api/bookinfo/find/sale/bookname/', methods=['GET'])
+@main.route('/api/bookinfo/search/sale/bookname/', methods=['GET'])
 def FindSaleBookName():
     bookname = request.args.get('bookname')
     skip = int(request.args.get('skip'))
