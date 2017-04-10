@@ -300,7 +300,7 @@ def UpdateUser():
 
 # 查找单个用户
 @main.route('/api/userinfo/find/', methods=['GET'])
-def FindUserById(Uid):
+def FindUserById():
     Uid = int(request.args.get('id'))
     user = User.query.filter_by(UserId=Uid).first()
     data = GetUserJson(user)
