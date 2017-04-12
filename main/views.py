@@ -989,6 +989,14 @@ def UpdateOrder():
     session.merge(s)
     session.commit()
     session.close()
+    if request.json['State'] == 4:
+        user = User.query.filter(User.UserId == request.json['FirstId']).first()
+        oldMoney = user.Money
+        newuser = User(UserId=user.UserId)
+        newuser.Money = oldMoney + request.json['Price']
+        session.merge(newuser)
+        session.commit()
+        session.close()
     if request.json['State'] == 5:
         if request.json['Type'] == 0:
             sale = Sale.query.filter(Sale.SaleId == request.json['BookId']).first()
@@ -1659,23 +1667,24 @@ def UpdateAdress():
     u.Location = request.json['Location']
     u.Code = request.json['Code']
     u.Area = request.json['Area']
+    u.UserId = request.json['UserId']
     u.IsDefault = request.json['IsDefault']
     session.merge(u)
     session.commit()
     session.close()
-    get = Adress.query.filter(
-        and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
-    if get:
-        print ''
-    else:
-        get1 = Adress.query.filter(
-            and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).first()
-        if get1:
-            u = Adress(AdressId=get1.AdressId)
-            u.IsDefault = True
-            session.merge(u)
-            session.commit()
-            session.close()
+    # get = Adress.query.filter(
+    #     and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
+    # if get:
+    #     print ''
+    # else:
+    #     get1 = Adress.query.filter(
+    #         and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == False)).first()
+    #     if get1:
+    #         u = Adress(AdressId=get1.AdressId)
+    #         u.IsDefault = True
+    #         session.merge(u)
+    #         session.commit()
+    #         session.close()
     return jsonify({'Message': '成功', 'Data': '设置成功'})
 
 
