@@ -993,7 +993,7 @@ def UpdateOrder():
         user = User.query.filter(User.UserId == request.json['FirstId']).first()
         oldMoney = user.Money
         newuser = User(UserId=user.UserId)
-        newuser.Money = oldMoney + request.json['Price']
+        newuser.Money = float(oldMoney) + request.json['Price']
         session.merge(newuser)
         session.commit()
         session.close()
