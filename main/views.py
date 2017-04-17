@@ -70,6 +70,72 @@ def getCharge():
     return result
 
 
+# 提现
+class Money(db.Model):
+    __tablename__ = 'money'
+    MoneyId = db.Column(db.Integer, primary_key=True)
+    Type = db.Column(db.String)
+    UserId = db.Column(db.INTEGER)
+    Money = db.Column(db.DECIMAL)
+    Name = db.Column(db.String)
+    State = db.Column(db.INTEGER)  # 0等待#1完成
+    Number = db.Column(db.String)  # 微信号，支付宝号
+
+    def __int__(self, MoneyId, Type, UserId, Money, State, Number, Name):
+        self.MoneyId = MoneyId
+        self.Type = Type
+        self.UserId = UserId
+        self.Money = Money
+        self.State = State
+        self.Number = Number
+        self.Name = Name
+
+    def __repr__(self):
+        return ''
+
+
+# 申请提现
+@main.route('/api/moneyinfo/get', methods=['POST'])
+def getMoney():
+    get = User.query.filter_by(UserId=request.json['UserId']).first()
+    if get.PassWord == request.json['Psw']:
+        user = User(UserId=get.UserId)
+        user.Money = float(get.Money) - request.json['Money']
+        session.merge(user)
+        session.commit()
+        session.close()
+        money = User(MoneyId=request.json['MoneyId'])
+        money.Type = request.json['Type']
+        money.UserId = request.json['UserId']
+        money.Money = request.json['Money']
+        money.State = request.json['State']
+        money.Number = request.json['Number']
+        money.Name = request.json['Name']
+        session.add(money)
+        session.commit()
+        session.close()
+        return jsonify({'Message': '成功', 'Data': float(get.Money) - request.json['Money']})
+    else:
+        return jsonify({'Message': '失败', 'Data': '密码错误'})
+
+
+# 查询提现记录
+@main.route('/api/moneyinfo/find/', methods=['GET'])
+def findMoney():
+    id = request.args.get('UserId')
+    skip = request.args.get('Skip')
+    limit = request.args.get('Limit')
+    moneylist = Money.query.filter(Money.UserId == id).order_by(
+        desc(Money.MoneyId)).limit(skip).offset(limit).all()
+    if moneylist:
+        list = list()
+        for money in moneylist:
+            list.append(GetMoneyJson(money))
+        return jsonify({'Message': '成功', 'Data': list})
+    else:
+        return jsonify({'Message': '失败', 'Data': '没有提现记录'})
+
+
 # *****************************主页相关内容*****************************
 class App(db.Model):
     __tablename__ = 'app'
@@ -1782,6 +1848,13 @@ def GetShoppingJson(shopping):
             'Sale': GetSaleJson(book)}
 
 
+def GetMoneyJson(money):
+    m = str(money.Money)
+    return {'MoneyId': money.MoneyId, 'Type': money.Type, 'UserId': money.UserId,
+            'Money': m,
+            'State': money.State, 'Number': money.Number, 'Name': money.Name}
+
+
 def GetOrderJson(order):
     price = str(order.Price)
     firstuser = User.query.filter_by(UserId=order.FirstId).first()
@@ -1916,3 +1989,90 @@ def IMLogOutById(id):
     r = requests.get(
         "https://a1.easemob.com/1145161215178634/wohuiaini1314/users/" + str(id) + "/disconnect",
         headers=headers)
+
+
+# UFAN
+# 注册
+@main.route('/api/ufan/register', methods=['POST'])
+def UFANIM():
+    id = request.json['id']
+    psw = request.json['psw']
+    datainfo = {
+        "grant_type": "client_credentials",
+        "client_id": "YXA68WtU0CKpEee-DHeGrsjOSg",
+        "client_secret": "YXA6W814_yeBE_fiIBFJuW2V0gzekrI"
+    }
+    headers = {
+        'content-type': 'application/json;charset=UTF-8'
+    }
+    r = requests.post("https://a1.easemob.com/1196170416115093/ufan/token", data=json.dumps(datainfo),
+                      headers=headers)
+    token = r.json().get('access_token')
+    header = {
+        'content-type': 'application/json;charset=UTF-8',
+        'Authorization': 'Bearer ' + token
+    }
+    user = {
+        "username": id,
+        "password": psw
+    }
+    r = requests.post("https://a1.easemob.com/1196170416115093/ufan/users", data=json.dumps(user),
+                      headers=header)
+    return jsonify(
+        {'Message': '成功', 'Data': '注册成功'})
+
+
+# UFAN
+# 改密
+@main.route('/api/ufan/changepsw', methods=['POST'])
+def UFANCHANGE():
+    id = request.json['id']
+    psw = request.json['psw']
+    datainfo = {
+        "grant_type": "client_credentials",
+        "client_id": "YXA68WtU0CKpEee-DHeGrsjOSg",
+        "client_secret": "YXA6W814_yeBE_fiIBFJuW2V0gzekrI"
+    }
+    headers = {
+        'content-type': 'application/json;charset=UTF-8'
+    }
+    r = requests.post("https://a1.easemob.com/1196170416115093/ufan/token", data=json.dumps(datainfo),
+                      headers=headers)
+    token = r.json().get('access_token')
+    datainfo = {
+        "newpassword": psw,
+    }
+    headers = {
+        'Authorization': 'Bearer ' + token
+    }
+    r = requests.post("https://a1.easemob.com/1196170416115093/ufan/users/" + str(id) + "/password",
+                      data=json.dumps(datainfo),
+                      headers=headers)
+    return jsonify(
+        {'Message': '成功', 'Data': '修改成功'})
+
+
+# UFAN
+# 下线
+@main.route('/api/ufan/logout', methods=['POST'])
+def UFANLOGOUT():
+    id = request.json['id']
+    datainfo = {
+        "grant_type": "client_credentials",
+        "client_id": "YXA68WtU0CKpEee-DHeGrsjOSg",
+        "client_secret": "YXA6W814_yeBE_fiIBFJuW2V0gzekrI"
+    }
+    headers = {
+        'content-type': 'application/json;charset=UTF-8'
+    }
+    r = requests.post("https://a1.easemob.com/1196170416115093/ufan/token", data=json.dumps(datainfo),
+                      headers=headers)
+    token = r.json().get('access_token')
+    headers = {
+        'Authorization': 'Bearer ' + token
+    }
+    r = requests.get(
+        "https://a1.easemob.com/1196170416115093/ufan/users/" + str(id) + "/disconnect",
+        headers=headers)
+    return jsonify(
+        {'Message': '成功', 'Data': '下线成功'})
