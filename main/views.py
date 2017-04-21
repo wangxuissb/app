@@ -80,8 +80,9 @@ class Money(db.Model):
     Name = db.Column(db.String)
     State = db.Column(db.INTEGER)  # 0等待#1完成
     Number = db.Column(db.String)  # 微信号，支付宝号
+    Time = db.Column(db.BIGINT)
 
-    def __int__(self, MoneyId, Type, UserId, Money, State, Number, Name):
+    def __int__(self, MoneyId, Type, UserId, Money, State, Number, Name, Time):
         self.MoneyId = MoneyId
         self.Type = Type
         self.UserId = UserId
@@ -89,6 +90,7 @@ class Money(db.Model):
         self.State = State
         self.Number = Number
         self.Name = Name
+        self.Time = Time
 
     def __repr__(self):
         return ''
@@ -111,6 +113,7 @@ def getMoney():
         money.State = request.json['State']
         money.Number = request.json['Number']
         money.Name = request.json['Name']
+        money.Time = request.json['Time']
         session.add(money)
         session.commit()
         session.close()
@@ -1852,7 +1855,7 @@ def GetMoneyJson(money):
     m = str(money.Money)
     return {'MoneyId': money.MoneyId, 'Type': money.Type, 'UserId': money.UserId,
             'Money': m,
-            'State': money.State, 'Number': money.Number, 'Name': money.Name}
+            'State': money.State, 'Number': money.Number, 'Name': money.Name, 'Time': money.Time}
 
 
 def GetOrderJson(order):
