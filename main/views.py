@@ -390,7 +390,7 @@ def FindUserByTel():
 
 # QQ登陆
 @main.route('/api/userinfo/loginbyqq/', methods=['GET'])
-def LoginByQQ(QQ):
+def LoginByQQ():
     QQ = request.args.get('qq')
     user = User.query.filter_by(QQ=QQ).first()
     if user:
@@ -400,117 +400,250 @@ def LoginByQQ(QQ):
         return jsonify({'Message': '失败', 'Data': '该用户不存在'})
 
 
-# # *****************************商家相关*****************************
-# class Shop(db.Model):
-#     __tablename__ = 'shop'
-#     # id
-#     ShopId = db.Column(db.Integer, primary_key=True)
-#     # 用户ID
-#     UserId = db.Column(db.Integer)
-#     # 商家头像
-#     Name = db.Column(db.String)
-#     # 商家名称
-#     Avatar = db.Column(db.String)
-#     # 手机号码
-#     Tel = db.Column(db.String)
-#     # 地址
-#     Adress = db.Column(db.String)
-#     # 公司执照
-#     Licence = db.Column(db.String)
-#     # 类型
-#     Type = db.Column(db.Integer)
-#     # 负责人姓名
-#     UserName = db.Column(db.String)
-#     # 负责人身份证号
-#     UserCardNumber = db.Column(db.String)
-#     # 负责人姓名
-#     UserTel = db.Column(db.String)
-#     # 公告
-#     Content = db.Column(db.String)
-#     # 封禁
-#     IsBan = db.Column(db.Boolean)
-#
-#     def __int__(self, ShopId, UserId, Name, Avatar, Tel, Adress, Licence,
-#                 Type, UserName, UserCardNumber, UserTel, Content, IsBan):
-#         self.ShopId = ShopId
-#         self.UserId = UserId
-#         self.Name = Name
-#         self.Avatar = Avatar
-#         self.Tel = Tel
-#         self.Adress = Adress
-#         self.Licence = Licence
-#         self.Type = Type
-#         self.UserName = UserName
-#         self.UserCardNumber = UserCardNumber
-#         self.UserTel = UserTel
-#         self.Content = Content
-#         self.IsBan = IsBan
-#
-#     def __repr__(self):
-#         return ''
-#
-#
-# class ShopComment(db.Model):
-#     __tablename__ = 'shop_comment'
-#     # id
-#     CommentId = db.Column(db.Integer, primary_key=True)
-#     # id
-#     ShopId = db.Column(db.Integer)
-#     # 用户ID
-#     UserId = db.Column(db.Integer)
-#     # 评论
-#     Content = db.Column(db.String)
-#     # 评分
-#     Score = db.Column(db.DECIMAL)
-#     # 时间
-#     CreatedAt = db.Column(db.BIGINT)
-#
-#     def __int__(self, CommentId, ShopId, UserId, Content, Score, CreatedAt):
-#         self.ShopId = ShopId
-#         self.UserId = UserId
-#         self.Content = Content
-#         self.Score = Score
-#         self.CreatedAt = CreatedAt
-#         self.CommentId = CommentId
-#
-#     def __repr__(self):
-#         return ''
-#
-#
-# class ShopClassify(db.Model):
-#     __tablename__ = 'shop_classify'
-#     # id
-#     ClassifyId = db.Column(db.Integer, primary_key=True)
-#     # 用户ID
-#     ShopId = db.Column(db.Integer)
-#     # 分类
-#     Classify = db.Column(db.String)
-#
-#     def __int__(self, ClassifyId, ShopId, Classify):
-#         self.ClassifyId = ClassifyId
-#         self.ShopId = ShopId
-#         self.Classify = Classify
-#
-#     def __repr__(self):
-#         return ''
-#
-#
-# class ShopBook(db.Model):
-#     __tablename__ = 'shop_book'
-#     # id
-#     ShopBookId = db.Column(db.Integer, primary_key=True)
-#     # 用户ID
-#     ShopId = db.Column(db.Integer)
-#     # 分类
-#     BookId = db.Column(db.Integer)
-#
-#     def __int__(self, ShopBookId, ShopId, BookId):
-#         self.ShopBookId = ShopBookId
-#         self.ShopId = ShopId
-#         self.BookId = BookId
-#
-#     def __repr__(self):
-#         return ''
+# *****************************商家相关*****************************
+class Shop(db.Model):
+    __tablename__ = 'shop'
+    # id
+    ShopId = db.Column(db.Integer, primary_key=True)
+    # 用户ID
+    UserId = db.Column(db.Integer)
+    # 商家头像
+    Name = db.Column(db.String)
+    # 商家名称
+    Avatar = db.Column(db.String)
+    # 手机号码
+    Tel = db.Column(db.String)
+    # 地址
+    Adress = db.Column(db.String)
+    # 公司执照
+    Licence = db.Column(db.String)
+    # 类型
+    Type = db.Column(db.Integer)
+    # 负责人姓名
+    UserName = db.Column(db.String)
+    # 负责人身份证号
+    UserCardNumber = db.Column(db.String)
+    # 负责人手机号码
+    UserTel = db.Column(db.String)
+    # 公告
+    Content = db.Column(db.String)
+    # 封禁
+    IsBan = db.Column(db.Boolean)
+
+    # 评分
+    Score = db.Column(db.Integer)
+    # 评论数
+    CommentCount = db.Column(db.Integer)
+
+    def __int__(self, ShopId, UserId, Name, Avatar, Tel, Adress, Licence,
+                Type, UserName, UserCardNumber, UserTel, Content, IsBan, Score, CommentCount):
+        self.ShopId = ShopId
+        self.UserId = UserId
+        self.Name = Name
+        self.Avatar = Avatar
+        self.Tel = Tel
+        self.Adress = Adress
+        self.Licence = Licence
+        self.Type = Type
+        self.UserName = UserName
+        self.UserCardNumber = UserCardNumber
+        self.UserTel = UserTel
+        self.Content = Content
+        self.IsBan = IsBan
+        self.Score = Score
+        self.CommentCount = CommentCount
+
+    def __repr__(self):
+        return ''
+
+
+# 根据id查询商家
+@main.route('/api/shopinfo/find/', methods=['GET'])
+def FindShop():
+    shop = Shop.query.filter_by(ShopId=request.args.get('id')).first()
+    if shop:
+        data = GetShopJson(shop)
+        return jsonify({'Message': '成功', 'Data': data})
+    else:
+        return jsonify({'Message': '失败', 'Data': '商家不存在'})
+
+
+# 查询商家
+@main.route('/api/shopinfo/find/all/', methods=['GET'])
+def FindAllShop():
+    shop = Shop.query.filter_by(IsBan=False).order_by(
+        desc(Shop.ShopId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
+    if shop:
+        data = GetShopJson(shop)
+        return jsonify({'Message': '成功', 'Data': data})
+    else:
+        return jsonify({'Message': '失败', 'Data': '商家不存在'})
+
+
+# 修改商户信息
+@main.route('/api/shopinfo/update', methods=['POST'])
+def UpdateShop():
+    shop = Shop(ShopId=request.json['ShopId'])
+    shop.Avatar = request.json['Avatar']
+    shop.Content = request.json['Content']
+    session.merge(shop)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '更新成功'})
+
+
+class ShopComment(db.Model):
+    __tablename__ = 'shop_comment'
+    # id
+    CommentId = db.Column(db.Integer, primary_key=True)
+    # id
+    ShopId = db.Column(db.Integer)
+    # 用户ID
+    UserId = db.Column(db.Integer)
+    # 评论
+    Content = db.Column(db.String)
+    # 评分
+    Score = db.Column(db.Integer)
+    # 时间
+    CreatedAt = db.Column(db.BIGINT)
+
+    def __int__(self, CommentId, ShopId, UserId, Content, Score, CreatedAt):
+        self.ShopId = ShopId
+        self.UserId = UserId
+        self.Content = Content
+        self.Score = Score
+        self.CreatedAt = CreatedAt
+        self.CommentId = CommentId
+
+    def __repr__(self):
+        return ''
+
+
+# 新建评论
+@main.route('/api/shopinfo/create/comment', methods=['POST'])
+def CreateShopComment():
+    comment = ShopComment(ShopId=request.json['ShopId'])
+    comment.UserId = request.json['UserId']
+    comment.Content = request.json['Content']
+    comment.Score = request.json['Score']
+    comment.CreatedAt = request.json['CreatedAt']
+    session.add(comment)
+    session.commit()
+    session.close()
+    shop = Shop.query.filter_by(ShopId=request.json['ShopId']).first()
+    s = Shop(ShopId=request.json['ShopId'])
+    s.Score = shop.Score + request.json['Score']
+    s.CommentCount = shop.CommentCount + 1
+    session.merge(s)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '成功'})
+
+
+# 根据商家id查询评论
+@main.route('/api/shopinfo/find/comment', methods=['GET'])
+def FindShopComment():
+    shop = ShopComment.query.filter_by(ShopId=request.args.get('id')).order_by(
+        desc(ShopComment.CommentId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
+    if shop:
+        data = list()
+        for comment in shop:
+            data.append(GetShopCommentJson(comment))
+        return jsonify({'Message': '成功', 'Data': data})
+    else:
+        return jsonify({'Message': '失败', 'Data': '暂无评论'})
+
+
+class ShopClassify(db.Model):
+    __tablename__ = 'shop_classify'
+    # id
+    ClassifyId = db.Column(db.Integer, primary_key=True)
+    # 用户ID
+    ShopId = db.Column(db.Integer)
+    # 分类
+    Classify = db.Column(db.String)
+
+    def __int__(self, ClassifyId, ShopId, Classify):
+        self.ClassifyId = ClassifyId
+        self.ShopId = ShopId
+        self.Classify = Classify
+
+    def __repr__(self):
+        return ''
+
+
+# 新建分类
+@main.route('/api/shopinfo/create/classify', methods=['POST'])
+def CreateShopClassify():
+    classify = ShopClassify(ShopId=request.json['ShopId'])
+    classify.Classify = request.json['Classify']
+    session.add(classify)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '成功'})
+
+
+# 根据商家id查询分类
+@main.route('/api/shopinfo/find/classify', methods=['GET'])
+def FindShopClassify():
+    shop = ShopClassify.query.filter_by(ShopId=request.args.get('id')).order_by(
+        desc(ShopClassify.ClassifyId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
+    if shop:
+        data = list()
+        for classify in shop:
+            data.append(classify.Classify)
+        return jsonify({'Message': '成功', 'Data': data})
+    else:
+        return jsonify({'Message': '失败', 'Data': '暂无分类'})
+
+
+class ShopBook(db.Model):
+    __tablename__ = 'shop_book'
+    # id
+    ShopBookId = db.Column(db.Integer, primary_key=True)
+    # 用户ID
+    ShopId = db.Column(db.Integer)
+    # 分类id
+    ClassifyId = db.Column(db.Integer)
+    # 书的id
+    BookId = db.Column(db.Integer)
+
+    def __int__(self, ShopBookId, ShopId, BookId, ClassifyId):
+        self.ShopBookId = ShopBookId
+        self.ShopId = ShopId
+        self.BookId = BookId
+        self.ClassifyId = ClassifyId
+
+    def __repr__(self):
+        return ''
+
+
+# 新建分类下的书籍
+@main.route('/api/shopinfo/create/book', methods=['POST'])
+def CreateShopClassify():
+    book = ShopBook(ShopId=request.json['ShopId'])
+    book.ClassifyId = request.json['ClassifyId']
+    book.BookId = request.json['BookId']
+    session.add(book)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '成功'})
+
+
+# 根据商家id查询分类书籍
+@main.route('/api/shopinfo/find/book', methods=['GET'])
+def FindShopClassifyBook():
+    shop = ShopBook.query.filter(and_(ShopBook.ShopId == request.args.get('ShopId'),
+                                      ShopBook.ClassifyId == request.args.get('ClassifyId'))).order_by(
+        desc(ShopBook.ShopBookId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
+    if shop:
+        data = list()
+        for book in shop:
+            sale = Sale.query.filter_by(SaleId=book.BookId).first()
+            data.append(GetSaleJson(sale))
+        return jsonify({'Message': '成功', 'Data': data})
+    else:
+        return jsonify({'Message': '失败', 'Data': '暂无书籍'})
 
 
 # *****************************帖子相关*****************************
@@ -1904,6 +2037,23 @@ def GetAdressJson(order):
                 'AdressId': get.AdressId, 'Area': get.Area}
     else:
         return {}
+
+
+def GetShopJson(shop):
+    user = User.query.filter_by(UserId=shop.UserId).first()
+    return {'ShopId': shop.ShopId, 'UserId': shop.UserId,
+            'Name': shop.Name, 'User': GetUserJson(user),
+            'Avatar': shop.Avatar, 'Tel': shop.Tel,
+            'Adress': shop.Adress,
+            'Content': shop.Content, 'IsBan': shop.IsBan,
+            'Score': shop.Score, 'CommentCount': shop.CommentCount}
+
+
+def GetShopCommentJson(comment):
+    user = User.query.filter_by(UserId=comment.UserId).first()
+    return {'CommentId': comment.CommentId, 'ShopId': comment.ShopId,
+            'UserId': comment.UserId, 'User': GetUserJson(user),
+            'Content': comment.Content, 'Score': comment.Score, 'CreatedAt': comment.CreatedAt}
 
 
 def LoginIM(id, psw):
