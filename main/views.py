@@ -435,8 +435,14 @@ class Shop(db.Model):
     # 评论数
     CommentCount = db.Column(db.Integer)
 
+    # 三个管理员
+    Manager1 = db.Column(db.Integer)
+    Manager2 = db.Column(db.Integer)
+    Manager3 = db.Column(db.Integer)
+
     def __int__(self, ShopId, UserId, Name, Avatar, Tel, Adress, Licence,
-                Type, UserName, UserCardNumber, UserTel, Content, IsBan, Score, CommentCount):
+                Type, UserName, UserCardNumber, UserTel, Content, IsBan, Score, CommentCount, Manager1, Manager2,
+                Manager3):
         self.ShopId = ShopId
         self.UserId = UserId
         self.Name = Name
@@ -452,6 +458,9 @@ class Shop(db.Model):
         self.IsBan = IsBan
         self.Score = Score
         self.CommentCount = CommentCount
+        self.Manager1 = Manager1
+        self.Manager2 = Manager2
+        self.Manager3 = Manager3
 
     def __repr__(self):
         return ''
@@ -486,6 +495,9 @@ def UpdateShop():
     shop = Shop(ShopId=request.json['ShopId'])
     shop.Avatar = request.json['Avatar']
     shop.Content = request.json['Content']
+    shop.Manager1 = request.json['Manager1']
+    shop.Manager2 = request.json['Manager2']
+    shop.Manager3 = request.json['Manager3']
     session.merge(shop)
     session.commit()
     session.close()
@@ -541,7 +553,7 @@ def CreateShopComment():
 
 
 # 根据商家id查询评论
-@main.route('/api/shopinfo/find/comment', methods=['GET'])
+@main.route('/api/shopinfo/find/comment/', methods=['GET'])
 def FindShopComment():
     shop = ShopComment.query.filter_by(ShopId=request.args.get('id')).order_by(
         desc(ShopComment.CommentId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
@@ -583,18 +595,31 @@ def CreateShopClassify():
     return jsonify({'Message': '成功', 'Data': '成功'})
 
 
+# 删除分类
+@main.route('/api/shopinfo/delete/classify', methods=['POST'])
+def DeleteShopClassify():
+    ShopClassify.query.filter_by(ClassifyId=request.json['ClassifyId']).delete()
+    return jsonify({'Message': '成功', 'Data': '成功'})
+
+
 # 根据商家id查询分类
-@main.route('/api/shopinfo/find/classify', methods=['GET'])
+@main.route('/api/shopinfo/find/classify/', methods=['GET'])
 def FindShopClassify():
     shop = ShopClassify.query.filter_by(ShopId=request.args.get('id')).order_by(
         desc(ShopClassify.ClassifyId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
     if shop:
         data = list()
         for classify in shop:
-            data.append(classify.Classify)
+            data.append(GetShopClassifyJson(classify))
         return jsonify({'Message': '成功', 'Data': data})
     else:
         return jsonify({'Message': '失败', 'Data': '暂无分类'})
+
+
+def GetShopClassifyJson(classify):
+    return {'ClassifyId': classify.ClassifyId,
+            'ShopId': classify.ShopId,
+            'Classify': classify.Classify}
 
 
 class ShopBook(db.Model):
@@ -620,7 +645,7 @@ class ShopBook(db.Model):
 
 # 新建分类下的书籍
 @main.route('/api/shopinfo/create/book', methods=['POST'])
-def CreateShopClassify():
+def CreateShopClassifyBook():
     book = ShopBook(ShopId=request.json['ShopId'])
     book.ClassifyId = request.json['ClassifyId']
     book.BookId = request.json['BookId']
@@ -630,8 +655,15 @@ def CreateShopClassify():
     return jsonify({'Message': '成功', 'Data': '成功'})
 
 
+# 删除分类书籍
+@main.route('/api/shopinfo/delete/book', methods=['POST'])
+def DeleteShopClassifyBook():
+    ShopBook.query.filter_by(ShopBookId=request.json['ShopBookId']).delete()
+    return jsonify({'Message': '成功', 'Data': '成功'})
+
+
 # 根据商家id查询分类书籍
-@main.route('/api/shopinfo/find/book', methods=['GET'])
+@main.route('/api/shopinfo/find/book/', methods=['GET'])
 def FindShopClassifyBook():
     shop = ShopBook.query.filter(and_(ShopBook.ShopId == request.args.get('ShopId'),
                                       ShopBook.ClassifyId == request.args.get('ClassifyId'))).order_by(
@@ -639,11 +671,18 @@ def FindShopClassifyBook():
     if shop:
         data = list()
         for book in shop:
-            sale = Sale.query.filter_by(SaleId=book.BookId).first()
-            data.append(GetSaleJson(sale))
+            data.append(GetShopBookJson(book))
         return jsonify({'Message': '成功', 'Data': data})
     else:
         return jsonify({'Message': '失败', 'Data': '暂无书籍'})
+
+
+def GetShopBookJson(book):
+    sale = Sale.query.filter_by(SaleId=book.BookId).first()
+    classify = ShopClassify.query.filter_by(ClassifyId=book.ClassifyId).first()
+    return {'ShopBookId': book.ShopBookId, 'Classify': GetShopClassifyJson(classify),
+            'ShopId': book.ShopId, 'Book': GetSaleJson(sale),
+            'BookId': book.BookId, 'ClassifyId': book.ClassifyId}
 
 
 # *****************************帖子相关*****************************
@@ -2041,12 +2080,16 @@ def GetAdressJson(order):
 
 def GetShopJson(shop):
     user = User.query.filter_by(UserId=shop.UserId).first()
+    user1 = User.query.filter_by(UserId=shop.Manager1).first()
+    user2 = User.query.filter_by(UserId=shop.Manager2).first()
+    user3 = User.query.filter_by(UserId=shop.Manager3).first()
     return {'ShopId': shop.ShopId, 'UserId': shop.UserId,
-            'Name': shop.Name, 'User': GetUserJson(user),
+            'Name': shop.Name, 'User': GetUserJson(user), 'Type': shop.Type,
             'Avatar': shop.Avatar, 'Tel': shop.Tel,
-            'Adress': shop.Adress,
+            'Adress': shop.Adress, 'Manager1': GetUserJson(user1),
             'Content': shop.Content, 'IsBan': shop.IsBan,
-            'Score': shop.Score, 'CommentCount': shop.CommentCount}
+            'Score': shop.Score, 'CommentCount': shop.CommentCount,
+            'Manager2': GetUserJson(user2), 'Manager3': GetUserJson(user3)}
 
 
 def GetShopCommentJson(comment):
