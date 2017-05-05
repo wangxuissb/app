@@ -566,6 +566,13 @@ def FindShopComment():
         return jsonify({'Message': '失败', 'Data': '暂无评论'})
 
 
+# 根据商家id查询评论数量
+@main.route('/api/shopinfo/count/comment/', methods=['GET'])
+def FindShopComment():
+    shop = ShopComment.query.filter_by(ShopId=request.args.get('id')).count()
+    return jsonify({'Message': '成功', 'Data': shop})
+
+
 class ShopClassify(db.Model):
     __tablename__ = 'shop_classify'
     # id
@@ -665,9 +672,14 @@ def DeleteShopClassifyBook():
 # 根据商家id查询分类书籍
 @main.route('/api/shopinfo/find/book/', methods=['GET'])
 def FindShopClassifyBook():
-    shop = ShopBook.query.filter(and_(ShopBook.ShopId == request.args.get('ShopId'),
-                                      ShopBook.ClassifyId == request.args.get('ClassifyId'))).order_by(
-        desc(ShopBook.ShopBookId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
+    classifyId = request.args.get('ClassifyId')
+    if (classifyId == 0):
+        shop = ShopBook.query.filter(ShopBook.ShopId == request.args.get('ShopId')).order_by(
+            desc(ShopBook.ShopBookId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
+    else:
+        shop = ShopBook.query.filter(and_(ShopBook.ShopId == request.args.get('ShopId'),
+                                          ShopBook.ClassifyId == classifyId)).order_by(
+            desc(ShopBook.ShopBookId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
     if shop:
         data = list()
         for book in shop:
