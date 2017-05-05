@@ -568,7 +568,7 @@ def FindShopComment():
 
 # 根据商家id查询评论数量
 @main.route('/api/shopinfo/count/comment/', methods=['GET'])
-def FindShopComment():
+def FindShopCommentCount():
     shop = ShopComment.query.filter_by(ShopId=request.args.get('id')).count()
     return jsonify({'Message': '成功', 'Data': shop})
 
