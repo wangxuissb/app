@@ -804,7 +804,10 @@ def CreateSale():
     session.add(s)
     session.commit()
     session.close()
-    return jsonify({'Message': '成功', 'Data': '发布成功'})
+    sale = Sale.query.filter(
+        and_(Sale.UserId == request.json['UserId'], Sale.BookName == request.json['BookName'])).order_by(
+        desc(Sale.SaleId)).first()
+    return jsonify({'Message': '成功', 'Data': sale.SaleId})
 
 
 # 查询出售
