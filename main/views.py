@@ -673,7 +673,7 @@ def DeleteShopClassifyBook():
 @main.route('/api/shopinfo/find/book/', methods=['GET'])
 def FindShopClassifyBook():
     classifyId = request.args.get('ClassifyId')
-    if (classifyId == 0):
+    if (int(classifyId) == 0):
         shop = ShopBook.query.filter(ShopBook.ShopId == request.args.get('ShopId')).order_by(
             desc(ShopBook.ShopBookId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
     else:
@@ -1671,7 +1671,8 @@ def FindSaleCount():
 @main.route('/api/orderinfo/find/count/', methods=['GET'])
 def FindOrderCount():
     id = int(request.args.get('id'))
-    count = Order.query.filter(or_(Order.FirstId == id, Order.SecondId == id)).count()
+    count = Order.query.filter(
+        and_(or_(Order.FirstId == id, Order.SecondId == id), and_(Order.State != -1, Order.State != -2, ))).count()
     return jsonify({'Message': '成功', 'Data': count})
 
 
