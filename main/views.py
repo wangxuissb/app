@@ -2099,13 +2099,19 @@ def GetShopJson(shop):
     user1 = User.query.filter_by(UserId=shop.Manager1).first()
     user2 = User.query.filter_by(UserId=shop.Manager2).first()
     user3 = User.query.filter_by(UserId=shop.Manager3).first()
+    classify = ShopClassify.query.filter_by(ShopId=shop.ShopId).order_by(
+        desc(ShopClassify.ClassifyId)).all()
+    data = list()
+    if classify:
+        for c in classify:
+            data.append(GetShopClassifyJson(c))
     return {'ShopId': shop.ShopId, 'UserId': shop.UserId,
             'Name': shop.Name, 'User': GetUserJson(user), 'Type': shop.Type,
             'Avatar': shop.Avatar, 'Tel': shop.Tel,
             'Adress': shop.Adress, 'Manager1': GetUserJson(user1),
             'Content': shop.Content, 'IsBan': shop.IsBan,
             'Score': shop.Score, 'CommentCount': shop.CommentCount,
-            'Manager2': GetUserJson(user2), 'Manager3': GetUserJson(user3)}
+            'Manager2': GetUserJson(user2), 'Manager3': GetUserJson(user3), 'ShopClassify': data}
 
 
 def GetShopCommentJson(comment):
