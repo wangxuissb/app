@@ -21,3 +21,4 @@ def create_app():
     app.register_blueprint(main_blueprint)
     db.init_app(app)
     return app
+
