@@ -158,10 +158,13 @@ class App(db.Model):
 
 
 # app状态
-@main.route('/api/appinfo/state', methods=['GET'])
+@main.route('/api/appinfo/state/', methods=['GET'])
 def getAppState():
-    app = App.query.filter(App.Type.like('状态')).first()
-    return jsonify({'Message': '成功', 'Data': app.State})
+    app = App.query.filter(App.Type.like(request.args.get('version'))).first()
+    if app:
+        return jsonify({'Message': '成功', 'Data': app.State})
+    else:
+        return jsonify({'Message': '成功', 'Data': '2'})
 
 
 # 获取主页推荐
@@ -666,6 +669,23 @@ def CreateShopClassifyBook():
 @main.route('/api/shopinfo/delete/book', methods=['POST'])
 def DeleteShopClassifyBook():
     ShopBook.query.filter_by(ShopBookId=request.json['ShopBookId']).delete()
+    return jsonify({'Message': '成功', 'Data': '成功'})
+
+
+# 更新分类下的书籍
+@main.route('/api/shopinfo/update/book', methods=['POST'])
+def UpdateShopClassifyBook():
+    book = ShopBook(BookId=request.json['SaleId'])
+    book.ClassifyId = request.json['ClassifyId']
+    session.merge(book)
+    session.commit()
+    session.close()
+    s = Sale(SaleId=request.json['SaleId'])
+    s.Count = request.json['Count']
+    s.NewPrice = request.json['NewPrice']
+    session.merge(s)
+    session.commit()
+    session.close()
     return jsonify({'Message': '成功', 'Data': '成功'})
 
 
@@ -1576,13 +1596,14 @@ def FindOrderById():
     type = int(request.args.get('type'))
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
+    state = int(request.args.get('state'))
     limit = int(request.args.get('limit'))
     # 0是我的出售订单，1是我的购买订单
     if type == 0:
-        orderList = Order.query.filter(Order.FirstId.like(id), Order.State != -1).order_by(
+        orderList = Order.query.filter(Order.FirstId.like(id), Order.State == state).order_by(
             desc(Order.OrderId)).limit(limit).offset(skip).all()
     else:
-        orderList = Order.query.filter(Order.SecondId.like(id), Order.State != -2).order_by(
+        orderList = Order.query.filter(Order.SecondId.like(id), Order.State == state).order_by(
             desc(Order.OrderId)).limit(limit).offset(skip).all()
     if orderList:
         newlist = list()
