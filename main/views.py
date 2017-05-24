@@ -139,6 +139,77 @@ def findMoney():
         return jsonify({'Message': '失败', 'Data': '没有提现记录'})
 
 
+# ******************************公众号同步内容****************************
+class EMessage(db.Model):
+    __tablename__ = 'emessage'
+    EMessageId = db.Column(db.Integer, primary_key=True)
+    Title = db.Column(db.String)
+    Content = db.Column(db.String)
+    Data = db.Column(db.String)
+    Image = db.Column(db.String)
+    Url = db.Column(db.String)
+
+    def __int__(self, EMessageId, Title, Content, Data, Image, Url):
+        self.EMessageId = EMessageId
+        self.Title = Title
+        self.Content = Content
+        self.Data = Data
+        self.Image = Image
+        self.Url = Url
+
+    def __repr__(self):
+        return ''
+
+
+@main.route('/api/emessageinfo/find/', methods=['GET'])
+def GetEMessage():
+    skip = request.args.get('Skip')
+    limit = request.args.get('Limit')
+    list = EMessage.query.filter().order_by(
+        desc(EMessage.EMessageId)).limit(skip).offset(limit).all()
+    if list:
+        data = list()
+        for message in list:
+            data.append(GetEMessageJson(message))
+        return jsonify({'Message': '成功', 'Data': data})
+    else:
+        return jsonify({'Message': '失败', 'Data': '没有数据了'})
+
+
+def GetEMessageJson(message):
+    return {'EMessageId': message.EMessageId, 'Title': message.Title, 'Content': message.Content,
+            'Data': message.Data, 'Image': message.Image, 'Url': message.Url}
+
+
+# *****************************意见反馈*********************************
+class FeedBack(db.Model):
+    __tablename__ = 'feedback'
+    FeedBackId = db.Column(db.Integer, primary_key=True)
+    Content = db.Column(db.String)
+    UserId = db.Column(db.Integer)
+    CreatedAt = db.Column(db.BIGINT)
+
+    def __int__(self, FeedBackId, Content, UserId, CreatedAt):
+        self.FeedBackId = FeedBackId
+        self.Content = Content
+        self.UserId = UserId
+        self.CreatedAt = CreatedAt
+
+    def __repr__(self):
+        return ''
+
+
+@main.route('/api/feedbackinfo/create', methods=['POST'])
+def CreateFeedBack():
+    u = FeedBack(UserId=request.json['UserId'])
+    u.Content = request.json['Content']
+    u.CreatedAt = request.json['CreatedAt']
+    session.add(u)
+    session.commit()
+    session.close()
+    return jsonify({'Message': '成功', 'Data': '反馈成功'})
+
+
 # *****************************主页相关内容*****************************
 class App(db.Model):
     __tablename__ = 'app'
