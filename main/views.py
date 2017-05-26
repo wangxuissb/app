@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import subprocess
-from flask import jsonify, make_response, request
+from flask import jsonify, make_response, request, send_from_directory
 from . import main
 
 
@@ -19,7 +19,8 @@ def index():
 @main.route('/api/model/slice/', methods=['GET'])
 def sliceModel():
     modelName = request.args.get('modelName')
+    outName = modelName.split('.', 1)[0]
     shell = '~/cura/CuraEngine2.5 slice -v -p -j ~/cura/resources/definitions/delta.def.json' \
-            ' -o ~/cura/output/' + modelName + '.gcode -l ~/cura/models/' + modelName + '.stl'
-    result = os.popen(shell).read()
-    return result
+            ' -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + modelName
+    os.popen(shell).read()
+    return send_from_directory('~/cura/output/', outName + '.gcode')
