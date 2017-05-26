@@ -165,11 +165,11 @@ class EMessage(db.Model):
 def GetEMessage():
     skip = request.args.get('Skip')
     limit = request.args.get('Limit')
-    list = EMessage.query.filter().order_by(
+    e = EMessage.query.filter().order_by(
         desc(EMessage.EMessageId)).limit(limit).offset(skip).all()
-    if list:
+    if e:
         data = list()
-        for message in list:
+        for message in e:
             data.append(GetEMessageJson(message))
         return jsonify({'Message': '成功', 'Data': data})
     else:
