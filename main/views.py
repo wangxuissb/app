@@ -17,9 +17,9 @@ def index():
 # ~/cura/CuraEngine2.5 slice -v -p -j ~/cura/resources/definitions/delta.def.json -o ~/cura/output/1.gcode -l ~/cura/models/1.stl
 @main.route('/api/model/slice/', methods=['GET'])
 def sliceModel():
-    modelName = request.args.get('modelName')
+    modelName = request.args.get('modelName') + '.stl'
     outName = modelName + '.gcode'
     shell = '~/cura/CuraEngine2.5 slice -v -p -j ~/cura/resources/definitions/delta.def.json' \
-            ' -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + modelName + '.stl'
+            ' -o ~/cura/output/' + outName + ' -l ~/cura/models/' + modelName
     result = subprocess.call([shell])
     return result
