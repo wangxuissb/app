@@ -21,6 +21,6 @@ def sliceModel():
     modelName = request.args.get('modelName')
     outName = modelName.split('.', 1)[0]
     shell = '~/cura/CuraEngine2.5 slice -v -p -j ~/cura/resources/definitions/delta.def.json' \
-            ' -o ~/dev/demo/app/output/' + outName + '.gcode -l ~/cura/models/' + modelName
+            ' -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + modelName
     os.popen(shell).read()
-    return send_file('output/' + outName + '.gcode')
+    return send_file('../../../cura/output/' + outName + '.gcode', as_attachment=True)
