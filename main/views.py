@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import subprocess
 from flask import jsonify, make_response, request
 from . import main
@@ -20,5 +21,5 @@ def sliceModel():
     modelName = request.args.get('modelName')
     shell = '~/cura/CuraEngine2.5 slice -v -p -j ~/cura/resources/definitions/delta.def.json' \
             ' -o ~/cura/output/' + modelName + '.gcode -l ~/cura/models/' + modelName + '.stl'
-    result = subprocess.call([shell])
+    result = os.popen(shell).read()
     return result
