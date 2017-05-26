@@ -129,7 +129,7 @@ def findMoney():
     skip = request.args.get('Skip')
     limit = request.args.get('Limit')
     moneylist = Money.query.filter(Money.UserId == id).order_by(
-        desc(Money.MoneyId)).limit(skip).offset(limit).all()
+        desc(Money.MoneyId)).limit(limit).offset(skip).all()
     if moneylist:
         list = list()
         for money in moneylist:
@@ -166,7 +166,7 @@ def GetEMessage():
     skip = request.args.get('Skip')
     limit = request.args.get('Limit')
     list = EMessage.query.filter().order_by(
-        desc(EMessage.EMessageId)).limit(skip).offset(limit).all()
+        desc(EMessage.EMessageId)).limit(limit).offset(skip).all()
     if list:
         data = list()
         for message in list:
