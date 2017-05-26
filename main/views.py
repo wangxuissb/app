@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import subprocess
-from flask import jsonify, make_response, request, send_from_directory
+from flask import jsonify, make_response, request, send_from_directory, send_file
 from . import main
 
 
@@ -23,4 +23,4 @@ def sliceModel():
     shell = '~/cura/CuraEngine2.5 slice -v -p -j ~/cura/resources/definitions/delta.def.json' \
             ' -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + modelName
     os.popen(shell).read()
-    return send_from_directory(os.path.abspath('/cura/output/'), outName + '.gcode', as_attachment=True)
+    return send_file('~/cura/output/' + outName + '.gcode')
