@@ -23,4 +23,4 @@ def sliceModel():
     shell = '~/cura/CuraEngine2.5 slice -v -p -j ~/cura/resources/definitions/delta.def.json' \
             ' -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + modelName
     os.popen(shell).read()
-    return send_from_directory('~/cura/output/', outName + '.gcode')
+    return send_from_directory(os.path.abspath('~/cura/output/'), outName + '.gcode')
