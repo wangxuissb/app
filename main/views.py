@@ -130,9 +130,9 @@ def findMoney():
     moneylist = Money.query.filter(Money.UserId == id).order_by(
         desc(Money.MoneyId)).limit(limit).offset(skip).all()
     if moneylist:
-        list = list()
+        newlist = list()
         for money in moneylist:
-            list.append(GetMoneyJson(money))
+            newlist.append(GetMoneyJson(money))
         return jsonify({'Message': '成功', 'Data': list})
     else:
         return jsonify({'Message': '失败', 'Data': '没有提现记录'})
