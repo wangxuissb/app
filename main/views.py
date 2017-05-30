@@ -116,7 +116,7 @@ def getMoney():
         session.add(money)
         session.commit()
         session.close()
-        return jsonify({'Message': '成功', 'Data': float(get.Money) - request.json['Money']})
+        return jsonify({'Message': '成功', 'Data': ''})
     else:
         return jsonify({'Message': '失败', 'Data': '密码错误'})
 
@@ -133,7 +133,7 @@ def findMoney():
         newlist = list()
         for money in moneylist:
             newlist.append(GetMoneyJson(money))
-        return jsonify({'Message': '成功', 'Data': list})
+        return jsonify({'Message': '成功', 'Data': newlist})
     else:
         return jsonify({'Message': '失败', 'Data': '没有提现记录'})
 
