@@ -252,6 +252,49 @@ def getForYou():
         return jsonify({'Message': '失败', 'Data': ''})
 
 
+@main.route('/api/appinfo/image', methods=['GET'])
+def getImage():
+    image = App.query.filter(App.Type.like('首页图')).first()
+    if image:
+        return jsonify({'Message': '成功', 'Data': image.Content})
+    else:
+        return jsonify({'Message': '失败', 'Data': ''})
+
+
+# *****************************轮播图*****************************
+class Banner(db.Model):
+    __tablename__ = 'banner'
+    BannerId = db.Column(db.Integer, primary_key=True)
+    Url = db.Column(db.String)
+    Click = db.Column(db.Boolean)
+    Pic = db.Column(db.String)
+
+    def __int__(self, BannerId, Url, Click, Pic):
+        self.BannerId = BannerId
+        self.Url = Url
+        self.Click = Click
+        self.Pic = Pic
+
+    def __repr__(self):
+        return ''
+
+
+@main.route('/api/bannerinfo/get', methods=['GET'])
+def getBanner():
+    blist = list()
+    bannerList = Banner.query.filter().all()
+    if bannerList:
+        for banner in bannerList:
+            blist.append(GetBannerJson(banner))
+        return jsonify({'Message': '成功', 'Data': blist})
+    else:
+        return jsonify({'Message': '失败', 'Data': ''})
+
+
+def GetBannerJson(banner):
+    return {'BannerId': banner.BannerId, 'Url': banner.Url, 'Click': banner.Click, 'Pic': banner.Pic}
+
+
 # *****************************用户相关*****************************
 class User(db.Model):
     # 共计23项
@@ -399,7 +442,7 @@ def SignUp():
         session.commit()
         session.close()
         user = User.query.filter_by(TelPhone=request.json['TelPhone']).first()
-        LoginIM(user.UserId, user.PassWord)
+        LoginIM(user.UserId, request.json['PassWord'])
         return jsonify({'Message': '成功', 'Data': '注册成功'})
 
 
@@ -565,6 +608,22 @@ def FindAllShop():
 # 修改商户信息
 @main.route('/api/shopinfo/update', methods=['POST'])
 def UpdateShop():
+    shop = Shop.query.filter_by(ShopId=request.json['ShopId']).first()
+    user1 = User(shop.Manager1)
+    user1.ShopId = 0
+    session.merge(user1)
+    session.commit()
+    session.close()
+    user2 = User(shop.Manager2)
+    user2.ShopId = 0
+    session.merge(user2)
+    session.commit()
+    session.close()
+    user3 = User(shop.Manager3)
+    user3.ShopId = 0
+    session.merge(user3)
+    session.commit()
+    session.close()
     shop = Shop(ShopId=request.json['ShopId'])
     shop.Avatar = request.json['Avatar']
     shop.Content = request.json['Content']
@@ -572,6 +631,21 @@ def UpdateShop():
     shop.Manager2 = request.json['Manager2']
     shop.Manager3 = request.json['Manager3']
     session.merge(shop)
+    session.commit()
+    session.close()
+    user1 = User(request.json['Manager1'])
+    user1.ShopId = 0
+    session.merge(user1)
+    session.commit()
+    session.close()
+    user2 = User(request.json['Manager2'])
+    user2.ShopId = 0
+    session.merge(user2)
+    session.commit()
+    session.close()
+    user3 = User(request.json['Manager3'])
+    user3.ShopId = 0
+    session.merge(user3)
     session.commit()
     session.close()
     return jsonify({'Message': '成功', 'Data': '更新成功'})
@@ -1764,7 +1838,11 @@ def FindOrderCount():
     id = int(request.args.get('id'))
     count = Order.query.filter(
         and_(or_(Order.FirstId == id, Order.SecondId == id), and_(Order.State != -1, Order.State != -2, ))).count()
-    return jsonify({'Message': '成功', 'Data': count})
+    sale = Order.query.filter(
+        and_(Order.FirstId == id, and_(Order.State != -1, Order.State != -2, ))).count()
+    buy = Order.query.filter(
+        and_(Order.SecondId == id, and_(Order.State != -1, Order.State != -2, ))).count()
+    return jsonify({'Message': '成功', 'Data': {'Count': count, 'Sale': sale, 'Buy': buy}})
 
 
 # 查询关注数目
