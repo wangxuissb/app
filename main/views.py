@@ -609,17 +609,17 @@ def FindAllShop():
 @main.route('/api/shopinfo/update', methods=['POST'])
 def UpdateShop():
     shop = Shop.query.filter_by(ShopId=request.json['ShopId']).first()
-    user1 = User(shop.Manager1)
+    user1 = User(UserId=shop.Manager1)
     user1.ShopId = 0
     session.merge(user1)
     session.commit()
     session.close()
-    user2 = User(shop.Manager2)
+    user2 = User(UserId=shop.Manager2)
     user2.ShopId = 0
     session.merge(user2)
     session.commit()
     session.close()
-    user3 = User(shop.Manager3)
+    user3 = User(UserId=shop.Manager3)
     user3.ShopId = 0
     session.merge(user3)
     session.commit()
@@ -633,17 +633,17 @@ def UpdateShop():
     session.merge(shop)
     session.commit()
     session.close()
-    user1 = User(request.json['Manager1'])
+    user1 = User(UserId=request.json['Manager1'])
     user1.ShopId = 0
     session.merge(user1)
     session.commit()
     session.close()
-    user2 = User(request.json['Manager2'])
+    user2 = User(UserId=request.json['Manager2'])
     user2.ShopId = 0
     session.merge(user2)
     session.commit()
     session.close()
-    user3 = User(request.json['Manager3'])
+    user3 = User(UserId=request.json['Manager3'])
     user3.ShopId = 0
     session.merge(user3)
     session.commit()
