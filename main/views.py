@@ -612,18 +612,11 @@ def UpdateShop():
     user1 = User(UserId=shop.Manager1)
     user1.ShopId = 0
     session.merge(user1)
-    session.commit()
-    session.close()
     user2 = User(UserId=shop.Manager2)
     user2.ShopId = 0
-    session.merge(user2)
-    session.commit()
-    session.close()
     user3 = User(UserId=shop.Manager3)
     user3.ShopId = 0
     session.merge(user3)
-    session.commit()
-    session.close()
     shop = Shop(ShopId=request.json['ShopId'])
     shop.Avatar = request.json['Avatar']
     shop.Content = request.json['Content']
@@ -631,18 +624,12 @@ def UpdateShop():
     shop.Manager2 = request.json['Manager2']
     shop.Manager3 = request.json['Manager3']
     session.merge(shop)
-    session.commit()
-    session.close()
     user1 = User(UserId=request.json['Manager1'])
     user1.ShopId = 0
     session.merge(user1)
-    session.commit()
-    session.close()
     user2 = User(UserId=request.json['Manager2'])
     user2.ShopId = 0
     session.merge(user2)
-    session.commit()
-    session.close()
     user3 = User(UserId=request.json['Manager3'])
     user3.ShopId = 0
     session.merge(user3)
