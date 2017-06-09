@@ -625,13 +625,13 @@ def UpdateShop():
     shop.Manager3 = request.json['Manager3']
     session.merge(shop)
     user1 = User(UserId=request.json['Manager1'])
-    user1.ShopId = 0
+    user1.ShopId = request.json['ShopId']
     session.merge(user1)
     user2 = User(UserId=request.json['Manager2'])
-    user2.ShopId = 0
+    user2.ShopId = request.json['ShopId']
     session.merge(user2)
     user3 = User(UserId=request.json['Manager3'])
-    user3.ShopId = 0
+    user3.ShopId = request.json['ShopId']
     session.merge(user3)
     session.commit()
     session.close()
@@ -674,8 +674,6 @@ def CreateShopComment():
     comment.Score = request.json['Score']
     comment.CreatedAt = request.json['CreatedAt']
     session.add(comment)
-    session.commit()
-    session.close()
     shop = Shop.query.filter_by(ShopId=request.json['ShopId']).first()
     s = Shop(ShopId=request.json['ShopId'])
     s.Score = shop.Score + request.json['Score']
@@ -809,8 +807,6 @@ def UpdateShopClassifyBook():
     book = ShopBook(BookId=request.json['SaleId'])
     book.ClassifyId = request.json['ClassifyId']
     session.merge(book)
-    session.commit()
-    session.close()
     s = Sale(SaleId=request.json['SaleId'])
     s.Count = request.json['Count']
     s.NewPrice = request.json['NewPrice']
@@ -1308,8 +1304,6 @@ def CreateOrder():
             if newcount == 0:
                 newsale.IsSale = True
             session.merge(newsale)
-            session.commit()
-            session.close()
             s = Order(Type=request.json['Type'])
             s.PayAt = request.json['PayAt']
             s.GetAt = request.json['GetAt']
@@ -1340,8 +1334,6 @@ def CreateOrder():
         newbuy = Buy(BuyId=request.json['BookId'])
         newbuy.IsBuy = True
         session.merge(newbuy)
-        session.commit()
-        session.close()
         s = Order(Type=request.json['Type'])
         s.PayAt = request.json['PayAt']
         s.GetAt = request.json['GetAt']
