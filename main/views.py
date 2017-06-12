@@ -2,8 +2,8 @@
 import hashlib
 import random
 import requests
-from flask import Flask, jsonify, request, abort, make_response
-from flask.ext.login import AnonymousUserMixin, login_user
+from flask import Flask, jsonify, request, abort, make_response, g
+from flask.ext.login import AnonymousUserMixin, login_user, login_required
 from sqlalchemy import create_engine, MetaData, and_, or_, desc, asc
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -517,6 +517,7 @@ def UpdateUser():
 
 # 查找单个用户
 @main.route('/api/userinfo/find/', methods=['GET'])
+@login_required
 def FindUserById():
     Uid = int(request.args.get('id'))
     user = User.query.filter_by(UserId=Uid).first()
