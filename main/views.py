@@ -510,12 +510,14 @@ def UpdateUser():
 
 # 查找单个用户
 @main.route('/api/userinfo/find/', methods=['GET'])
-@login_required
 def FindUserById():
-    Uid = int(request.args.get('id'))
-    user = User.query.filter_by(UserId=Uid).first()
-    data = GetUserJson(user)
-    return jsonify({'Message': '成功', 'Data': data})
+    if current_user.is_authenticated():
+        Uid = int(request.args.get('id'))
+        user = User.query.filter_by(UserId=Uid).first()
+        data = GetUserJson(user)
+        return jsonify({'Message': '成功', 'Data': data})
+    else:
+        return '用户未登录'
 
 
 # 手机号查找单个用户
