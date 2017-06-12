@@ -402,6 +402,7 @@ class User(db.Model, UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
+    print '老铁'
     print int(user_id)
     return User.query.filter_by(UserId=int(user_id)).first()
 
@@ -425,7 +426,6 @@ def Login():
             session.close()
             user = User.query.filter_by(TelPhone=Tel).first()
             login_user(user)
-            print '老铁'
             data = GetUserJson(user)
             return jsonify(
                 {'Message': '成功', 'Data': data})
