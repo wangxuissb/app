@@ -3,11 +3,12 @@ import hashlib
 import random
 import requests
 from flask import Flask, jsonify, request, abort, make_response
+from flask.ext.login import AnonymousUserMixin, login_user
 from sqlalchemy import create_engine, MetaData, and_, or_, desc, asc
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from flask.ext.sqlalchemy import SQLAlchemy
-from .. import db, db_session, session
+from .. import db, db_session, session, login_manager
 from . import main
 import json, time, urllib2
 import pingpp
@@ -16,6 +17,7 @@ from pingpp import Charge
 pingpp.api_key = 'sk_live_vz5808mDmvfPXfPKGOqPyfPK'
 appid = 'app_fjPKqPGCm980qT8G'
 UserIdNum = [0]
+login_manager.session_protection = "strong"
 
 
 @main.teardown_request
@@ -382,6 +384,35 @@ class User(db.Model):
     def __repr__(self):
         return ''
 
+    def is_authenticated(self):
+        """Check the user whether logged in."""
+
+        # Check the User's instance whether Class AnonymousUserMixin's instance.
+        if isinstance(self, AnonymousUserMixin):
+            return False
+        else:
+            return True
+
+    def is_active(self):
+        """Check the user whether pass the activation process."""
+        return True
+
+    def is_anonymous(self):
+        """Check the user's login status whether is anonymous."""
+        if isinstance(self, AnonymousUserMixin):
+            return True
+        else:
+            return False
+
+    def get_id(self):
+        """Get the user's uuid from database."""
+        return unicode(self.UserId)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter_by(UserId=int(user_id)).first()
+
 
 # 登陆
 @main.route('/api/userinfo/login', methods=['POST'])
@@ -402,6 +433,7 @@ def Login():
             session.close()
             user = User.query.filter_by(TelPhone=Tel).first()
             data = GetUserJson(user)
+            login_user(user)
             return jsonify(
                 {'Message': '成功', 'Data': data})
         else:
