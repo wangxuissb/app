@@ -3,7 +3,7 @@ import hashlib
 import random
 import requests
 from flask import Flask, jsonify, request, abort, make_response, g
-from flask.ext.login import AnonymousUserMixin, login_user, login_required, current_user
+from flask.ext.login import AnonymousUserMixin, login_user, login_required, current_user, UserMixin
 from sqlalchemy import create_engine, MetaData, and_, or_, desc, asc
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -299,7 +299,7 @@ def GetBannerJson(banner):
 
 
 # *****************************用户相关*****************************
-class User(db.Model):
+class User(db.Model, UserMixin):
     # 共计23项
     __tablename__ = 'user'
     # -----------------------------必要信息-------------------------
@@ -509,14 +509,12 @@ def UpdateUser():
 
 # 查找单个用户
 @main.route('/api/userinfo/find/', methods=['GET'])
+@login_required
 def FindUserById():
-    if current_user:
-        return '未登录'
-    else:
-        Uid = int(request.args.get('id'))
-        user = User.query.filter_by(UserId=Uid).first()
-        data = GetUserJson(user)
-        return jsonify({'Message': '成功', 'Data': data})
+    Uid = int(request.args.get('id'))
+    user = User.query.filter_by(UserId=Uid).first()
+    data = GetUserJson(user)
+    return jsonify({'Message': '成功', 'Data': data})
 
 
 # 手机号查找单个用户
