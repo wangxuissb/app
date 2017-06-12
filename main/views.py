@@ -425,7 +425,6 @@ def Login():
             session.close()
             user = User.query.filter_by(TelPhone=Tel).first()
             login_user(user)
-            g.user = user
             data = GetUserJson(user)
             return jsonify(
                 {'Message': '成功', 'Data': data})
@@ -511,7 +510,7 @@ def UpdateUser():
 # 查找单个用户
 @main.route('/api/userinfo/find/', methods=['GET'])
 def FindUserById():
-    if not g.user:
+    if current_user:
         return '未登录'
     else:
         Uid = int(request.args.get('id'))
