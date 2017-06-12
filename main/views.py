@@ -411,6 +411,7 @@ class User(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
+    print int(user_id)
     return User.query.filter_by(UserId=int(user_id)).first()
 
 
@@ -519,8 +520,6 @@ def UpdateUser():
 @main.route('/api/userinfo/find/', methods=['GET'])
 @login_required
 def FindUserById():
-    if not current_user:
-        return '请登陆'
     Uid = int(request.args.get('id'))
     user = User.query.filter_by(UserId=Uid).first()
     data = GetUserJson(user)
