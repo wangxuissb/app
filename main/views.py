@@ -18,6 +18,7 @@ pingpp.api_key = 'sk_live_vz5808mDmvfPXfPKGOqPyfPK'
 appid = 'app_fjPKqPGCm980qT8G'
 UserIdNum = [0]
 login_manager.session_protection = "strong"
+login_manager.login_view = '/api/userinfo/login'
 
 
 @main.teardown_request
