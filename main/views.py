@@ -425,6 +425,7 @@ def Login():
             session.close()
             user = User.query.filter_by(TelPhone=Tel).first()
             login_user(user)
+            print '老铁'
             data = GetUserJson(user)
             return jsonify(
                 {'Message': '成功', 'Data': data})
