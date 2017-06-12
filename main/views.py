@@ -3,7 +3,7 @@ import hashlib
 import random
 import requests
 from flask import Flask, jsonify, request, abort, make_response, g
-from flask.ext.login import AnonymousUserMixin, login_user, login_required
+from flask.ext.login import AnonymousUserMixin, login_user, login_required, current_user
 from sqlalchemy import create_engine, MetaData, and_, or_, desc, asc
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -432,8 +432,8 @@ def Login():
             session.commit()
             session.close()
             user = User.query.filter_by(TelPhone=Tel).first()
-            data = GetUserJson(user)
             login_user(user)
+            data = GetUserJson(user)
             return jsonify(
                 {'Message': '成功', 'Data': data})
         else:
@@ -519,6 +519,8 @@ def UpdateUser():
 @main.route('/api/userinfo/find/', methods=['GET'])
 @login_required
 def FindUserById():
+    if not current_user:
+        return '请登陆'
     Uid = int(request.args.get('id'))
     user = User.query.filter_by(UserId=Uid).first()
     data = GetUserJson(user)
