@@ -20,6 +20,7 @@ def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = databaseurl
     app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+    app.config['SECRET_KEY'] = '406726'
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
     db.init_app(app)
