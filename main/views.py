@@ -26,6 +26,13 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    print '老铁'
+    print int(user_id)
+    return User.query.filter_by(UserId=int(user_id)).first()
+
+
 @main.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not Found'}), 404)
@@ -400,13 +407,6 @@ class User(db.Model, UserMixin):
         return unicode(self.UserId)
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    print '老铁'
-    print int(user_id)
-    return User.query.filter_by(UserId=int(user_id)).first()
-
-
 # 登陆
 @main.route('/api/userinfo/login', methods=['POST'])
 def Login():
@@ -511,13 +511,10 @@ def UpdateUser():
 # 查找单个用户
 @main.route('/api/userinfo/find/', methods=['GET'])
 def FindUserById():
-    if current_user.is_authenticated():
-        Uid = int(request.args.get('id'))
-        user = User.query.filter_by(UserId=Uid).first()
-        data = GetUserJson(user)
-        return jsonify({'Message': '成功', 'Data': data})
-    else:
-        return '用户未登录'
+    Uid = int(request.args.get('id'))
+    user = User.query.filter_by(UserId=Uid).first()
+    data = GetUserJson(user)
+    return jsonify({'Message': '成功', 'Data': data})
 
 
 # 手机号查找单个用户
