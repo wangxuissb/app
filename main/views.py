@@ -406,7 +406,7 @@ class User(db.Model, UserMixin):
 
 
 # 登陆
-@main.route('/api/userinfo/login', methods=['POST', 'GET'])
+@main.route('/api/userinfo/login/', methods=['POST', 'GET'])
 def Login():
     # Tel = request.json['Tel']
     # Psw = request.json['Psw']
