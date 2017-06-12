@@ -28,8 +28,6 @@ def shutdown_session(exception=None):
 
 @login_manager.user_loader
 def load_user(user_id):
-    print '老铁'
-    print int(user_id)
     return User.query.filter_by(UserId=int(user_id)).first()
 
 
@@ -408,11 +406,14 @@ class User(db.Model, UserMixin):
 
 
 # 登陆
-@main.route('/api/userinfo/login', methods=['POST'])
+@main.route('/api/userinfo/login', methods=['POST', 'GET'])
 def Login():
-    Tel = request.json['Tel']
-    Psw = request.json['Psw']
-    Time = request.json['Time']
+    # Tel = request.json['Tel']
+    # Psw = request.json['Psw']
+    # Time = request.json['Time']
+    Tel = request.args.get['Tel']
+    Psw = request.args.get['Psw']
+    Time = request.args.get['Time']
     get = User.query.filter_by(TelPhone=Tel).first()
     if get is None:
         return jsonify({'Message': '失败', 'Data': '用户不存在'})
@@ -510,6 +511,7 @@ def UpdateUser():
 
 # 查找单个用户
 @main.route('/api/userinfo/find/', methods=['GET'])
+@login_required
 def FindUserById():
     Uid = int(request.args.get('id'))
     user = User.query.filter_by(UserId=Uid).first()
