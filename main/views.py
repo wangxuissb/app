@@ -43,6 +43,7 @@ def index():
 
 # **********************************快递查询***************************
 @main.route('/posinfo/find/type=<type>&id=<id>', methods=['GET'])
+@login_required
 def PostFind(type, id):
     url = 'http://www.kuaidi100.com/query?type=' + type + '&postid=' + id
     r = requests.get(url)
@@ -51,12 +52,14 @@ def PostFind(type, id):
 
 
 @main.route('/posinfo/getkey', methods=['GET'])
+@login_required
 def PostKey():
     return jsonify({'Message': '成功', 'Data': {'Time': 'time', 'Context': 'context'}})
 
 
 # *******************************支付**********************************
 @main.route('/api/chargeinfo/getcharge', methods=['POST'])
+@login_required
 def getCharge():
     ch = Charge.create(
         order_no=request.json['OrderNo'],
@@ -106,6 +109,7 @@ class Money(db.Model):
 
 # 申请提现
 @main.route('/api/moneyinfo/get', methods=['POST'])
+@login_required
 def getMoney():
     get = User.query.filter_by(UserId=request.json['UserId']).first()
     if get.PassWord == request.json['Psw']:
@@ -131,6 +135,7 @@ def getMoney():
 
 # 查询提现记录
 @main.route('/api/moneyinfo/find/', methods=['GET'])
+@login_required
 def findMoney():
     id = request.args.get('UserId')
     skip = request.args.get('Skip')
@@ -169,6 +174,7 @@ class EMessage(db.Model):
 
 
 @main.route('/api/emessageinfo/find/', methods=['GET'])
+@login_required
 def GetEMessage():
     skip = request.args.get('Skip')
     limit = request.args.get('Limit')
@@ -207,6 +213,7 @@ class FeedBack(db.Model):
 
 
 @main.route('/api/feedbackinfo/create', methods=['POST'])
+@login_required
 def CreateFeedBack():
     u = FeedBack(UserId=request.json['UserId'])
     u.Content = request.json['Content']
@@ -610,6 +617,7 @@ class Shop(db.Model):
 
 # 根据id查询商家
 @main.route('/api/shopinfo/find/', methods=['GET'])
+@login_required
 def FindShop():
     shop = Shop.query.filter_by(ShopId=request.args.get('id')).first()
     if shop:
@@ -621,6 +629,7 @@ def FindShop():
 
 # 查询商家
 @main.route('/api/shopinfo/find/all/', methods=['GET'])
+@login_required
 def FindAllShop():
     shop = Shop.query.filter_by(IsBan=False).order_by(
         desc(Shop.ShopId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
@@ -633,6 +642,7 @@ def FindAllShop():
 
 # 修改商户信息
 @main.route('/api/shopinfo/update', methods=['POST'])
+@login_required
 def UpdateShop():
     shop = Shop.query.filter_by(ShopId=request.json['ShopId']).first()
     user1 = User(UserId=shop.Manager1)
@@ -693,6 +703,7 @@ class ShopComment(db.Model):
 
 # 新建评论
 @main.route('/api/shopinfo/create/comment', methods=['POST'])
+@login_required
 def CreateShopComment():
     comment = ShopComment(ShopId=request.json['ShopId'])
     comment.UserId = request.json['UserId']
@@ -712,6 +723,7 @@ def CreateShopComment():
 
 # 根据商家id查询评论
 @main.route('/api/shopinfo/find/comment/', methods=['GET'])
+@login_required
 def FindShopComment():
     shop = ShopComment.query.filter_by(ShopId=request.args.get('id')).order_by(
         desc(ShopComment.CommentId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
@@ -726,6 +738,7 @@ def FindShopComment():
 
 # 根据商家id查询评论数量
 @main.route('/api/shopinfo/count/comment/', methods=['GET'])
+@login_required
 def FindShopCommentCount():
     shop = ShopComment.query.filter_by(ShopId=request.args.get('id')).count()
     return jsonify({'Message': '成功', 'Data': shop})
@@ -751,6 +764,7 @@ class ShopClassify(db.Model):
 
 # 新建分类
 @main.route('/api/shopinfo/create/classify', methods=['POST'])
+@login_required
 def CreateShopClassify():
     classify = ShopClassify(ShopId=request.json['ShopId'])
     classify.Classify = request.json['Classify']
@@ -762,6 +776,7 @@ def CreateShopClassify():
 
 # 删除分类
 @main.route('/api/shopinfo/delete/classify', methods=['POST'])
+@login_required
 def DeleteShopClassify():
     ShopClassify.query.filter_by(ClassifyId=request.json['ClassifyId']).delete()
     return jsonify({'Message': '成功', 'Data': '成功'})
@@ -769,6 +784,7 @@ def DeleteShopClassify():
 
 # 根据商家id查询分类
 @main.route('/api/shopinfo/find/classify/', methods=['GET'])
+@login_required
 def FindShopClassify():
     shop = ShopClassify.query.filter_by(ShopId=request.args.get('id')).order_by(
         desc(ShopClassify.ClassifyId)).limit(request.args.get('limit')).offset(request.args.get('skip')).all()
@@ -810,6 +826,7 @@ class ShopBook(db.Model):
 
 # 新建分类下的书籍
 @main.route('/api/shopinfo/create/book', methods=['POST'])
+@login_required
 def CreateShopClassifyBook():
     book = ShopBook(ShopId=request.json['ShopId'])
     book.ClassifyId = request.json['ClassifyId']
@@ -822,6 +839,7 @@ def CreateShopClassifyBook():
 
 # 删除分类书籍
 @main.route('/api/shopinfo/delete/book', methods=['POST'])
+@login_required
 def DeleteShopClassifyBook():
     ShopBook.query.filter_by(ShopBookId=request.json['ShopBookId']).delete()
     return jsonify({'Message': '成功', 'Data': '成功'})
@@ -829,6 +847,7 @@ def DeleteShopClassifyBook():
 
 # 更新分类下的书籍
 @main.route('/api/shopinfo/update/book', methods=['POST'])
+@login_required
 def UpdateShopClassifyBook():
     book = ShopBook(BookId=request.json['SaleId'])
     book.ClassifyId = request.json['ClassifyId']
@@ -844,6 +863,7 @@ def UpdateShopClassifyBook():
 
 # 根据商家id查询分类书籍
 @main.route('/api/shopinfo/find/book/', methods=['GET'])
+@login_required
 def FindShopClassifyBook():
     classifyId = request.args.get('ClassifyId')
     if (int(classifyId) == 0):
@@ -952,6 +972,7 @@ class Sale(db.Model):
 
 # 新建出售订单
 @main.route('/api/bookinfo/create/sale', methods=['POST'])
+@login_required
 def CreateSale():
     s = Sale(UserId=request.json['UserId'])
     s.BookName = request.json['BookName']
@@ -989,6 +1010,7 @@ def CreateSale():
 # 新旧从新到旧20，从旧到新21
 # desc降序，asc升序
 @main.route('/api/bookinfo/find/sale/', methods=['GET'])
+@login_required
 def FindAllSale():
     type = int(request.args.get('type', 0))
     skip = int(request.args.get('skip', 0))
@@ -1101,6 +1123,7 @@ def FindAllSale():
 
 # 更新出售
 @main.route('/api/bookinfo/update/sale', methods=['POST'])
+@login_required
 def UpdateSale():
     s = Sale(SaleId=request.json['SaleId'])
     s.IsSale = request.json['IsSale']
@@ -1113,6 +1136,7 @@ def UpdateSale():
 
 # 查询剩余数量
 @main.route('/api/bookinfo/find/count/', methods=['GET'])
+@login_required
 def FindSaleBookCount():
     id = int(request.args.get('id'))
     book = Sale.query.filter(Sale.SaleId == id).first()
@@ -1121,6 +1145,7 @@ def FindSaleBookCount():
 
 # 按书名搜索
 @main.route('/api/bookinfo/search/sale/bookname/', methods=['GET'])
+@login_required
 def FindSaleBookName():
     bookname = request.args.get('bookname')
     skip = int(request.args.get('skip'))
@@ -1189,6 +1214,7 @@ class Buy(db.Model):
 
 # 新建求购
 @main.route('/api/bookinfo/create/buy', methods=['POST'])
+@login_required
 def CreateBuy():
     s = Buy(UserId=request.json['UserId'])
     s.BookName = request.json['BookName']
@@ -1209,6 +1235,7 @@ def CreateBuy():
 
 # 查询求购
 @main.route('/api/bookinfo/find/buy/', methods=['GET'])
+@login_required
 def FindAllBuy():
     skip = int(request.args.get('skip'))
     limit = int(request.args.get('limit'))
@@ -1226,6 +1253,7 @@ def FindAllBuy():
 
 # 更新求购
 @main.route('/api/bookinfo/update/buy', methods=['POST'])
+@login_required
 def UpdateBuy():
     s = Buy(BuyId=request.json['BuyId'])
     s.IsBuy = request.json['IsBuy']
@@ -1318,6 +1346,7 @@ class Order(db.Model):
 
 # 创建订单
 @main.route('/api/orderinfo/create', methods=['POST'])
+@login_required
 def CreateOrder():
     if request.json['Type'] == 0:
         Shopping.query.filter(
@@ -1389,6 +1418,7 @@ def CreateOrder():
 
 # 更新订单
 @main.route('/api/orderinfo/update', methods=['POST'])
+@login_required
 def UpdateOrder():
     s = Order(OrderId=request.json['OrderId'])
     s.PayAt = request.json['PayAt']
@@ -1443,6 +1473,7 @@ def UpdateOrder():
 
 # 删除订单
 @main.route('/api/orderinfo/delete', methods=['POST'])
+@login_required
 def DeleteOrder():
     Order.query.filter(Order.OrderId == request.json['OrderId']).delete()
     return jsonify({'Message': '成功', 'Data': '删除成功'})
@@ -1478,6 +1509,7 @@ class Comment(db.Model):
 
 # 创建留言
 @main.route('/api/commentinfo/create', methods=['POST'])
+@login_required
 def CreateComment():
     s = Comment(UserId=request.json['UserId'])
     s.ToId = request.json['ToId']
@@ -1492,6 +1524,7 @@ def CreateComment():
 
 # 查询留言
 @main.route('/api/commentinfo/find/', methods=['GET'])
+@login_required
 def FindComment():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
@@ -1563,6 +1596,7 @@ class Shopping(db.Model):
 
 # 加入购物车
 @main.route('/api/shoppinginfo/create', methods=['POST'])
+@login_required
 def addShopping():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
@@ -1588,6 +1622,7 @@ def addShopping():
 
 # 更新购物车
 @main.route('/api/shoppinginfo/update', methods=['POST'])
+@login_required
 def updateShopping():
     s = Shopping(ShoppingId=request.json['ShoppingId'])
     s.Count = request.json['Count']
@@ -1599,6 +1634,7 @@ def updateShopping():
 
 # 删除购物车
 @main.route('/api/shoppinginfo/delete', methods=['POST'])
+@login_required
 def deleteShopping():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
@@ -1608,6 +1644,7 @@ def deleteShopping():
 
 # 查询购物车数量（只支持本人查询）
 @main.route('/api/shoppinginfo/count/', methods=['GET'])
+@login_required
 def findShoppingCount():
     id = int(request.args.get('id'))
     count = Shopping.query.filter(Shopping.FirstId == id).count()
@@ -1616,6 +1653,7 @@ def findShoppingCount():
 
 # 查询购物车（只支持本人查询）
 @main.route('/api/shoppinginfo/find/', methods=['GET'])
+@login_required
 def findShopping():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
@@ -1635,6 +1673,7 @@ def findShopping():
 # *****************************用户操作*****************************
 # 关注
 @main.route('/api/starinfo/starpeople/create', methods=['POST'])
+@login_required
 def addStarPeople():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
@@ -1648,6 +1687,7 @@ def addStarPeople():
 
 # 收藏
 @main.route('/api/starinfo/starbook/create', methods=['POST'])
+@login_required
 def addStarBook():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
@@ -1661,6 +1701,7 @@ def addStarBook():
 
 # 取消关注
 @main.route('/api/starinfo/starpeople/delete', methods=['POST'])
+@login_required
 def deleteStarPeople():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
@@ -1670,6 +1711,7 @@ def deleteStarPeople():
 
 # 取消收藏
 @main.route('/api/starinfo/starbook/delete', methods=['POST'])
+@login_required
 def deleteStarBook():
     firstId = request.json['FirstId']
     toId = request.json['ToId']
@@ -1679,6 +1721,7 @@ def deleteStarBook():
 
 # 查询是否收藏
 @main.route('/api/starinfo/starbook/isstar/', methods=['GET'])
+@login_required
 def isStarBook():
     id = int(request.args.get('id'))
     toid = int(request.args.get('toid'))
@@ -1691,6 +1734,7 @@ def isStarBook():
 
 # 查询是否关注
 @main.route('/api/starinfo/starpeople/isstar/', methods=['GET'])
+@login_required
 def isStarPeople():
     id = int(request.args.get('id'))
     toid = int(request.args.get('toid'))
@@ -1704,6 +1748,7 @@ def isStarPeople():
 # *****************************用户查寻相关*****************************
 # 根据用户id查询出售
 @main.route('/api/bookinfo/find/sale/userid/', methods=['GET'])
+@login_required
 def FindSaleById():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
@@ -1722,6 +1767,7 @@ def FindSaleById():
 
 # 根据用户id查询求购
 @main.route('/api/bookinfo/find/buy/userid/', methods=['GET'])
+@login_required
 def FindBuyById():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
@@ -1741,6 +1787,7 @@ def FindBuyById():
 
 # 根据id查询用户订单
 @main.route('/api/orderinfo/find/userid/', methods=['GET'])
+@login_required
 def FindOrderById():
     type = int(request.args.get('type'))
     skip = int(request.args.get('skip'))
@@ -1766,6 +1813,7 @@ def FindOrderById():
 
 # 关注的人
 @main.route('/api/starinfo/starpeople/find/userid/', methods=['GET'])
+@login_required
 def FindStarPeople():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
@@ -1785,6 +1833,7 @@ def FindStarPeople():
 
 # 关注我的人
 @main.route('/api/starinfo/staredpeople/find/userid/', methods=['GET'])
+@login_required
 def FindStaredPeople():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
@@ -1804,6 +1853,7 @@ def FindStaredPeople():
 
 # 收藏的帖子
 @main.route('/api/starinfo/starbook/find/userid/', methods=['GET'])
+@login_required
 def FindStarBook():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
@@ -1823,6 +1873,7 @@ def FindStarBook():
 
 # 查询求购数目
 @main.route('/api/bookinfo/find/buy/count/', methods=['GET'])
+@login_required
 def FindBuyCount():
     id = int(request.args.get('id'))
     count = Buy.query.filter(Buy.UserId == id).count()
@@ -1839,6 +1890,7 @@ def FindSaleCount():
 
 # 查询订单数目
 @main.route('/api/orderinfo/find/count/', methods=['GET'])
+@login_required
 def FindOrderCount():
     id = int(request.args.get('id'))
     count = Order.query.filter(
@@ -1852,6 +1904,7 @@ def FindOrderCount():
 
 # 查询关注数目
 @main.route('/api/starinfo/starpeople/find/count/', methods=['GET'])
+@login_required
 def FindStarPeopleCount():
     id = int(request.args.get('id'))
     count = StarPeople.query.filter(StarPeople.FirstId == id).count()
@@ -1860,6 +1913,7 @@ def FindStarPeopleCount():
 
 # 查询被关注数目
 @main.route('/api/starinfo/staredpeople/find/count/', methods=['GET'])
+@login_required
 def FindStaredPeopleCount():
     id = int(request.args.get('id'))
     count = StarPeople.query.filter(StarPeople.ToId == id).count()
@@ -1868,6 +1922,7 @@ def FindStaredPeopleCount():
 
 # 查询收藏数目
 @main.route('/api/starinfo/starbook/find/count/', methods=['GET'])
+@login_required
 def FindStarBookCount():
     id = int(request.args.get('id'))
     count = StarBook.query.filter(StarBook.FirstId == id).count()
@@ -1876,6 +1931,7 @@ def FindStarBookCount():
 
 # 查询三种数目
 @main.route('/api/allcount/', methods=['GET'])
+@login_required
 def GetAllCount():
     id = int(request.args.get('id'))
     buyCount = Buy.query.filter(Buy.UserId == id).count()
@@ -2037,6 +2093,7 @@ class Adress(db.Model):
 
 # 添加地址
 @main.route('/api/adressinfo/create', methods=['POST'])
+@login_required
 def CreateAdress():
     u = Adress(UserId=request.json['UserId'])
     u.Name = request.json['Name']
@@ -2064,6 +2121,7 @@ def CreateAdress():
 
 # 查询地址
 @main.route('/api/adressinfo/find/', methods=['GET'])
+@login_required
 def FindAdress():
     id = int(request.args.get('id'))
     newlist = list()
@@ -2091,6 +2149,7 @@ def FindAdress():
 
 # 更新地址
 @main.route('/api/adressinfo/update', methods=['POST'])
+@login_required
 def UpdateAdress():
     u = Adress(AdressId=request.json['AdressId'])
     u.Name = request.json['Name']
@@ -2121,6 +2180,7 @@ def UpdateAdress():
 
 # 删除地址
 @main.route('/api/adressinfo/delete', methods=['POST'])
+@login_required
 def DeleteAdress():
     Adress.query.filter_by(AdressId=request.json['AdressId']).delete()
     get = Adress.query.filter(
@@ -2141,6 +2201,7 @@ def DeleteAdress():
 
 # 修改默认地址
 @main.route('/api/adressinfo/default', methods=['POST'])
+@login_required
 def DefaultAdress():
     get = Adress.query.filter(
         and_(Adress.UserId == request.json['UserId'], Adress.IsDefault == True)).first()
