@@ -415,32 +415,37 @@ class User(db.Model, UserMixin):
 # 登陆
 @main.route('/api/userinfo/login/', methods=['POST', 'GET'])
 def Login():
-    # Tel = request.json['Tel']
-    # Psw = request.json['Psw']
-    # Time = request.json['Time']
-    Tel = request.args.get('Tel')
-    Psw = request.args.get('Psw')
-    Time = request.args.get('Time')
-    get = User.query.filter_by(TelPhone=Tel).first()
-    if get is None:
-        return jsonify({'Message': '失败', 'Data': '用户不存在'})
-    else:
-        if get.PassWord == Psw:
-            # IMLogOut(get.UserId)
-            u = User(UserId=get.UserId)
-            u.LastLoginTime = Time
-            session.merge(u)
-            session.commit()
-            session.close()
-            user = User.query.filter_by(TelPhone=Tel).first()
-            login_user(user)
-            data = GetUserJson(user)
-            return jsonify(
-                {'Message': '成功', 'Data': data})
+    Tel = request.json['Tel']
+    Psw = request.json['Psw']
+    Time = request.json['Time']
+    Next = request.args.get('next', '')
+    if Next == '':
+        # Tel = request.args.get('Tel')
+        # Psw = request.args.get('Psw')
+        # Time = request.args.get('Time')
+        get = User.query.filter_by(TelPhone=Tel).first()
+        if get is None:
+            return jsonify({'Message': '失败', 'Data': '用户不存在'})
         else:
-            return jsonify({'Message': '失败', 'Data': '密码错误'})  # 注册
+            if get.PassWord == Psw:
+                # IMLogOut(get.UserId)
+                u = User(UserId=get.UserId)
+                u.LastLoginTime = Time
+                session.merge(u)
+                session.commit()
+                session.close()
+                user = User.query.filter_by(TelPhone=Tel).first()
+                login_user(user)
+                data = GetUserJson(user)
+                return jsonify(
+                    {'Message': '成功', 'Data': data})
+            else:
+                return jsonify({'Message': '失败', 'Data': '密码错误'})
+    else:
+        return jsonify({'Message': '失败', 'Data': '用户已过期'})
 
 
+# 注册
 @main.route('/api/userinfo/signup', methods=['POST'])
 def SignUp():
     teluser = User.query.filter_by(TelPhone=request.json['TelPhone']).first()
