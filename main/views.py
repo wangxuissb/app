@@ -1758,8 +1758,16 @@ def FindSaleById():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
     limit = int(request.args.get('limit'))
-    booklist = Sale.query.filter(Sale.UserId == id).order_by(
-        desc(Sale.SaleId)).limit(limit).offset(skip).all()
+    name = str(request.args.get('name', ''))
+    if name == '':
+        booklist = Sale.query.filter(Sale.UserId == id).order_by(
+            desc(Sale.SaleId)).limit(limit).offset(skip).all()
+    else:
+        booklist = Sale.query.filter(and_(Sale.UserId == id, or_(Sale.BookName.like("%" + name + "%"),
+                                                                 Sale.Author.like("%" + name + "%"),
+                                                                 Sale.Publish.like("%" + name + "%"),
+                                                                 Sale.Classify.like("%" + name + "%")))).order_by(
+            desc(Sale.SaleId)).limit(limit).offset(skip).all()
     if booklist:
         newlist = list()
         for book in booklist:
