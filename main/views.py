@@ -1785,8 +1785,13 @@ def FindBuyById():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
     limit = int(request.args.get('limit'))
-    buylist = Buy.query.filter(Buy.UserId == id).order_by(
-        desc(Buy.BuyId)).limit(limit).offset(skip).all()
+    name = str(request.args.get('name', ''))
+    if name == '':
+        buylist = Buy.query.filter(Buy.UserId == id).order_by(
+            desc(Buy.BuyId)).limit(limit).offset(skip).all()
+    else:
+        buylist = Buy.query.filter(and_(Buy.UserId == id, Buy.BookName.like("%" + name + "%"))).order_by(
+            desc(Buy.BuyId)).limit(limit).offset(skip).all()
     if buylist:
         newlist = list()
         for buy in buylist:
