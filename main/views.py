@@ -1758,7 +1758,7 @@ def FindSaleById():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
     limit = int(request.args.get('limit'))
-    name = str(request.args.get('name', ''))
+    name = request.args.get('name', '')
     if name == '':
         booklist = Sale.query.filter(Sale.UserId == id).order_by(
             desc(Sale.SaleId)).limit(limit).offset(skip).all()
@@ -1785,7 +1785,7 @@ def FindBuyById():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
     limit = int(request.args.get('limit'))
-    name = str(request.args.get('name', ''))
+    name = request.args.get('name', '')
     if name == '':
         buylist = Buy.query.filter(Buy.UserId == id).order_by(
             desc(Buy.BuyId)).limit(limit).offset(skip).all()
