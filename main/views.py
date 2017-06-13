@@ -413,16 +413,16 @@ class User(db.Model, UserMixin):
 
 
 # 登陆
-@main.route('/api/userinfo/login/', methods=['POST', 'GET'])
+@main.route('/api/userinfo/login/', methods=['GET'])
 def Login():
-    Tel = request.json['Tel']
-    Psw = request.json['Psw']
-    Time = request.json['Time']
     Next = request.args.get('next', '')
     if Next == '':
-        # Tel = request.args.get('Tel')
-        # Psw = request.args.get('Psw')
-        # Time = request.args.get('Time')
+        # Tel = request.json['Tel']
+        # Psw = request.json['Psw']
+        # Time = request.json['Time']
+        Tel = request.args.get('Tel')
+        Psw = request.args.get('Psw')
+        Time = request.args.get('Time')
         get = User.query.filter_by(TelPhone=Tel).first()
         if get is None:
             return jsonify({'Message': '失败', 'Data': '用户不存在'})
