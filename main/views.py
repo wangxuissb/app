@@ -441,6 +441,7 @@ def Login():
                 # IMLogOut(get.UserId)
                 u = User(UserId=get.UserId)
                 u.LastLoginTime = Time
+                u.Type = Type
                 if Type == 'Android':
                     u.AndroidId = Id
                 else:
