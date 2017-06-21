@@ -1493,6 +1493,8 @@ class Comment(db.Model):
     UserId = db.Column(db.Integer)
     # 被留言id（书的id）
     ToId = db.Column(db.Integer)
+    # 被留言id（用户的id）
+    ToUserId = db.Column(db.Integer)
     # 回复id,无回复为0
     BackId = db.Column(db.Integer)
     # 内容
@@ -1500,13 +1502,14 @@ class Comment(db.Model):
     # 创建时间
     CreatedAt = db.Column(db.BIGINT)
 
-    def __int__(self, CommentId, BackId, UserId, ToId, Content, CreatedAt):
+    def __int__(self, CommentId, BackId, UserId, ToId, Content, CreatedAt, ToUserId):
         self.CommentId = CommentId
         self.BackId = BackId
         self.UserId = UserId
         self.ToId = ToId
         self.Content = Content
         self.CreatedAt = CreatedAt
+        self.ToUserId = ToUserId
 
     def __repr__(self):
         return ''
@@ -1521,6 +1524,7 @@ def CreateComment():
     s.Content = request.json['Content']
     s.CreatedAt = request.json['CreatedAt']
     s.BackId = request.json['BackId']
+    s.ToUserId = request.json['ToUserId']
     session.add(s)
     session.commit()
     session.close()
@@ -1534,7 +1538,8 @@ def FindComment():
     skip = int(request.args.get('skip'))
     id = int(request.args.get('id'))
     limit = int(request.args.get('limit'))
-    commentlist = Comment.query.filter_by(ToId=id).order_by(
+    user = int(request.args.get('user'))
+    commentlist = Comment.query.filter_by(and_(ToId=id, ToUserId=user)).order_by(
         desc(Comment.CommentId)).limit(limit).offset(skip).all()
     if commentlist:
         newlist = list()
@@ -2276,13 +2281,15 @@ def GetCommentJson(comment):
         return {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
                 'ToId': comment.ToId,
                 'Content': comment.Content,
-                'CreatedAt': comment.CreatedAt, 'User': GetUserJson(user), 'BackUser': ''}
+                'CreatedAt': comment.CreatedAt, 'User': GetUserJson(user), 'BackUser': '', 'BackComment': ''}
     else:
-        backuser = User.query.filter_by(UserId=comment.BackId).first()
+        backcomment = Comment.query.filter_by(CommentId=comment.BackId).first()
+        backuser = User.query.filter_by(UserId=backcomment.UserId).first()
         return {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
                 'ToId': comment.ToId,
                 'Content': comment.Content,
-                'CreatedAt': comment.CreatedAt, 'User': GetUserJson(user), 'BackUser': GetUserJson(backuser)}
+                'CreatedAt': comment.CreatedAt, 'User': GetUserJson(user), 'BackUser': GetUserJson(backuser),
+                'BackComment': GetCommentJson(backcomment)}
 
 
 def GetShoppingJson(shopping):
