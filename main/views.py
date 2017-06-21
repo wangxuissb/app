@@ -1543,7 +1543,7 @@ def FindComment():
         commentlist = Comment.query.filter_by(ToId=id).order_by(
             desc(Comment.CommentId)).limit(limit).offset(skip).all()
     else:
-        commentlist = Comment.query.filter_by(and_(ToId=id, ToUserId=user)).order_by(
+        commentlist = Comment.query.filter_by(ToUserId=user).order_by(
             desc(Comment.CommentId)).limit(limit).offset(skip).all()
     if commentlist:
         newlist = list()
