@@ -2281,11 +2281,13 @@ def GetBuyJson(buy):
 
 def GetCommentJson(comment):
     user = User.query.filter_by(UserId=comment.UserId).first()
+    book = Sale.query.filter_by(SaleId=comment.ToId).first()
     if comment.BackId == 0:
         return {'CommentId': comment.CommentId, 'UserId': comment.UserId, 'BackId': comment.BackId,
                 'ToId': comment.ToId,
                 'Content': comment.Content,
-                'CreatedAt': comment.CreatedAt, 'User': GetUserJson(user), 'BackUser': '', 'BackComment': ''}
+                'CreatedAt': comment.CreatedAt, 'User': GetUserJson(user), 'BackUser': '', 'BackComment': '',
+                'Book': GetSaleJson(book)}
     else:
         backcomment = Comment.query.filter_by(CommentId=comment.BackId).first()
         backuser = User.query.filter_by(UserId=backcomment.UserId).first()
@@ -2293,7 +2295,7 @@ def GetCommentJson(comment):
                 'ToId': comment.ToId,
                 'Content': comment.Content,
                 'CreatedAt': comment.CreatedAt, 'User': GetUserJson(user), 'BackUser': GetUserJson(backuser),
-                'BackComment': GetCommentJson(backcomment)}
+                'BackComment': GetCommentJson(backcomment), 'Book': GetSaleJson(book)}
 
 
 def GetShoppingJson(shopping):
