@@ -367,9 +367,17 @@ class User(db.Model, UserMixin):
     # 上次签到时间
     LastPastTime = db.Column(db.BIGINT)
 
+    # 设备相关
+    PhoneType = db.Column(db.String)
+    AndroidId = db.Column(db.String)
+    IosId = db.Column(db.String)
+
     def __int__(self, UserId, TelPhone, PassWord, NickName, SchoolName, Major, Education,
                 Sign, Avatar, IsBan, IsPublish, IsDevelop, Location, Ex, Gold, CreatedAt, LastLoginTime, Type,
-                LastPastTime, Money, QQ, WeChat, ShopId):
+                LastPastTime, Money, QQ, WeChat, ShopId, PhoneType, AndroidId, IosId):
+        self.PhoneType = PhoneType
+        self.AndroidId = AndroidId
+        self.IosId = IosId
         self.UserId = UserId
         self.TelPhone = TelPhone
         self.PassWord = PassWord
@@ -423,6 +431,8 @@ def Login():
         Tel = request.args.get('Tel')
         Psw = request.args.get('Psw')
         Time = request.args.get('Time')
+        Type = request.args.get('Type')
+        Id = request.args.get('Id')
         get = User.query.filter_by(TelPhone=Tel).first()
         if get is None:
             return jsonify({'Message': '失败', 'Data': '用户不存在'})
@@ -431,6 +441,10 @@ def Login():
                 # IMLogOut(get.UserId)
                 u = User(UserId=get.UserId)
                 u.LastLoginTime = Time
+                if Type == 'Android':
+                    u.AndroidId = Id
+                else:
+                    u.IosId = Id
                 session.merge(u)
                 session.commit()
                 session.close()
@@ -472,6 +486,9 @@ def SignUp():
         u.ShopId = 0
         u.Location = ''
         u.Shopping = ''
+        u.AndroidId = request.json['AndroidId']
+        u.PhoneType = request.json['PhoneType']
+        u.IosId = request.json['IosId']
         u.QQ = ''
         u.WeChat = ''
         u.LastPastTime = 0
@@ -2254,7 +2271,8 @@ def GetUserJson(user):
             'Ex': user.Ex, 'Gold': user.Gold, 'LastLoginTime': user.LastLoginTime,
             'PassWord': '', 'Location': user.Location,
             'CreatedAt': user.CreatedAt, 'Type': user.Type,
-            'LastPastTime': user.LastPastTime, 'QQ': user.QQ, 'WeChat': user.WeChat, 'ShopId': user.ShopId}
+            'LastPastTime': user.LastPastTime, 'QQ': user.QQ, 'WeChat': user.WeChat, 'ShopId': user.ShopId,
+            'PhoneType': user.PhoneType, 'AndroidId': user.AndroidId, 'IosId': user.IosId}
 
 
 def GetSaleJson(sale):
