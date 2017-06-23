@@ -1287,6 +1287,49 @@ def UpdateBuy():
     return jsonify({'Message': '成功', 'Data': '设置成功'})
 
 
+class OrderRecord(db.Model):
+    __tablename__ = 'order_record'
+    OrderRecordId = db.Column(db.Integer, primary_key=True)
+    State = db.Column(db.Integer)
+    OrderId = db.Column(db.Integer)
+    UserId = db.Column(db.Integer)
+    Remark = db.Column(db.String)
+
+    def __int__(self, OrderRecordId, State, OrderId, UserId, Remark):
+        self.OrderRecordId = OrderRecordId
+        self.State = State
+        self.OrderId = OrderId
+        self.UserId = UserId
+        self.Remark = Remark
+
+    def __repr__(self):
+        return ''
+
+
+@main.route('/api/orderrecordinfo/find/', methods=['GET'])
+@login_required
+def findOrderRecord():
+    skip = int(request.args.get('skip'))
+    limit = int(request.args.get('limit'))
+    orderlist = OrderRecord.query.filter(OrderRecord.UserId == request.args.get('UserId')).order_by(
+        desc(OrderRecord.OrderRecordId)).limit(limit).offset(skip).all()
+    if orderlist:
+        newlist = list()
+        for record in orderlist:
+            data = GetOrderRecordJson(record)
+            newlist.append(data)
+        return jsonify({'Message': '成功', 'Data': newlist})
+    else:
+        return jsonify({'Message': '失败', 'Data': '没有更多数据了'})
+
+
+def GetOrderRecordJson(record):
+    order = Order.query.filter(Order.OrderId == request.json['OrderId']).first()
+    return {'OrderRecordId': record.MoneyId, 'State': record.State, 'OrderId': record.OrderId,
+            'UserId': record.UserId,
+            'Remark': record.Remark, 'Order': GetOrderJson(order)}
+
+
 # *****************************订单*****************************
 class Order(db.Model):
     # 共计20项
@@ -1405,6 +1448,15 @@ def CreateOrder():
             s.ChargeId = ''
             session.add(s)
             session.commit()
+            order = Order.query.filter(
+                and_(Order.FirstId == request.json['FirstId'], Order.BookId == request.json['BookId']
+                     , Order.SecondId == request.json['SecondId'])).first()
+            record = OrderRecord(State=request.json['State'])
+            record.OrderId = order.OrderId
+            record.UserId = request.json['FirstId']
+            record.Remark = request.json['Remark']
+            session.add(record)
+            session.commit()
             session.close()
         else:
             return jsonify({'Message': '失败', 'Data': '数量不足'})
@@ -1434,6 +1486,15 @@ def CreateOrder():
         s.PosType = ''
         s.ChargeId = ''
         session.add(s)
+        session.commit()
+        order = Order.query.filter(
+            and_(Order.FirstId == request.json['FirstId'], Order.BookId == request.json['BookId']
+                 , Order.SecondId == request.json['SecondId'])).first()
+        record = OrderRecord(State=request.json['State'])
+        record.OrderId = order.OrderId
+        record.UserId = request.json['FirstId']
+        record.Remark = request.json['Remark']
+        session.add(record)
         session.commit()
         session.close()
     return jsonify({'Message': '成功', 'Data': '下单成功'})
@@ -1465,8 +1526,12 @@ def UpdateOrder():
     s.ChargeId = request.json['ChargeId']
     s.PosType = request.json['PosType']
     session.merge(s)
-    session.commit()
-    session.close()
+    order = Order.query.filter(Order.OrderId == request.json['OrderId']).first()
+    record = OrderRecord(State=request.json['State'])
+    record.OrderId = order.OrderId
+    record.UserId = request.json['FirstId']
+    record.Remark = request.json['Remark']
+    session.add(record)
     if request.json['State'] == 4:
         user = User.query.filter(User.UserId == request.json['FirstId']).first()
         oldMoney = user.Money
@@ -1475,7 +1540,7 @@ def UpdateOrder():
         session.merge(newuser)
         session.commit()
         session.close()
-    if request.json['State'] == 5:
+    elif request.json['State'] == 5:
         if request.json['Type'] == 0:
             sale = Sale.query.filter(Sale.SaleId == request.json['BookId']).first()
             newcount = sale.Count + request.json['Count']
@@ -1491,10 +1556,12 @@ def UpdateOrder():
             session.merge(newbuy)
             session.commit()
             session.close()
-    return jsonify({'Message': '成功', 'Data': '更新成功'})
+    else:
+        session.commit()
+        session.close()
+    return jsonify({'Message': '成功', 'Data': '更新成功'})  # 删除订单
 
 
-# 删除订单
 @main.route('/api/orderinfo/delete', methods=['POST'])
 @login_required
 def DeleteOrder():
