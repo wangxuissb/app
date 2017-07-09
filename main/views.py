@@ -12,15 +12,14 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not Found'}), 404)
 
 
-@main.route('/', methods=['GET', 'POST'])
-def index():
-    modelName = request.args.get('modelName', '')
-    if modelName == '':
+@main.route('/<string:name>', methods=['GET', 'POST'])
+def index(name):
+    if name == '':
         return '万创科技'
     else:
-        outName = modelName.split('.', 1)[0]
+        outName = name.split('.', 1)[0]
         shell = '~/cura/CuraEngine2.5 slice -v -j ~/cura/resources/definitions/delta.def.json' \
-                ' -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + modelName
+                ' -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + name
         os.popen(shell).read()
         return send_file('../../../cura/output/' + outName + '.gcode', as_attachment=True)
 
