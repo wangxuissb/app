@@ -18,10 +18,17 @@ def index(name):
         return '万创科技'
     else:
         outName = name.split('.', 1)[0]
-        shell = '~/cura/CuraEngine2.5 slice -v -j ~/cura/resources/definitions/delta.def.json' \
-                ' -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + name
-        os.popen(shell).read()
         return send_file('../../../cura/output/' + outName + '.gcode', as_attachment=True)
+
+
+@main.route('/slice', methods=['POST'])
+def slice():
+    type = request.json['type']
+    name = request.json['name']
+    outName = name.split('.', 1)[0]
+    shell = '~/cura/CuraEngine2.5 slice -v -j ~/cura/resources/definitions/' + type + '.def.json -o ~/cura/output/' + outName + '.gcode -l ~/cura/models/' + name
+    os.popen(shell).read()
+    return 'Success'
 
 
 # ~/cura/CuraEngine2.5 slice -v -p -j ~/cura/resources/definitions/delta.def.json -o ~/cura/output/1.gcode -l ~/cura/models/1.stl
